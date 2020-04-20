@@ -12,10 +12,10 @@
 #This is required for python3 to create and manipulate mySql databases
 import pymysql
 
-hostname = 'localhost'
+hostname = '35.197.174.1'
 username = 'root'
-password = 'root'
-database = 'carhiredb'
+password = 'password'
+database = 'People'
 
 #This function clears the database
 def clearDatabases(conn):
@@ -67,7 +67,7 @@ def createTables(conn):
 		print("Error: {}", e)
 
 	try:
-		cur.execute("CREATE TABLE user (username VARCHAR(20), firstname VARCHAR(20), lastname VARCHAR(20), password VARCHAR(20), email VARCHAR(28))")
+		cur.execute("CREATE TABLE user (username VARCHAR(20), firstname VARCHAR(20), lastname VARCHAR(20), password VARCHAR(20), email VARCHAR(28), PRIMARY KEY (username))")
 	except pymysql.Error as e:
 		print("Error: {}", e)
 
