@@ -1,6 +1,10 @@
 import unittest
+#import pymysql
 import db_singleton as singleton
 import database_utils as database
+import datetime
+import test_database_setup as tdb
+from datetime import timedelta
 
 class test_database_utils(unittest.TestCase):
 
@@ -19,13 +23,8 @@ class test_database_utils(unittest.TestCase):
 
 		self.conn = self.db.get_connection()
 
-		#The SQL and the table population is performed here
-		with self.conn.cursor() as cur:
-			cur.execute("DROP TABLE if exists user")
-			cur.execute("CREATE TABLE if not exists user (username VARCHAR(20), firstname VARCHAR(20), lastname VARCHAR(20), password VARCHAR(20), email VARCHAR(28), PRIMARY KEY (username))")
-			cur.execute("INSERT INTO user VALUES ('Johnno', 'John','Delaney','abc123','john@password.com') ")
-			cur.execute("INSERT INTO user VALUES ('Fry', 'Philip','Fry','Leelha','fry@planetExpress.earth') ")
-		self.conn.commit()
+		tdb.clearDatabases(self.conn)
+		tdb.createTables(self.conn)
 
 	#This function removes is called at the end of the test and closes the connection 
 	def tearDown(self):
@@ -82,6 +81,57 @@ class test_database_utils(unittest.TestCase):
 		with self.assertRaises(Exception) as context:
 			singleton_database2 = singleton.Singleton(test_database_utils.HOST, test_database_utils.USER, test_database_utils.PASSWORD, test_database_utils.DATABASE)
 			self.assertTrue("You cannot create more than one connection!" in context.exception)
+
+	def test_get_booking_history(self):
+
+		with self.db as db:
+			self.assertTrue(len(db.get_booking_history("Johnno")) == 2)
+
+	def test_get_available_cars(self):
+
+		with self.db as db:
+			self.assertTrue(len(db.get_available_cars(-37.800855,144.979234)) == 2)
+
+	def test_get_vehicle_details(self):
+
+		with self.db as db:
+			vehicle_details = db.return_vehicle_details('XYZ987')
+
+			self.assertTrue(vehicle_details[0][0] == 'XYZ987')
+			self.assertTrue(vehicle_details[0][1] == 'Holden')
+			self.assertTrue(vehicle_details[0][2] == 'Commodore')
+			self.assertTrue(vehicle_details[0][3] == -37.799972)
+			self.assertTrue(vehicle_details[0][4] == 144.977393)
+			self.assertTrue(vehicle_details[0][5] == 'green')
+
+	def test_book_vehicle(self):
+
+		with self.db as db:
+
+			pickup = datetime.datetime(2020,5,1,13)
+			dropoff = pickup + timedelta(hours=4)
+
+			self.assertTrue(db.book_vehicle("Johnno", "AH786B", pickup, dropoff) == "Vehicle Booked, your booking number is 4")
+			self.assertTrue(len(db.get_booking_history("Johnno")) == 3)
+
+			pickup = datetime.now()
+			pickup = pickup + timedelta(hours=1)
+			dropoff = pickup + timedelta(hours = 3)
+			self.assertTrue(db.book_vehicle("Johnno", "AH786B", pickup, dropoff) == "Vehicle alredy booked")
+
+	def test_cancel_booking(self):
+
+		with self.db as db:
+			self.assertTrue(db.cancel_booking("Fry", 2) == "Booking successfully cancelled")
+			self.assertTrue(len(db.get_booking_history("Fry")) == 1)
+
+			with self.assertRaises(Exception) as context:
+				db.cancel_booking("Johnno", 2)
+				self.assertTrue("Not your booking" in context.exception)
+				db.cancel_booking("Johnno", 0)
+				self.assertTrue("Can't cancel a Previous booking" in context.exception)
+
+
 
 
 if __name__ == "__main__":
