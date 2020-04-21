@@ -1,4 +1,5 @@
 import unittest
+import db_singleton as singleton
 import database_utils as database
 
 class test_database_utils(unittest.TestCase):
@@ -74,6 +75,14 @@ class test_database_utils(unittest.TestCase):
 			self.assertTrue(user_details[0][2] == 'Delaney')
 			self.assertTrue(user_details[0][3] == 'abc123')
 			self.assertTrue(user_details[0][4] == 'john@password.com')
+
+	def test_singleton(self):
+
+		singleton_database = singleton.Singleton(test_database_utils.HOST, test_database_utils.USER, test_database_utils.PASSWORD, test_database_utils.DATABASE)
+		with self.assertRaises(Exception) as context:
+			singleton_database2 = singleton.Singleton(test_database_utils.HOST, test_database_utils.USER, test_database_utils.PASSWORD, test_database_utils.DATABASE)
+			self.assertTrue("You cannot create more than one connection!" in context.exception)
+
 
 if __name__ == "__main__":
     unittest.main()
