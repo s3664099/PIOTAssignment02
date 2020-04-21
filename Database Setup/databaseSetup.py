@@ -52,41 +52,45 @@ def createTables(conn):
 	cur = conn.cursor()
 
 	try:
-		cur.execute("CREATE TABLE bodytype (bodytype VARCHAR(20), seats INTEGER(2), hourlyPrice DECIMAL(4,2), PRIMARY KEY (bodytype))")
+		cur.execute("CREATE TABLE bodytype (bodytype VARCHAR(20), seats INTEGER(2), hourlyPrice DECIMAL(4,2), icon VARCHAR(20), PRIMARY KEY (bodytype))")
 	except pymysql.Error as e:
-		print("Error: {}", e)
+		print("Error 01: {}", e)
 
 	try:
 		cur.execute("CREATE TABLE makemodel (make VARCHAR(20), model VARCHAR(20), bodytype VARCHAR(20), PRIMARY KEY (make,model), FOREIGN KEY (bodytype) REFERENCES bodytype(bodytype))")
 	except pymysql.Error as e:
-		print("Error: {}", e)
+		print("Error 02: {}", e)
 
 	try:
 		cur.execute("CREATE TABLE car (rego VARCHAR(10), make VARCHAR(20), model VARCHAR(20), locationLong DECIMAL(9,6), locationLat DECIMAL(9,6), colour VARCHAR(10), PRIMARY KEY (rego), FOREIGN KEY (make, model) REFERENCES makemodel(make, model))")
 	except pymysql.Error as e:
-		print("Error: {}", e)
+		print("Error 03: {}", e)
 
 	try:
 		cur.execute("CREATE TABLE user (username VARCHAR(20), firstname VARCHAR(20), lastname VARCHAR(20), password VARCHAR(20), email VARCHAR(28), PRIMARY KEY (username))")
 	except pymysql.Error as e:
-		print("Error: {}", e)
+		print("Error 04: {}", e)
+	try:
+		cur.execute("CREATE TABLE booking(bookingnumber INT NOT NULL AUTO_INCREMENT, rego VARCHAR(10), username VARCHAR(20), pickuptime DATETIME, dropofftime DATETIME, totalcost DECIMAL (4,2), PRIMARY KEY (bookingnumber), FOREIGN KEY (rego) REFERENCES car(rego), FOREIGN KEY (username) REFERENCES user(username))")
+	except pymysql.Error as e:
+		print("Error 05: {}", e)
 
 	#The database is populated
 	try:
-		cur.execute("INSERT INTO bodytype VALUES ('Compact', '2', '5.00')")
-		cur.execute("INSERT INTO bodytype VALUES ('Hatchback', '4', '7.00')")
-		cur.execute("INSERT INTO bodytype VALUES ('Small', '4', '9.00')")
-		cur.execute("INSERT INTO bodytype VALUES ('Medium', '5', '13.00')")
-		cur.execute("INSERT INTO bodytype VALUES ('Family', '5', '15.00')")
-		cur.execute("INSERT INTO bodytype VALUES ('Station Wagon', '5', '20.00')")
-		cur.execute("INSERT INTO bodytype VALUES ('SUV Small', '4', '15.00')")
-		cur.execute("INSERT INTO bodytype VALUES ('SUV Large', '5', '25.00')")
-		cur.execute("INSERT INTO bodytype VALUES ('Van', '2', '15.00')")
-		cur.execute("INSERT INTO bodytype VALUES ('Family Van', '8', '25.00')")
-		cur.execute("INSERT INTO bodytype VALUES ('Mini-Van', '15', '35.00')")
-		cur.execute("INSERT INTO bodytype VALUES ('Presige Small', '4', '35.00')")
-		cur.execute("INSERT INTO bodytype VALUES ('Prestige Large', '5', '55.00')")
-		cur.execute("INSERT INTO bodytype VALUES ('Sports', '2', '55.00')")
+		cur.execute("INSERT INTO bodytype VALUES ('Compact', '2', '5.00','compact.png')")
+		cur.execute("INSERT INTO bodytype VALUES ('Hatchback', '4', '7.00','hatchback.png')")
+		cur.execute("INSERT INTO bodytype VALUES ('Small', '4', '9.00','small.png')")
+		cur.execute("INSERT INTO bodytype VALUES ('Medium', '5', '13.00','medium.png')")
+		cur.execute("INSERT INTO bodytype VALUES ('Family', '5', '15.00','family.png')")
+		cur.execute("INSERT INTO bodytype VALUES ('Station Wagon', '5', '20.00','stationwagon.png')")
+		cur.execute("INSERT INTO bodytype VALUES ('SUV Small', '4', '15.00','suv.png')")
+		cur.execute("INSERT INTO bodytype VALUES ('SUV Large', '5', '25.00','suv.png')")
+		cur.execute("INSERT INTO bodytype VALUES ('Van', '2', '15.00','van.png')")
+		cur.execute("INSERT INTO bodytype VALUES ('Family Van', '8', '25.00','van.png')")
+		cur.execute("INSERT INTO bodytype VALUES ('Mini-Van', '15', '35.00','minivan.png')")
+		cur.execute("INSERT INTO bodytype VALUES ('Presige Small', '4', '35.00','prestige.png')")
+		cur.execute("INSERT INTO bodytype VALUES ('Prestige Large', '5', '55.00','prestige.png')")
+		cur.execute("INSERT INTO bodytype VALUES ('Sports', '2', '55.00','sportscar.png')")
 
 		cur.execute("INSERT INTO makemodel VALUES ('Holden', 'Commodore', 'Family')")
 		cur.execute("INSERT INTO makemodel VALUES ('Ford', 'Falcon', 'Family')")
@@ -101,7 +105,7 @@ def createTables(conn):
 		cur.execute("INSERT INTO makemodel VALUES ('Holden', 'Astra', 'Hatchback')")
 		cur.execute("INSERT INTO makemodel VALUES ('Holden', 'Barina', 'Small')")
 	except pymysql.Error as e:
-		print("Error: {}", e)
+		print("Error 06: {}", e)
 
 	conn.commit()	
 
