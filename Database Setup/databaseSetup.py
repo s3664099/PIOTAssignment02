@@ -16,6 +16,8 @@ hostname = '35.197.174.1'
 username = 'root'
 password = 'password'
 database = 'People'
+import datetime
+from datetime import timedelta
 
 #This function clears the database
 def clearDatabases(conn):
@@ -117,6 +119,20 @@ def createTables(conn):
 		cur.execute("INSERT INTO car VALUES ('XTK999', 'Ford', 'Falcon',-37.835074,144.9810364,'red')")
 		cur.execute("INSERT INTO car VALUES ('GHR445', 'Toyota', 'Rav 4',-37.833413,144.982732,'silver')")
 
+		pickup = datetime.datetime(2020,4,21,13)
+		dropoff = pickup + timedelta(hours=4)
+		cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) VALUES ('XYZ987', 'Johnno', '"+str(pickup)+"','"+str(dropoff)+"',60.00)")
+
+		pickup = datetime.datetime(2020,5,5,9)
+		dropoff = pickup + timedelta(hours=6)
+		cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) VALUES ('U75PYV', 'Johnno', '"+str(pickup)+"','"+str(dropoff)+"',42.00)")
+
+		pickup = datetime.datetime.now()
+		pickup = pickup + timedelta(hours=-2)
+		dropoff = pickup + timedelta(hours=4)
+		cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) VALUES ('U75PYV', 'Fry', '"+str(pickup)+"','"+str(dropoff)+"',42.00)")
+
+
 	except pymysql.Error as e:
 		print("Error 06: {}", e)
 
@@ -151,6 +167,14 @@ def testQuery(conn):
 			print(make+" "+model+" "+" "+bodytype)
 	except:
 		print("Error")
+
+	try:
+		cur.execute("SELECT rego, pickuptime, dropofftime FROM booking")
+
+		for rego, pickuptime, dropofftime in cur.fetchall():
+			print(rego+" "+str(pickuptime)+" "+" "+str(dropofftime))
+	except pymysql.Error as e:
+		print("Error 06: {}", e)
 
 
 print("Connecting")

@@ -43,6 +43,7 @@ class test_database_utils(unittest.TestCase):
 
 	#Tests whether the insert function works, and that duplicate entries cannot be entered
 	#Tests that the Primary Key of username works
+
 	def test_insert_person(self):
 		with self.db as db:
 
@@ -90,7 +91,7 @@ class test_database_utils(unittest.TestCase):
 	def test_get_available_cars(self):
 
 		with self.db as db:
-			self.assertTrue(len(db.get_available_cars(-37.800855,144.979234)) == 2)
+			self.assertTrue(len(db.get_available_cars(-37.800855,144.977234)) == 2)
 
 	def test_get_vehicle_details(self):
 
@@ -100,8 +101,8 @@ class test_database_utils(unittest.TestCase):
 			self.assertTrue(vehicle_details[0][0] == 'XYZ987')
 			self.assertTrue(vehicle_details[0][1] == 'Holden')
 			self.assertTrue(vehicle_details[0][2] == 'Commodore')
-			self.assertTrue(vehicle_details[0][3] == -37.799972)
-			self.assertTrue(vehicle_details[0][4] == 144.977393)
+			self.assertEqual(float(vehicle_details[0][3]), -37.799972)
+			self.assertEqual(float(vehicle_details[0][4]), 144.977393)
 			self.assertTrue(vehicle_details[0][5] == 'green')
 
 	def test_book_vehicle(self):
@@ -130,6 +131,8 @@ class test_database_utils(unittest.TestCase):
 				self.assertTrue("Not your booking" in context.exception)
 				db.cancel_booking("Johnno", 0)
 				self.assertTrue("Can't cancel a Previous booking" in context.exception)
+
+	
 
 
 

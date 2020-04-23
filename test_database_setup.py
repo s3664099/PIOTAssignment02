@@ -11,6 +11,8 @@
 
 #This is required for python3 to create and manipulate mySql databases
 import pymysql
+import datetime
+from datetime import timedelta
 
 hostname = '35.197.174.1'
 username = 'root'
@@ -41,11 +43,11 @@ def clearDatabases(conn):
 	try:
 		cur.execute("DROP TABLE bodytype")
 	except:
-		print("No such table as bodytype")	
+		print("No such table as bodytype")
 	try:
 		cur.execute("DROP TABLE booking")
 	except:
-		print("No such table as booking")
+		print("No such table as booking")		
 
 #This function creates the tables associated with the database
 def createTables(conn):
@@ -116,6 +118,20 @@ def createTables(conn):
 		cur.execute("INSERT INTO car VALUES ('LMP675', 'Toyota', 'Camry',-37.856707,144.9678956,'blue')")
 		cur.execute("INSERT INTO car VALUES ('XTK999', 'Ford', 'Falcon',-37.835074,144.9810364,'red')")
 		cur.execute("INSERT INTO car VALUES ('GHR445', 'Toyota', 'Rav 4',-37.833413,144.982732,'silver')")
+
+		pickup = datetime.datetime(2020,4,21,13)
+		dropoff = pickup + timedelta(hours=4)
+		cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) VALUES ('XYZ987', 'Johnno', '"+str(pickup)+"','"+str(dropoff)+"',60.00)")
+
+		pickup = datetime.datetime(2020,5,5,9)
+		dropoff = pickup + timedelta(hours=6)
+		cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) VALUES ('U75PYV', 'Johnno', '"+str(pickup)+"','"+str(dropoff)+"',42.00)")
+
+		pickup = datetime.datetime.now()
+		pickup = pickup + timedelta(hours=-2)
+		dropoff = pickup + timedelta(hours=4)
+		cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) VALUES ('U75PYV', 'Fry', '"+str(pickup)+"','"+str(dropoff)+"',42.00)")
+
 
 	except pymysql.Error as e:
 		print("Error 06: {}", e)
