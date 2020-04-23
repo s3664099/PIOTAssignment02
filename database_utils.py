@@ -76,6 +76,10 @@ class databaseUtils:
 		with self.connection.cursor() as cur:
 			cur.execute("SELECT rego, make, model, locationlong, locationlat, colour FROM car WHERE rego='"+rego+"'")
 
+			#Need to also return body type, seats and hourly price
+			#Place details into a map
+			#With make and model, get bodytype, seats, and hourly price
+
 			return cur.fetchall()
 
 	#Takes the details of the users location and returns all nearby cars and returns ones that aren't currently booked
@@ -126,11 +130,35 @@ class databaseUtils:
 				#gets booking history for vehicle
 				cur.execute("SELECT pickuptime, dropofftime FROM booking WHERE rego = '"+rego+"'")
 
+				#Iterates through booking history
+				for bookings in cur.fetchall():
+
+					#checks to see if booking date overlaps
+					if (pickup > bookings.pickuptime and pickup < bookings.dropofftime) or (
+						dropoff > bookings.pickuptime and dropoff < bookings.dropofftime):
+
+						#if it does returns invalid booking
+						return "Vehicle alredy booked"
+
+					else:
+
+						#Calculate number of hours booked and get fee based on bodytype
+						#Create function to calculate hourly price
+							#Takes pickup/dropoff and price, returns total price
+						
+
+						cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',42.00)")
 
 
-			#Iterates through booking history
-			#checks to see if booking date overlaps
-			#if it does returns invalid booking
+
+
+
+
+
+
+
+			
+			
 			#if it doesn't returns successful booking, and booking number
 
 
