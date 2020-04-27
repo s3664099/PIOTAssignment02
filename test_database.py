@@ -118,10 +118,17 @@ class test_database_utils(unittest.TestCase):
 			self.assertTrue(db.book_vehicle("Johnno", "AH786B", pickup, dropoff) == "Vehicle Booked, your booking number is 4")
 			self.assertTrue(len(db.get_booking_history("Johnno")) == 3)
 
-			pickup = datetime.now()
+			pickup = datetime.datetime.now()
 			pickup = pickup + timedelta(hours=1)
 			dropoff = pickup + timedelta(hours = 3)
-			self.assertTrue(db.book_vehicle("Johnno", "AH786B", pickup, dropoff) == "Vehicle alredy booked")
+			self.assertTrue(db.book_vehicle("Johnno", "U75PYV", pickup, dropoff) == "Vehicle already booked")
+
+			pickup = datetime.datetime.now()
+			pickup = pickup + timedelta(hours=-3)
+			dropoff = pickup + timedelta(hours = 3)
+			self.assertTrue(db.book_vehicle("Johnno", "U75PYV", pickup, dropoff) == "Vehicle already booked")
+
+	#Comment above, and also return total cost of hire
 
 	def test_cancel_booking(self):
 

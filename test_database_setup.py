@@ -129,16 +129,19 @@ def createTables(conn):
 
 		pickup = datetime.datetime(2020,4,21,13)
 		dropoff = pickup + timedelta(hours=4)
-		cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) VALUES ('XYZ987', 'Johnno', '"+str(pickup)+"','"+str(dropoff)+"',60.00)")
+		cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) VALUES\
+					 ('XYZ987', 'Johnno', '"+str(pickup)+"','"+str(dropoff)+"',60.00)")
 
 		pickup = datetime.datetime(2020,5,5,9)
 		dropoff = pickup + timedelta(hours=6)
-		cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) VALUES ('U75PYV', 'Johnno', '"+str(pickup)+"','"+str(dropoff)+"',42.00)")
+		cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) VALUES\
+					 ('U75PYV', 'Johnno', '"+str(pickup)+"','"+str(dropoff)+"',42.00)")
 
 		pickup = datetime.datetime.now()
 		pickup = pickup + timedelta(hours=-2)
 		dropoff = pickup + timedelta(hours=4)
-		cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) VALUES ('U75PYV', 'Fry', '"+str(pickup)+"','"+str(dropoff)+"',42.00)")
+		cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) VALUES\
+					 ('U75PYV', 'Fry', '"+str(pickup)+"','"+str(dropoff)+"',42.00)")
 
 
 	except pymysql.Error as e:

@@ -81,11 +81,6 @@ class databaseUtils:
 				AND m.bodytype = b.bodytype AND c.rego='"+rego+"'")
 
 			cars = cur.fetchall()
-			print(cars)
-
-			#Need to also return body type, seats and hourly price
-			#Place details into a map
-			#With make and model, get bodytype, seats, and hourly price
 
 			return cars
 
@@ -132,52 +127,47 @@ class databaseUtils:
 
 		return vehicle_list
 
-		def book_vehicle(self, name, rego, pickup, dropoff):
+	def book_vehicle(self, name, rego, pickup, dropoff):
 
-			with self.connection.cursor() as cur:
+		with self.connection.cursor() as cur:
 
-				#gets booking history for vehicle
-				cur.execute("SELECT pickuptime, dropofftime FROM booking WHERE rego = '"+rego+"'")
+			#gets booking history for vehicle
+			cur.execute("SELECT pickuptime, dropofftime FROM booking WHERE rego = '"+rego+"'")
 
-				#Iterates through booking history
-				for bookings in cur.fetchall():
+			#Iterates through booking history
+			for bookings in cur.fetchall():
 
-					#checks to see if booking date overlaps
-					if (pickup > bookings.pickuptime and pickup < bookings.dropofftime) or (
-						dropoff > bookings.pickuptime and dropoff < bookings.dropofftime):
+				#checks to see if booking date overlaps
+				if (pickup > bookings[0] and pickup < bookings[1]) or (
+					dropoff > bookings[0] and dropoff < bookings[1]):
 
-						#if it does returns invalid booking
-						return "Vehicle alredy booked"
+					#if it does returns invalid booking
+					return "Vehicle already booked"
 
-					else:
+			cur.execute("SELECT hourlyPrice FROM bodytype JOIN makemodel on makemodel.bodytype = bodytype.bodytype\
+						JOIN car ON car.model = makemodel.model\
+						WHERE rego = '"+rego+"'")
 
-						#Calculate number of hours booked and get fee based on bodytype
-						#Create function to calculate hourly price
-							#Takes pickup/dropoff and price, returns total price
-						
+			#Source: https://stackoverflow.com/questions/1345827/how-do-i-find-the-time-difference-between-two-datetime-objects-in-python
+			price = cur.fetchall()
+			price = float(price[0][0])
+			booking_time = dropoff - pickup
+			booking_time = divmod(booking_time.total_seconds(), 3600)[0]
+			total_cost = price*booking_time
 
-						cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) \
-							VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',42.00)")
+			cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) \
+						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+str(total_cost)+")")
+			cur.execute("SELECT LAST_INSERT_ID()")
+			insert_id = cur.fetchall()
 
+			return "Vehicle Booked, your booking number is "+str(insert_id[0][0])
 
+	def cancel_booking(self, name, booking_number):
 
+		with self.connection.cursor() as cur:
 
-
-
-
-
-
-			
-			
-			#if it doesn't returns successful booking, and booking number
-
-
-		def cancel_booking(self, name, booking_number):
-
-			with self.connection.cursor() as cur:
-
-				#gets the booking based on the booking number
-				cur.execute("SELECT username FROM booking WHERE bookingnumber = '"+booking_number+"'")
+			#gets the booking based on the booking number
+			cur.execute("SELECT username FROM booking WHERE bookingnumber = '"+booking_number+"'")
 
 			#confirms that the names match
 			#If they do, the booking is cancelled and the entry cleared
