@@ -104,6 +104,9 @@ class test_database_utils(unittest.TestCase):
 			self.assertEqual(float(vehicle_details[0][3]), -37.799972)
 			self.assertEqual(float(vehicle_details[0][4]), 144.977393)
 			self.assertTrue(vehicle_details[0][5] == 'green')
+			self.assertTrue(vehicle_details[0][6] == 'Family')
+			self.assertTrue(vehicle_details[0][7] == 5)
+			self.assertTrue(float(vehicle_details[0][8]) == 15.00)
 
 	def test_book_vehicle(self):
 

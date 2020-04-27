@@ -45,7 +45,8 @@ class databaseUtils:
 		with self.connection.cursor() as cur:
 			response = "success"
 			try:
-				cur.execute("INSERT INTO user VALUES ('"+user_name+"','"+first_name+"','"+last_name+"','"+password+"','"+email+"')")
+				cur.execute("INSERT INTO user VALUES \
+					('"+user_name+"','"+first_name+"','"+last_name+"','"+password+"','"+email+"')")
 			except:
 				response = "User name already used"
 			self.connection.commit()
@@ -67,20 +68,26 @@ class databaseUtils:
 	#Gets a list of the bookings that the user has made
 	def get_booking_history(self, user_name):
 		with self.connection.cursor() as cur:
-			cur.execute("SELECT rego, pickuptime, dropofftime, totalcost FROM booking WHERE username='"+user_name+"'")
+			cur.execute("SELECT rego, pickuptime, dropofftime, \
+				totalcost FROM booking WHERE username='"+user_name+"'")
 
 			return cur.fetchall()
 
 	#Returns the details of a particular vehicle
 	def return_vehicle_details(self, rego):
 		with self.connection.cursor() as cur:
-			cur.execute("SELECT rego, make, model, locationlong, locationlat, colour FROM car WHERE rego='"+rego+"'")
+			cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
+				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
+				AND m.bodytype = b.bodytype AND c.rego='"+rego+"'")
+
+			cars = cur.fetchall()
+			print(cars)
 
 			#Need to also return body type, seats and hourly price
 			#Place details into a map
 			#With make and model, get bodytype, seats, and hourly price
 
-			return cur.fetchall()
+			return cars
 
 	#Takes the details of the users location and returns all nearby cars and returns ones that aren't currently booked
 	def get_available_cars(self, lng, lat):
@@ -95,7 +102,9 @@ class databaseUtils:
 
 		#Get a list of vehicles based on area which has been passed through
 		with self.connection.cursor() as cur:
-			cur.execute("SELECT rego, make, model, locationlong, locationlat FROM car WHERE locationlong<"+top_long+" and locationlong > "+bottom_long+" and locationlat > "+left_lat+" and locationlat<"+right_lat)
+			cur.execute("SELECT rego, make, model, locationlong, locationlat FROM car \
+				WHERE locationlong<"+top_long+" and locationlong > "+bottom_long+" and \
+				locationlat > "+left_lat+" and locationlat<"+right_lat)
 
 			#checks each of the vehicles returned to see if they have been booked
 			for car in cur.fetchall():
@@ -147,7 +156,8 @@ class databaseUtils:
 							#Takes pickup/dropoff and price, returns total price
 						
 
-						cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',42.00)")
+						cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) \
+							VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',42.00)")
 
 
 

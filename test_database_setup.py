@@ -54,26 +54,34 @@ def createTables(conn):
 	cur = conn.cursor()
 
 	try:
-		cur.execute("CREATE TABLE bodytype (bodytype VARCHAR(20), seats INTEGER(2), hourlyPrice DECIMAL(4,2), icon VARCHAR(20), PRIMARY KEY (bodytype))")
+		cur.execute("CREATE TABLE bodytype (bodytype VARCHAR(20), seats INTEGER(2), hourlyPrice DECIMAL(4,2),\
+					icon VARCHAR(20), PRIMARY KEY (bodytype))")
 	except pymysql.Error as e:
 		print("Error 01: {}", e)
 
 	try:
-		cur.execute("CREATE TABLE makemodel (make VARCHAR(20), model VARCHAR(20), bodytype VARCHAR(20), PRIMARY KEY (make,model), FOREIGN KEY (bodytype) REFERENCES bodytype(bodytype))")
+		cur.execute("CREATE TABLE makemodel (make VARCHAR(20), model VARCHAR(20), bodytype VARCHAR(20),\
+					PRIMARY KEY (make,model), FOREIGN KEY (bodytype) REFERENCES bodytype(bodytype))")
 	except pymysql.Error as e:
 		print("Error 02: {}", e)
 
 	try:
-		cur.execute("CREATE TABLE car (rego VARCHAR(10), make VARCHAR(20), model VARCHAR(20), locationLong DECIMAL(9,6), locationLat DECIMAL(9,6), colour VARCHAR(10), PRIMARY KEY (rego), FOREIGN KEY (make, model) REFERENCES makemodel(make, model))")
+		cur.execute("CREATE TABLE car (rego VARCHAR(10), make VARCHAR(20), model VARCHAR(20), locationLong DECIMAL(9,6),\
+					locationLat DECIMAL(9,6), colour VARCHAR(10), PRIMARY KEY (rego), FOREIGN KEY (make, model)\
+					REFERENCES makemodel(make, model))")
 	except pymysql.Error as e:
 		print("Error 03: {}", e)
 
 	try:
-		cur.execute("CREATE TABLE user (username VARCHAR(20), firstname VARCHAR(20), lastname VARCHAR(20), password VARCHAR(20), email VARCHAR(28), PRIMARY KEY (username))")
+		cur.execute("CREATE TABLE user (username VARCHAR(20), firstname VARCHAR(20), lastname VARCHAR(20),\
+					password VARCHAR(20), email VARCHAR(28), PRIMARY KEY (username))")
 	except pymysql.Error as e:
 		print("Error 04: {}", e)
 	try:
-		cur.execute("CREATE TABLE booking(bookingnumber INT NOT NULL AUTO_INCREMENT, rego VARCHAR(10), username VARCHAR(20), pickuptime DATETIME, dropofftime DATETIME, totalcost DECIMAL (4,2), PRIMARY KEY (bookingnumber), FOREIGN KEY (rego) REFERENCES car(rego), FOREIGN KEY (username) REFERENCES user(username))")
+		cur.execute("CREATE TABLE booking(bookingnumber INT NOT NULL AUTO_INCREMENT, rego VARCHAR(10),\
+					username VARCHAR(20), pickuptime DATETIME, dropofftime DATETIME, totalcost DECIMAL (4,2),\
+					PRIMARY KEY (bookingnumber), FOREIGN KEY (rego) REFERENCES car(rego), FOREIGN KEY (username)\
+					REFERENCES user(username))")
 	except pymysql.Error as e:
 		print("Error 05: {}", e)
 
