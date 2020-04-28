@@ -127,6 +127,7 @@ class databaseUtils:
 
 		return vehicle_list
 
+	#Function to book a vehicle and adds booking to the database
 	def book_vehicle(self, name, rego, pickup, dropoff):
 
 		with self.connection.cursor() as cur:
@@ -144,23 +145,28 @@ class databaseUtils:
 					#if it does returns invalid booking
 					return "Vehicle already booked"
 
+			#The hourly price for that particular car is retrieved form the database
 			cur.execute("SELECT hourlyPrice FROM bodytype JOIN makemodel on makemodel.bodytype = bodytype.bodytype\
 						JOIN car ON car.model = makemodel.model\
 						WHERE rego = '"+rego+"'")
 
 			#Source: https://stackoverflow.com/questions/1345827/how-do-i-find-the-time-difference-between-two-datetime-objects-in-python
+			#Calculates the total cost of the booking
 			price = cur.fetchall()
 			price = float(price[0][0])
 			booking_time = dropoff - pickup
 			booking_time = divmod(booking_time.total_seconds(), 3600)[0]
-			total_cost = price*booking_time
 
+			#Source: https://kite.com/python/answers/how-to-print-a-float-with-two-decimal-places-in-python
+			total_cost = "{:.2f}".format(price*booking_time)
+
+			#The booking is added to the database and the results returned to the user
 			cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) \
-						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+str(total_cost)+")")
+						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+")")
 			cur.execute("SELECT LAST_INSERT_ID()")
 			insert_id = cur.fetchall()
 
-			return "Vehicle Booked, your booking number is "+str(insert_id[0][0])
+			return "Vehicle Booked, your booking number is "+str(insert_id[0][0])+" and the price is $"+total_cost
 
 	def cancel_booking(self, name, booking_number):
 

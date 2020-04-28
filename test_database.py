@@ -115,7 +115,9 @@ class test_database_utils(unittest.TestCase):
 			pickup = datetime.datetime(2020,5,1,13)
 			dropoff = pickup + timedelta(hours=4)
 
-			self.assertTrue(db.book_vehicle("Johnno", "AH786B", pickup, dropoff) == "Vehicle Booked, your booking number is 4")
+			test_result = "Vehicle Booked, your booking number is 4 and the price is $36.00"
+
+			self.assertTrue(db.book_vehicle("Johnno", "AH786B", pickup, dropoff) == test_result)
 			self.assertTrue(len(db.get_booking_history("Johnno")) == 3)
 
 			pickup = datetime.datetime.now()
