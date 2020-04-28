@@ -158,7 +158,8 @@ class databaseUtils:
 			booking_time = divmod(booking_time.total_seconds(), 3600)[0]
 
 			#Source: https://kite.com/python/answers/how-to-print-a-float-with-two-decimal-places-in-python
-			total_cost = "{:.2f}".format(price*booking_time)
+			total_cost = price*booking_time
+			total_cost = "{:.2f}".format(total_cost)
 
 			#The booking is added to the database and the results returned to the user
 			cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) \
@@ -173,11 +174,36 @@ class databaseUtils:
 		with self.connection.cursor() as cur:
 
 			#gets the booking based on the booking number
-			cur.execute("SELECT username FROM booking WHERE bookingnumber = '"+booking_number+"'")
+			row_count = cur.execute("SELECT username, pickuptime, dropofftime FROM booking WHERE bookingnumber\
+									 = '"+str(booking_number)+"'")
 
-			#confirms that the names match
-			#If they do, the booking is cancelled and the entry cleared
-			#If they don't, an error is returned
+			#Checks to see if the booking exists
+			if row_count == 0:
+				return "No booking exists"
+
+			results = cur.fetchall()
+			username = results[0][0]
+			pickup = results[0][1]
+			dropoff = results[0][2]
+
+			time = datetime.datetime.now()
+
+			#Checks to see if the booking is a valud booking to be cancelled	
+			if name != username:
+				return "Can't cancel somebody else's booking"
+			elif time > dropoff:
+				return "Can't cancel a previous booking"
+			elif time > pickup:
+				return "Can't cancel a booking in progress"
+			else:
+
+				#If they do, the booking is cancelled and the entry cleared
+				cur.execute("DELETE FROM booking WHERE bookingnumber = '"+str(booking_number)+"'")
+				return "Booking successfully cancelled"
+				
+
+				
+
 
 				
 

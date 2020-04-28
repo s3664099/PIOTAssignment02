@@ -14,9 +14,9 @@ import pymysql
 import datetime
 from datetime import timedelta
 
-hostname = '35.197.174.1'
+hostname = 'localhost'
 username = 'root'
-password = 'password'
+password = 'root'
 database = 'People'
 
 #This function clears the database
@@ -79,7 +79,7 @@ def createTables(conn):
 		print("Error 04: {}", e)
 	try:
 		cur.execute("CREATE TABLE booking(bookingnumber INT NOT NULL AUTO_INCREMENT, rego VARCHAR(10),\
-					username VARCHAR(20), pickuptime DATETIME, dropofftime DATETIME, totalcost DECIMAL (4,2),\
+					username VARCHAR(20), pickuptime DATETIME, dropofftime DATETIME, totalcost DECIMAL (6,2),\
 					PRIMARY KEY (bookingnumber), FOREIGN KEY (rego) REFERENCES car(rego), FOREIGN KEY (username)\
 					REFERENCES user(username))")
 	except pymysql.Error as e:
@@ -142,7 +142,6 @@ def createTables(conn):
 		dropoff = pickup + timedelta(hours=4)
 		cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) VALUES\
 					 ('U75PYV', 'Fry', '"+str(pickup)+"','"+str(dropoff)+"',42.00)")
-
 
 	except pymysql.Error as e:
 		print("Error 06: {}", e)

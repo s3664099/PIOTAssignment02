@@ -9,9 +9,9 @@ from datetime import timedelta
 class test_database_utils(unittest.TestCase):
 
 	#The details of the database to be accessed
-	HOST = "35.197.174.1"
+	HOST = "localhost"
 	USER = "root"
-	PASSWORD = "password"
+	PASSWORD = "root"
 	DATABASE = "People"
 
 	#This sets up the test, namely by connecting to the database, clearing the table to be tested
@@ -135,14 +135,25 @@ class test_database_utils(unittest.TestCase):
 	def test_cancel_booking(self):
 
 		with self.db as db:
-			self.assertTrue(db.cancel_booking("Fry", 2) == "Booking successfully cancelled")
+			pickup = datetime.datetime.now()
+			pickup = pickup + timedelta(days= 2, hours=-2)
+			dropoff = pickup + timedelta(days=2, hours=4)
+			db.book_vehicle("Fry", "GHR445", pickup, dropoff)
+
+			
+			self.assertTrue(db.cancel_booking("Fry", 3) == "Can't cancel a booking in progress")
+			self.assertTrue(db.cancel_booking("Fry", 4) == "Booking successfully cancelled")
 			self.assertTrue(len(db.get_booking_history("Fry")) == 1)
 
-			with self.assertRaises(Exception) as context:
-				db.cancel_booking("Johnno", 2)
-				self.assertTrue("Not your booking" in context.exception)
-				db.cancel_booking("Johnno", 0)
-				self.assertTrue("Can't cancel a Previous booking" in context.exception)
+			self.assertTrue(db.cancel_booking("Johnno", 3) == "Can't cancel somebody else's booking")
+			self.assertTrue(db.cancel_booking("Johnno", 1) == "Can't cancel a previous booking")
+			self.assertTrue(db.cancel_booking("Johnno", 20) == "No booking exists")
+
+			#with self.assertRaises(Exception) as context:
+			#	db.cancel_booking("Johnno", 2)
+			#	self.assertTrue("Not your booking" in context.exception)
+			#	db.cancel_booking("Johnno", 0)
+			#	self.assertTrue("Can't cancel a Previous booking" in context.exception)
 
 	
 
