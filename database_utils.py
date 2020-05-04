@@ -48,20 +48,20 @@ class databaseUtils:
 				cur.execute("INSERT INTO user VALUES \
 					('"+user_name+"','"+first_name+"','"+last_name+"','"+password+"','"+email+"')")
 			except:
-				response = "User name already used"
+				response = "Email already used"
 			self.connection.commit()
 			return response
 
 	#This method returns the password and the user name of the user
 	def return_user(self, user_name):
 		with self.connection.cursor() as cur:
-			cur.execute("SELECT username, password FROM user WHERE username='"+user_name+"'")
+			cur.execute("SELECT username, password FROM user WHERE email='"+user_name+"'")
 			return cur.fetchall()
 
 	#Return user details
 	def return_user_details(self, user_name):
 		with self.connection.cursor() as cur:
-			cur.execute("SELECT * FROM user WHERE username='"+user_name+"'")
+			cur.execute("SELECT * FROM user WHERE email='"+user_name+"'")
 
 			return cur.fetchall()	
 
@@ -69,7 +69,7 @@ class databaseUtils:
 	def get_booking_history(self, user_name):
 		with self.connection.cursor() as cur:
 			cur.execute("SELECT rego, pickuptime, dropofftime, \
-				totalcost FROM booking WHERE username='"+user_name+"'")
+				totalcost FROM booking WHERE email='"+user_name+"'")
 
 			return cur.fetchall()
 
@@ -92,7 +92,6 @@ class databaseUtils:
 		bottom_long = str(lng - databaseUtils.area_range)
 		left_lat = str(lat - databaseUtils.area_range)
 		right_lat = str(lat + databaseUtils.area_range)
-		temp_vehicle_list = []
 		vehicle_list = []
 
 		#Get a list of vehicles based on area which has been passed through
@@ -101,29 +100,49 @@ class databaseUtils:
 				WHERE locationlong<"+top_long+" and locationlong > "+bottom_long+" and \
 				locationlat > "+left_lat+" and locationlat<"+right_lat)
 
-			#checks each of the vehicles returned to see if they have been booked
-			for car in cur.fetchall():
-				temp_vehicle_list.append(car)
+			vehicle_list = self.sort_cars(cur.fetchall(), cur)
 
-			for car in temp_vehicle_list:
+		return vehicle_list
 
-				car_booked = False
+	def sort_cars(self, vehicle_list, cur):
 
-				#Gets a list of bookings based on that vehicle
-				cur.execute("SELECT pickuptime, dropofftime FROM booking WHERE rego = '"+car[0]+"'")
-				car_booking = cur.fetchall()
+		temp_vehicle_list = []
+		unbooked_vehicle_list = []
 
-				if car_booking:
+		#checks each of the vehicles returned to see if they have been booked
+		for car in vehicle_list:
+			temp_vehicle_list.append(car)
 
-					for booking in car_booking:
+		for car in temp_vehicle_list:
 
-						#Checks to see if the car has been booked in the current period
-						#If so, sets the flag to true so that the vehicle is not returned
-						if datetime.datetime.now() > booking[0] and datetime.datetime.now() < booking[1]:
-							car_booked = True
+			car_booked = False
 
-				if car_booked == False:
-					vehicle_list.append(car)
+			#Gets a list of bookings based on that vehicle
+			cur.execute("SELECT pickuptime, dropofftime FROM booking WHERE rego = '"+car[0]+"'")
+			car_booking = cur.fetchall()
+
+			if car_booking:
+
+				for booking in car_booking:
+
+					#Checks to see if the car has been booked in the current period
+					#If so, sets the flag to true so that the vehicle is not returned
+					if datetime.datetime.now() > booking[0] and datetime.datetime.now() < booking[1]:
+						car_booked = True
+
+			if car_booked == False:
+				unbooked_vehicle_list.append(car)
+
+		#print(len(unbooked_vehicle_list))
+
+		return unbooked_vehicle_list
+
+
+	def get_all_cars(self):
+		with self.connection.cursor() as cur:
+			cur.execute("SELECT rego, make, model FROM car")
+
+			vehicle_list = self.sort_cars(cur.fetchall(), cur)
 
 		return vehicle_list
 
@@ -133,14 +152,14 @@ class databaseUtils:
 		with self.connection.cursor() as cur:
 
 			#gets booking history for vehicle
-			cur.execute("SELECT pickuptime, dropofftime FROM booking WHERE rego = '"+rego+"'")
+			cur.execute("SELECT pickuptime, dropofftime, active FROM booking WHERE rego = '"+rego+"'")
 
 			#Iterates through booking history
 			for bookings in cur.fetchall():
 
 				#checks to see if booking date overlaps
-				if (pickup > bookings[0] and pickup < bookings[1]) or (
-					dropoff > bookings[0] and dropoff < bookings[1]):
+				if (pickup > bookings[0] and pickup < bookings[1] and bookings[2] == 1) or (
+					dropoff > bookings[0] and dropoff < bookings[1] and bookings[2] == 1):
 
 					#if it does returns invalid booking
 					return "Vehicle already booked"
@@ -162,8 +181,8 @@ class databaseUtils:
 			total_cost = "{:.2f}".format(total_cost)
 
 			#The booking is added to the database and the results returned to the user
-			cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) \
-						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+")")
+			cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active) \
+						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+", 1)")
 			cur.execute("SELECT LAST_INSERT_ID()")
 			insert_id = cur.fetchall()
 
@@ -174,7 +193,7 @@ class databaseUtils:
 		with self.connection.cursor() as cur:
 
 			#gets the booking based on the booking number
-			row_count = cur.execute("SELECT username, pickuptime, dropofftime FROM booking WHERE bookingnumber\
+			row_count = cur.execute("SELECT email, pickuptime, dropofftime, active FROM booking WHERE bookingnumber\
 									 = '"+str(booking_number)+"'")
 
 			#Checks to see if the booking exists
@@ -198,7 +217,7 @@ class databaseUtils:
 			else:
 
 				#If they do, the booking is cancelled and the entry cleared
-				cur.execute("DELETE FROM booking WHERE bookingnumber = '"+str(booking_number)+"'")
+				cur.execute("UPDATE booking SET active = 0 WHERE bookingnumber = '"+str(booking_number)+"'")
 				return "Booking successfully cancelled"
 				
 

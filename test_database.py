@@ -50,7 +50,7 @@ class test_database_utils(unittest.TestCase):
 			count = self.countPeople()
 			self.assertTrue(db.insert_user("Ralphie", "Ralpho", "Emmerson", "poetry", "ralph@deadpoet.com") == "success")
 			self.assertTrue(count+1 == self.countPeople())
-			self.assertTrue(db.insert_user("Ralphie", "Ralpho", "Emmerson", "poetry", "ralph@deadpoet.com") == "User name already used")
+			self.assertTrue(db.insert_user("Ralphie", "Ralpho", "Emmerson", "poetry", "ralph@deadpoet.com") == "Email already used")
 			self.assertTrue(count+1 == self.countPeople())
 			self.assertTrue(db.insert_user("JoniBoi", "Pope", "John Paul II", "pope", "thepope@stpeters.vt") == "success")
 			self.assertTrue(count+2 == self.countPeople())
@@ -60,7 +60,7 @@ class test_database_utils(unittest.TestCase):
 	def test_return_user(self):
 
 		with self.db as db:
-			self.assertTrue(len(db.return_user("Johnno")) == 1)
+			self.assertTrue(len(db.return_user("john@password.com")) == 1)
 
 	#Tests that the return user details works. This confirms that all of the details of the particular user
 	#Is returned.
@@ -68,7 +68,7 @@ class test_database_utils(unittest.TestCase):
 
 		with self.db as db:
 
-			user_details = db.return_user_details("Johnno")
+			user_details = db.return_user_details("john@password.com")
 
 			self.assertTrue(user_details[0][0] == 'Johnno')
 			self.assertTrue(user_details[0][1] == 'John')
@@ -86,12 +86,16 @@ class test_database_utils(unittest.TestCase):
 	def test_get_booking_history(self):
 
 		with self.db as db:
-			self.assertTrue(len(db.get_booking_history("Johnno")) == 2)
+			self.assertTrue(len(db.get_booking_history("john@password.com")) == 2)
 
-	def test_get_available_cars(self):
+	def test_get_available_local_cars(self):
 
 		with self.db as db:
 			self.assertTrue(len(db.get_available_cars(-37.800855,144.977234)) == 2)
+
+	def test_get_all_available_case(self):
+		with self.db as db:
+			self.assertTrue(len(db.get_all_cars()) == 7)
 
 	def test_get_vehicle_details(self):
 
@@ -117,18 +121,18 @@ class test_database_utils(unittest.TestCase):
 
 			test_result = "Vehicle Booked, your booking number is 4 and the price is $36.00"
 
-			self.assertTrue(db.book_vehicle("Johnno", "AH786B", pickup, dropoff) == test_result)
-			self.assertTrue(len(db.get_booking_history("Johnno")) == 3)
+			self.assertTrue(db.book_vehicle("john@password.com", "AH786B", pickup, dropoff) == test_result)
+			self.assertTrue(len(db.get_booking_history("john@password.com")) == 3)
 
 			pickup = datetime.datetime.now()
 			pickup = pickup + timedelta(hours=1)
 			dropoff = pickup + timedelta(hours = 3)
-			self.assertTrue(db.book_vehicle("Johnno", "U75PYV", pickup, dropoff) == "Vehicle already booked")
+			self.assertTrue(db.book_vehicle("john@password.com", "U75PYV", pickup, dropoff) == "Vehicle already booked")
 
 			pickup = datetime.datetime.now()
 			pickup = pickup + timedelta(hours=-3)
 			dropoff = pickup + timedelta(hours = 3)
-			self.assertTrue(db.book_vehicle("Johnno", "U75PYV", pickup, dropoff) == "Vehicle already booked")
+			self.assertTrue(db.book_vehicle("john@password.com", "U75PYV", pickup, dropoff) == "Vehicle already booked")
 
 	#Comment above, and also return total cost of hire
 
@@ -138,27 +142,22 @@ class test_database_utils(unittest.TestCase):
 			pickup = datetime.datetime.now()
 			pickup = pickup + timedelta(days= 2, hours=-2)
 			dropoff = pickup + timedelta(days=2, hours=4)
-			db.book_vehicle("Fry", "GHR445", pickup, dropoff)
+			db.book_vehicle("fry@planetExpress.earth", "GHR445", pickup, dropoff)
 
 			
-			self.assertTrue(db.cancel_booking("Fry", 3) == "Can't cancel a booking in progress")
-			self.assertTrue(db.cancel_booking("Fry", 4) == "Booking successfully cancelled")
-			self.assertTrue(len(db.get_booking_history("Fry")) == 1)
+			self.assertTrue(db.cancel_booking("fry@planetExpress.earth", 3) == "Can't cancel a booking in progress")
+			self.assertTrue(db.cancel_booking("fry@planetExpress.earth", 4) == "Booking successfully cancelled")
+			self.assertTrue(len(db.get_booking_history("fry@planetExpress.earth")) == 2)
+			db.book_vehicle("fry@planetExpress.earth", "GHR445", pickup, dropoff)
+			self.assertTrue(len(db.get_booking_history("fry@planetExpress.earth")) == 3)
+			self.assertTrue(db.cancel_booking("fry@planetExpress.earth", 5) == "Booking successfully cancelled")
+			self.assertTrue(len(db.get_booking_history("fry@planetExpress.earth")) == 3)
 
-			self.assertTrue(db.cancel_booking("Johnno", 3) == "Can't cancel somebody else's booking")
-			self.assertTrue(db.cancel_booking("Johnno", 1) == "Can't cancel a previous booking")
-			self.assertTrue(db.cancel_booking("Johnno", 20) == "No booking exists")
-
-			#with self.assertRaises(Exception) as context:
-			#	db.cancel_booking("Johnno", 2)
-			#	self.assertTrue("Not your booking" in context.exception)
-			#	db.cancel_booking("Johnno", 0)
-			#	self.assertTrue("Can't cancel a Previous booking" in context.exception)
-
-	
-
-
-
+			self.assertTrue(db.cancel_booking("john@password.com", 3) == "Can't cancel somebody else's booking")
+			self.assertTrue(db.cancel_booking("john@password.com", 1) == "Can't cancel a previous booking")
+			self.assertTrue(db.cancel_booking("john@password.com", 20) == "No booking exists")
+			db.book_vehicle("john@password.com", "GHR445", pickup, dropoff)
+			self.assertTrue(len(db.get_booking_history("john@password.com")) == 3)
 
 if __name__ == "__main__":
     unittest.main()
