@@ -39,7 +39,9 @@ class test_database_utils(unittest.TestCase):
 	def countPeople(self):
 		with self.conn.cursor() as cursor:
 			cursor.execute("select count(*) from user")
-			return cursor.fetchone()[0]
+			count = cursor.fetchall()
+
+			return count.pop()['count(*)']
 
 	#Tests whether the insert function works, and that duplicate entries cannot be entered
 	#Tests that the Primary Key of username works
@@ -70,11 +72,13 @@ class test_database_utils(unittest.TestCase):
 
 			user_details = db.return_user_details("john@password.com")
 
-			self.assertTrue(user_details[0][0] == 'Johnno')
-			self.assertTrue(user_details[0][1] == 'John')
-			self.assertTrue(user_details[0][2] == 'Delaney')
-			self.assertTrue(user_details[0][3] == 'abc123')
-			self.assertTrue(user_details[0][4] == 'john@password.com')
+			user_details = user_details.pop()
+
+			self.assertTrue(user_details['username'] == 'Johnno')
+			self.assertTrue(user_details['firstname'] == 'John')
+			self.assertTrue(user_details['lastname'] == 'Delaney')
+			self.assertTrue(user_details['password'] == 'abc123')
+			self.assertTrue(user_details['email'] == 'john@password.com')
 
 	def test_singleton(self):
 
@@ -102,15 +106,17 @@ class test_database_utils(unittest.TestCase):
 		with self.db as db:
 			vehicle_details = db.return_vehicle_details('XYZ987')
 
-			self.assertTrue(vehicle_details[0][0] == 'XYZ987')
-			self.assertTrue(vehicle_details[0][1] == 'Holden')
-			self.assertTrue(vehicle_details[0][2] == 'Commodore')
-			self.assertEqual(float(vehicle_details[0][3]), -37.799972)
-			self.assertEqual(float(vehicle_details[0][4]), 144.977393)
-			self.assertTrue(vehicle_details[0][5] == 'green')
-			self.assertTrue(vehicle_details[0][6] == 'Family')
-			self.assertTrue(vehicle_details[0][7] == 5)
-			self.assertTrue(float(vehicle_details[0][8]) == 15.00)
+			vehicle_details = vehicle_details.pop()
+
+			self.assertTrue(vehicle_details["rego"] == 'XYZ987')
+			self.assertTrue(vehicle_details["make"] == 'Holden')
+			self.assertTrue(vehicle_details["model"] == 'Commodore')
+			self.assertEqual(float(vehicle_details['locationlong']), -37.799972)
+			self.assertEqual(float(vehicle_details['locationlat']), 144.977393)
+			self.assertTrue(vehicle_details['colour'] == 'green')
+			self.assertTrue(vehicle_details['bodytype'] == 'Family')
+			self.assertTrue(vehicle_details['seats'] == 5)
+			self.assertTrue(float(vehicle_details['b.colour']) == 15.00)
 
 	def test_book_vehicle(self):
 
