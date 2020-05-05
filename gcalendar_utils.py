@@ -56,11 +56,11 @@ def print_events(events):
         results += str(start)+" "+str(end)+" "+event["summary"]
     return results
 
-def insert(pickUp, dropOff, rego, make, model, service):
+def insert(pickUp, dropOff, rego, make, model, cost, service):
 
     event = {
         "summary": "Vehicle Booking "+rego,
-        "description": "make: "+make+" model: "+model,
+        "description": "make: "+make+" model: "+model+" cost: $"+cost,
         "start": {
             "dateTime": pickUp,
             "timeZone": "Australia/Melbourne",
@@ -79,7 +79,7 @@ def insert(pickUp, dropOff, rego, make, model, service):
     }
 
     event = service.events().insert(calendarId = "primary", body = event).execute()
-    print("Event created: {}".format(event.get("htmlLink")))
+    #print("Event created: {}".format(event.get("htmlLink")))
     
     return event["id"]
     

@@ -1,5 +1,6 @@
 import pymysql
 import datetime
+import gcalendar_utils as gcalendar
 
 #A class for creating a connection to the database to enable manipulation
 #and retrieval.
@@ -180,9 +181,18 @@ class databaseUtils:
 			total_cost = price*booking_time
 			total_cost = "{:.2f}".format(total_cost)
 
+			cur.execute("SELECT make, model FROM car WHERE rego = '"+rego+"'")
+			car_type = cur.fetchall().pop()
+
+			service = gcalendar.connect_calendar()
+			googleId = gcalendar.insert(pickup.isoformat() +"Z", dropoff.isoformat() +"Z", rego, car_type['make'], car_type['model'], total_cost, service)
+			#print(type(service))
+			print(service)
+			#service.disconnect()
+
 			#The booking is added to the database and the results returned to the user
-			cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active) \
-						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+", 1)")
+			cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active, googleEventId) \
+						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+", 1,'"+googleId+"')")
 			cur.execute("SELECT LAST_INSERT_ID()")
 			insert_id = cur.fetchall().pop()
 
@@ -193,7 +203,7 @@ class databaseUtils:
 		with self.connection.cursor() as cur:
 
 			#gets the booking based on the booking number
-			row_count = cur.execute("SELECT email, pickuptime, dropofftime, active FROM booking WHERE bookingnumber\
+			row_count = cur.execute("SELECT email, pickuptime, dropofftime, active, googleEventId FROM booking WHERE bookingnumber\
 									 = '"+str(booking_number)+"'")
 
 			#Checks to see if the booking exists
@@ -215,6 +225,9 @@ class databaseUtils:
 			elif time > pickup:
 				return "Can't cancel a booking in progress"
 			else:
+
+				service = gcalendar.connect_calendar()
+				gcalendar.remove_event(results['googleEventId'], service)
 
 				#If they do, the booking is cancelled and the entry cleared
 				cur.execute("UPDATE booking SET active = 0 WHERE bookingnumber = '"+str(booking_number)+"'")
