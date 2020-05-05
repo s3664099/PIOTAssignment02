@@ -46,8 +46,8 @@ def clearDatabases(conn):
 		print("No such table as bodytype")
 	try:
 		cur.execute("DROP TABLE booking")
-	except:
-		print("No such table as booking")		
+	except pymysql.Error as e:
+		print("Error 01: {}", e)		
 
 #This function creates the tables associated with the database
 def createTables(conn):
@@ -74,14 +74,14 @@ def createTables(conn):
 
 	try:
 		cur.execute("CREATE TABLE user (username VARCHAR(20), firstname VARCHAR(20), lastname VARCHAR(20),\
-					password VARCHAR(20), email VARCHAR(28), PRIMARY KEY (username))")
+					password VARCHAR(20), email VARCHAR(28), PRIMARY KEY (email))")
 	except pymysql.Error as e:
 		print("Error 04: {}", e)
 	try:
 		cur.execute("CREATE TABLE booking(bookingnumber INT NOT NULL AUTO_INCREMENT, rego VARCHAR(10),\
-					username VARCHAR(20), pickuptime DATETIME, dropofftime DATETIME, totalcost DECIMAL (6,2),\
-					PRIMARY KEY (bookingnumber), FOREIGN KEY (rego) REFERENCES car(rego), FOREIGN KEY (username)\
-					REFERENCES user(username))")
+					email VARCHAR(28), pickuptime DATETIME, dropofftime DATETIME, totalcost DECIMAL (6,2), active BOOLEAN,\
+					PRIMARY KEY (bookingnumber), FOREIGN KEY (rego) REFERENCES car(rego), FOREIGN KEY (email)\
+					REFERENCES user(email))")
 	except pymysql.Error as e:
 		print("Error 05: {}", e)
 
@@ -129,19 +129,19 @@ def createTables(conn):
 
 		pickup = datetime.datetime(2020,4,21,13)
 		dropoff = pickup + timedelta(hours=4)
-		cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) VALUES\
-					 ('XYZ987', 'Johnno', '"+str(pickup)+"','"+str(dropoff)+"',60.00)")
+		cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active) VALUES\
+					 ('XYZ987', 'john@password.com', '"+str(pickup)+"','"+str(dropoff)+"',60.00, 1)")
 
 		pickup = datetime.datetime(2020,5,5,9)
 		dropoff = pickup + timedelta(hours=6)
-		cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) VALUES\
-					 ('U75PYV', 'Johnno', '"+str(pickup)+"','"+str(dropoff)+"',42.00)")
+		cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active) VALUES\
+					 ('U75PYV', 'john@password.com', '"+str(pickup)+"','"+str(dropoff)+"',42.00, 1)")
 
 		pickup = datetime.datetime.now()
 		pickup = pickup + timedelta(hours=-2)
 		dropoff = pickup + timedelta(hours=4)
-		cur.execute("INSERT INTO booking (rego, username, pickuptime, dropofftime, totalcost) VALUES\
-					 ('U75PYV', 'Fry', '"+str(pickup)+"','"+str(dropoff)+"',42.00)")
+		cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active) VALUES\
+					 ('U75PYV', 'fry@planetExpress.earth', '"+str(pickup)+"','"+str(dropoff)+"',42.00,1)")
 
 	except pymysql.Error as e:
 		print("Error 06: {}", e)
