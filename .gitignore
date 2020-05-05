@@ -1,6 +1,6 @@
-credentials.json
-token.json
+*.json
+*.json
 
-__pycache__
+__pycache__/
 
-Database_Setup
+Database_Setup/
