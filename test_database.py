@@ -90,6 +90,8 @@ class test_database_utils(unittest.TestCase):
 	def test_get_booking_history(self):
 
 		with self.db as db:
+			print(db.get_booking_history("john@password.com"))
+			print(type(db.get_booking_history("john@password.com")))
 			self.assertTrue(len(db.get_booking_history("john@password.com")) == 2)
 
 	def test_get_available_local_cars(self):

@@ -1,5 +1,6 @@
 import pymysql
 import datetime
+from pymysql.cursors import DictCursor
 
 #A class for creating a connection to the database to enable manipulation
 #and retrieval.
@@ -42,7 +43,7 @@ class databaseUtils:
 
 	#This method is designed to insert a new user into the database
 	def insert_user(self, user_name, first_name, last_name, password, email):
-		with self.connection.cursor() as cur:
+		with self.connection.cursor(DictCursor) as cur:
 			response = "success"
 			try:
 				cur.execute("INSERT INTO user VALUES \
@@ -54,20 +55,20 @@ class databaseUtils:
 
 	#This method returns the password and the user name of the user
 	def return_user(self, user_name):
-		with self.connection.cursor() as cur:
+		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT username, password FROM user WHERE email='"+user_name+"'")
 			return cur.fetchall()
 
 	#Return user details
 	def return_user_details(self, user_name):
-		with self.connection.cursor() as cur:
+		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT * FROM user WHERE email='"+user_name+"'")
 
 			return cur.fetchall()	
 
 	#Gets a list of the bookings that the user has made
 	def get_booking_history(self, user_name):
-		with self.connection.cursor() as cur:
+		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT rego, pickuptime, dropofftime, \
 				totalcost FROM booking WHERE email='"+user_name+"'")
 
@@ -75,7 +76,7 @@ class databaseUtils:
 
 	#Returns the details of a particular vehicle
 	def return_vehicle_details(self, rego):
-		with self.connection.cursor() as cur:
+		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
 				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
 				AND m.bodytype = b.bodytype AND c.rego='"+rego+"'")
@@ -95,7 +96,7 @@ class databaseUtils:
 		vehicle_list = []
 
 		#Get a list of vehicles based on area which has been passed through
-		with self.connection.cursor() as cur:
+		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT rego, make, model, locationlong, locationlat FROM car \
 				WHERE locationlong<"+top_long+" and locationlong > "+bottom_long+" and \
 				locationlat > "+left_lat+" and locationlat<"+right_lat)
@@ -139,7 +140,7 @@ class databaseUtils:
 
 
 	def get_all_cars(self):
-		with self.connection.cursor() as cur:
+		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT rego, make, model FROM car")
 
 			vehicle_list = self.sort_cars(cur.fetchall(), cur)
@@ -149,7 +150,7 @@ class databaseUtils:
 	#Function to book a vehicle and adds booking to the database
 	def book_vehicle(self, name, rego, pickup, dropoff):
 
-		with self.connection.cursor() as cur:
+		with self.connection.cursor(DictCursor) as cur:
 
 			#gets booking history for vehicle
 			cur.execute("SELECT pickuptime, dropofftime, active FROM booking WHERE rego = '"+rego+"'")
@@ -190,7 +191,7 @@ class databaseUtils:
 
 	def cancel_booking(self, name, booking_number):
 
-		with self.connection.cursor() as cur:
+		with self.connection.cursor(DictCursor) as cur:
 
 			#gets the booking based on the booking number
 			row_count = cur.execute("SELECT email, pickuptime, dropofftime, active FROM booking WHERE bookingnumber\
