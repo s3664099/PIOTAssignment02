@@ -1,8 +1,6 @@
 import pymysql
 import datetime
 from pymysql.cursors import DictCursor
-from login import hash_password
-import gcalendar_utils as gcalendar
 
 #A class for creating a connection to the database to enable manipulation
 #and retrieval.
@@ -17,6 +15,10 @@ class databaseUtils:
 	#Establishes the connection by passing through the required variables
 	#The variables aren't hardcoded to enable testing on a test database
 	def __init__ (self, host, user, password, database):
+
+
+		print("Connecting")
+
 		databaseUtils.HOST = host
 		databaseUtils.USER = user
 		databaseUtils.PASSWORD = password
@@ -27,6 +29,8 @@ class databaseUtils:
 			myConnection = pymysql.connect(host=databaseUtils.HOST, user = databaseUtils.USER, passwd = databaseUtils.PASSWORD, 
     			db = databaseUtils.DATABASE, charset='utf8', cursorclass=pymysql.cursors.DictCursor)
 		self.connection = myConnection
+
+		print("connected")
 
 	#The following methods are for closing the database
 	def close_connection(self):
@@ -45,89 +49,47 @@ class databaseUtils:
 
 	#This method is designed to insert a new user into the database
 	def insert_user(self, user_name, first_name, last_name, password, email):
-		#password=hash_password(password)
 		with self.connection.cursor(DictCursor) as cur:
 			response = "success"
 			try:
 				cur.execute("INSERT INTO user VALUES \
 					('"+user_name+"','"+first_name+"','"+last_name+"','"+password+"','"+email+"')")
 			except:
-				response = "Email already used"
+				response = "User name already used"
 			self.connection.commit()
 			return response
 
 	#This method returns the password and the user name of the user
 	def return_user(self, user_name):
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT username, password FROM user WHERE email='"+user_name+"'")
+			cur.execute("SELECT username, password FROM user WHERE user_name='"+user_name+"'")
 			return cur.fetchall()
 
 	#Return user details
 	def return_user_details(self, user_name):
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT * FROM user WHERE email='"+user_name+"'")
+			cur.execute("SELECT * FROM user WHERE user_name='"+user_name+"'")
 
 			return cur.fetchall()	
 
 	#Gets a list of the bookings that the user has made
-	def get_booking_history(self, email):
+	def get_booking_history(self, user_name):
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT * FROM booking WHERE email='"+email+"'")
+			cur.execute("SELECT rego, pickuptime, dropofftime, \
+				totalcost FROM booking WHERE email='"+user_name+"'")
 
 			return cur.fetchall()
 
 	#Returns the details of a particular vehicle
-	def return_vehicle_details(self, search):
+	def return_vehicle_details(self, rego):
 		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
 				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-				AND m.bodytype = b.bodytype AND c.rego='"+search+"'")
+				AND m.bodytype = b.bodytype AND c.rego='"+rego+"'")
 
 			cars = cur.fetchall()
-			if cars:
-				return cars
-			else:
-				cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
-				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-				AND m.bodytype = b.bodytype AND c.make='"+search+"'")
 
-				cars = cur.fetchall()
-				if cars:
-					return cars
-				else:
-					cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
-					colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-					AND m.bodytype = b.bodytype AND c.model='"+search+"'")
-
-					cars = cur.fetchall()
-					if cars:
-						return cars
-					else:
-						cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
-						colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-						AND m.bodytype = b.bodytype AND c.colour='"+search+"'")
-
-						cars = cur.fetchall()
-						if cars:
-							return cars
-						else:
-							cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
-							colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-							AND m.bodytype = b.bodytype AND b.bodytype='"+search+"'")
-
-							cars = cur.fetchall()
-							if cars:
-								return cars
-							else:
-								cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
-								colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-								AND m.bodytype = b.bodytype AND seats='"+search+"'")
-
-								cars = cur.fetchall()
-								if cars:
-									return cars
-
-
+			return cars
 
 	#Takes the details of the users location and returns all nearby cars and returns ones that aren't currently booked
 	def get_available_cars(self, lng, lat):
@@ -225,15 +187,9 @@ class databaseUtils:
 			total_cost = price*booking_time
 			total_cost = "{:.2f}".format(total_cost)
 
-			cur.execute("SELECT make, model FROM car WHERE rego = '"+rego+"'")
-			car_type = cur.fetchall().pop()
-
-			service = gcalendar.connect_calendar()
-			googleId = gcalendar.insert(pickup.isoformat() +"Z", dropoff.isoformat() +"Z", rego, car_type['make'], car_type['model'], total_cost, service)
-
 			#The booking is added to the database and the results returned to the user
-			cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active, googleEventId) \
-						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+", 1,'"+googleId+"')")
+			cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active) \
+						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+", 1)")
 			cur.execute("SELECT LAST_INSERT_ID()")
 			insert_id = cur.fetchall().pop()
 
@@ -244,7 +200,7 @@ class databaseUtils:
 		with self.connection.cursor(DictCursor) as cur:
 
 			#gets the booking based on the booking number
-			row_count = cur.execute("SELECT email, pickuptime, dropofftime, active, googleEventId FROM booking WHERE bookingnumber\
+			row_count = cur.execute("SELECT email, pickuptime, dropofftime, active FROM booking WHERE bookingnumber\
 									 = '"+str(booking_number)+"'")
 
 			#Checks to see if the booking exists
@@ -266,9 +222,6 @@ class databaseUtils:
 			elif time > pickup:
 				return "Can't cancel a booking in progress"
 			else:
-
-				service = gcalendar.connect_calendar()
-				gcalendar.remove_event(results['googleEventId'], service)
 
 				#If they do, the booking is cancelled and the entry cleared
 				cur.execute("UPDATE booking SET active = 0 WHERE bookingnumber = '"+str(booking_number)+"'")

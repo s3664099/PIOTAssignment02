@@ -11,15 +11,18 @@
 
 #This is required for python3 to create and manipulate mySql databases
 import pymysql
+
+hostname = '35.197.174.1'
+username = 'root'
+password = 'password'
+database_used = 'car_app_db'
 import datetime
 from datetime import timedelta
+import database_utils as database
 
-hostname = 'localhost'
-username = 'root'
-password = 'root'
-database = 'People'
+db = database.databaseUtils(hostname, username, password, database_used)
 
-#This function clears the database
+##This function clears the database
 def clearDatabases(conn):
 	cur = conn.cursor()
 
@@ -74,16 +77,18 @@ def createTables(conn):
 
 	try:
 		cur.execute("CREATE TABLE user (username VARCHAR(20), firstname VARCHAR(20), lastname VARCHAR(20),\
-					password VARCHAR(20), email VARCHAR(28), PRIMARY KEY (email))")
+					password VARCHAR(192), email VARCHAR(28), PRIMARY KEY (email))")
 	except pymysql.Error as e:
 		print("Error 04: {}", e)
 	try:
 		cur.execute("CREATE TABLE booking(bookingnumber INT NOT NULL AUTO_INCREMENT, rego VARCHAR(10),\
 					email VARCHAR(28), pickuptime DATETIME, dropofftime DATETIME, totalcost DECIMAL (6,2), active BOOLEAN,\
-					googleEventId VARCHAR(30), PRIMARY KEY (bookingnumber), FOREIGN KEY (rego) REFERENCES car(rego), \
-					FOREIGN KEY (email) REFERENCES user(email))")
+					PRIMARY KEY (bookingnumber), FOREIGN KEY (rego) REFERENCES car(rego), FOREIGN KEY (email)\
+					REFERENCES user(email))")
 	except pymysql.Error as e:
 		print("Error 05: {}", e)
+
+	print("Inserting")
 
 	#The database is populated
 	try:
@@ -143,9 +148,16 @@ def createTables(conn):
 		cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active) VALUES\
 					 ('U75PYV', 'fry@planetExpress.earth', '"+str(pickup)+"','"+str(dropoff)+"',42.00,1)")
 
+		print("Inserted")
+
 	except pymysql.Error as e:
 		print("Error 06: {}", e)
 
 	conn.commit()	
+
+conn = db.get_connection()
+clearDatabases(conn)
+createTables(conn)
+
 
 
