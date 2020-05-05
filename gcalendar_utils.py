@@ -17,15 +17,18 @@ from oauth2client import file, client, tools
 #Function to connect to the user's calendar so that the event
 #may be stored
 def connect_calendar():
+
     # If modifying these scopes, delete the file token.json.
     SCOPES = "https://www.googleapis.com/auth/calendar"
     store = file.Storage("token.json")
     creds = store.get()
+
     if(not creds or creds.invalid):
         flow = client.flow_from_clientsecrets("credentials.json", SCOPES)
         creds = tools.run_flow(flow, store)
-    return build("calendar", "v3", http=creds.authorize(Http()))
 
+    return build("calendar", "v3", http=creds.authorize(Http()))
+    
 #Function to get calendar events. Used for debugging and testing purposes
 def get_events(service, noEvents):
     """

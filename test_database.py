@@ -148,22 +148,21 @@ class test_database_utils(unittest.TestCase):
 			pickup = datetime.datetime.now()
 			pickup = pickup + timedelta(days= 2, hours=-2)
 			dropoff = pickup + timedelta(days=2, hours=4)
-			db.book_vehicle("fry@planetExpress.earth", "GHR445", pickup, dropoff)
 
+			db.book_vehicle("fry@planetExpress.earth", "GHR445", pickup, dropoff)
 			
 			self.assertTrue(db.cancel_booking("fry@planetExpress.earth", 3) == "Can't cancel a booking in progress")
 			self.assertTrue(db.cancel_booking("fry@planetExpress.earth", 4) == "Booking successfully cancelled")
 			self.assertTrue(len(db.get_booking_history("fry@planetExpress.earth")) == 2)
-			db.book_vehicle("fry@planetExpress.earth", "GHR445", pickup, dropoff)
-			self.assertTrue(len(db.get_booking_history("fry@planetExpress.earth")) == 3)
-			self.assertTrue(db.cancel_booking("fry@planetExpress.earth", 5) == "Booking successfully cancelled")
-			self.assertTrue(len(db.get_booking_history("fry@planetExpress.earth")) == 3)
 
 			self.assertTrue(db.cancel_booking("john@password.com", 3) == "Can't cancel somebody else's booking")
 			self.assertTrue(db.cancel_booking("john@password.com", 1) == "Can't cancel a previous booking")
 			self.assertTrue(db.cancel_booking("john@password.com", 20) == "No booking exists")
+
 			db.book_vehicle("john@password.com", "GHR445", pickup, dropoff)
 			self.assertTrue(len(db.get_booking_history("john@password.com")) == 3)
+
+			print("Done")
 
 if __name__ == "__main__":
     unittest.main()

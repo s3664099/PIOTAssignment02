@@ -186,9 +186,6 @@ class databaseUtils:
 
 			service = gcalendar.connect_calendar()
 			googleId = gcalendar.insert(pickup.isoformat() +"Z", dropoff.isoformat() +"Z", rego, car_type['make'], car_type['model'], total_cost, service)
-			#print(type(service))
-			print(service)
-			#service.disconnect()
 
 			#The booking is added to the database and the results returned to the user
 			cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active, googleEventId) \
