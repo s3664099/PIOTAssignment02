@@ -46,17 +46,16 @@
               <p>Some text to describe the application.</p>
             </div>
     </div>
-  <!-- This is the code I'm working on --> 
    <div id="search" class="tab-pane fade"><br>
         <div class='col-md-4'>
             <h3>Find Cars</h3>
             <form action="" method="POST">
             <input type="text" placeholder="Search" name="search">
             <button type="submit" class="btn btn-outline-success" name="find">Find</button>
-            <button type="submit" class="btn btn-outline-danger">Clear</button>
+            <button type="submit" class="btn btn-outline-danger" name="clear">Clear</button>
           </form>
                 </div>
-                {% if found %}
+                {% if searchcars %}
             <div class='col-md-8' id='foundcars'>
               <table class='table table-striped'>
                 <thead>
@@ -70,14 +69,14 @@
                 </tr>
                 </thead>
                 <tbody>
-                  {% for row in found %}
+                  {% for row in searchcars %}
                   <tr>
-                    <td>{{row[0]}}</td>
-                    <td>{{row[1]}}</td>
-                    <td>{{row[2]}}</td>
-                    <td>{{row[3]}}</td>
-                    <td>{{row[4]}}</td>
-                    <td>{{row[5]}}</td>
+                    <td>{{row.rego}}</td>
+                    <td>{{row.make}}</td>
+                    <td>{{row.model}}</td>
+                    <td>{{row.locationLat}}</td>
+                  <td>{{row.locationLong}}</td>
+                  <td>{{row.colour}}</td>
                 </tr>
                   {% endfor %}
                   </tbody>
@@ -228,18 +227,10 @@ $("document").ready(function(){
     $("#find").click(function(){
         var search = $("#search").val();
         $.ajax({
-            url: "http://localhost:5000/api/",
-            type: "POST"
+            url: "http://localhost:5000/searchcar/"+search,
+            type: "GET"
         }).done(function(data) {
-            console.log(data);
-        });
-        $.ajax({
-            url: "http://localhost:5000/api/",
-            type: "GET",
-            contentType: "application/json",
-            data: JSON.stringify({"found": found})
-        }).done(function(data) {
-            print(data);
+            print(data)
         });
     });
 });

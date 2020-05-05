@@ -11,16 +11,6 @@ from config import app
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
-# Update HOST and PASSWORD appropriately.
-#HOST = "35.197.174.1"
-#USER = "root"
-#PASSWORD = "password"
-#DATABASE = "car_app_db"
-
-#app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://{}:{}@{}/{}".format(USER, PASSWORD, HOST, DATABASE)
-#app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
-
-
 app.register_blueprint(api)
 app.register_blueprint(site)
 

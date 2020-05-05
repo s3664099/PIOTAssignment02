@@ -6,6 +6,7 @@ from flask_marshmallow import Marshmallow
 from config import app
 from login import verify_password
 import os, requests, json
+from database_utils import databaseUtils
 from flask import current_app as app
 from decimal import Decimal
 
@@ -31,6 +32,8 @@ cur.execute('SET NAMES utf8mb4')
 cur.execute('SET CHARACTER SET utf8mb4')
 cur.execute('SET character_set_connection=utf8mb4')
 cur.close()
+
+dbObj=databaseUtils(db_hostname,db_username,db_password,database)
 
 """class user(db.Model):
     __tablename__ = "user"
@@ -79,7 +82,9 @@ def getLogin(email):
     for row in rows:
         result = json.dumps(row[1])
         if result:
+            cur.close()
             return jsonify(result)
+    cur.close()
     return jsonify(rows)
 
 
@@ -94,17 +99,16 @@ def getOrderHistory(email):
         json_data.append(dict(result))
         print(result)
         username=result["username"]
-    cur.execute('Select * from booking where username= %s',username)
-    rows=cur.fetchall()
+    rows=dbObj.get_booking_history(username)
+    print("\n\n from booking history")
     print(rows)
+    print("\n\n")
     if rows:
-        print("\n\n***** This is in OrderHistory *****\n\n")
-        print(rows,"\n")
         orderhistory=json.dumps(rows,default=decimal_default)
-        print("\n\n####This is after dumps", orderhistory)
         orderhistory=json.loads(orderhistory)
-        print("\n\n####This is after loads", orderhistory)
+        cur.close()
         return jsonify(orderhistory)
+    cur.close()
     return jsonify(rows)
 
 @api.route("/cars",methods=['GET'])
@@ -114,7 +118,48 @@ def getCars():
     rows=cur.fetchall()
     availablecars=json.dumps(rows,default=decimal_default)
     availablecars=json.loads(availablecars)
+    cur.close()
     return jsonify(availablecars)
+
+@api.route("/searchcar/<search>",methods=['GET'])
+def searchCars(search):
+    carList=dbObj.return_vehicle_details(search)
+    carList=json.dumps(carList,default=decimal_default)
+    carList=json.loads(carList)
+    return jsonify(carList)
+    """cur=myConnection.cursor(DictCursor)
+    cur.execute("Select * from car where rego= %s",search)
+    rows=cur.fetchall()
+    if rows:
+        carList=json.dumps(rows,default=decimal_default)
+        carList=json.loads(carList)
+        cur.close()
+        return jsonify(carList)
+    else:
+        cur.execute("Select * from car where make= %s",search)
+        rows=cur.fetchall()
+        if rows:
+            carList=json.dumps(rows,default=decimal_default)
+            carList=json.loads(carList)
+            cur.close()
+            return jsonify(carList)
+        else:
+            cur.execute("Select * from car where model= %s",search)
+            rows=cur.fetchall()
+            if rows:
+                carList=json.dumps(rows,default=decimal_default)
+                carList=json.loads(carList)
+                cur.close()
+                return jsonify(carList)
+            else:
+                cur.execute("Select * from car where color= %s",search)
+                rows=cur.fetchall()
+                if rows:
+                    carList=json.dumps(rows,default=decimal_default)
+                    carList=json.loads(carList)
+                    cur.close()
+                    return jsonify(carList)
+    return jsonify(rows)"""
 
 def decimal_default(obj):
     if isinstance(obj,Decimal):

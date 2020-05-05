@@ -50,10 +50,19 @@ def home():
     response=requests.get(url)
     print("Response",response.text)
     orderhistory=json.loads(response.text)
-    
     url=("http://127.0.0.1:5000/cars")
     response=requests.get(url)
     availablecars=json.loads(response.text)
+    if request.method=='POST':
+        if ('find' in request.form):
+            print(request.form['search'])
+            url=("http://127.0.0.1:5000/searchcar/"+request.form['search'])
+            response=requests.get(url)
+            searchcars=json.loads(response.text)
+            print
+            return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=searchcars)
+        else:
+            return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None)
 
     return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars)
 
