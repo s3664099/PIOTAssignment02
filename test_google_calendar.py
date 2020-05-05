@@ -13,14 +13,11 @@ class test_database_utils(unittest.TestCase):
 		self.service = cal.connect_calendar()
 
 	def test_add_event(self):
-		cal.insert(self.time_start, self.time_end, "XYZ123", "BMW", "X3", self.service)
+		GoogleId = cal.insert(self.time_start, self.time_end, "XYZ123", "BMW", "X3", self.service)
 		self.assertTrue(len(cal.get_events(self.service, 3)) == 1)
-		self.assertTrue(cal.print_events(cal.get_events(self.service, 1)) == "2020-05-05T06:00:00+10:00 2020-05-05T07:00:00+10:00 Vehicle Booking XYZ123")
-		#print("Hi")
-		#print(cal.print_events(cal.get_events(self.service, 1)))
-
-	def remove_event(self):
-		print("Hi")
+		self.assertTrue(cal.print_events(cal.get_events(self.service, 1)) == self.time_start+" "+self.time_end+" Vehicle Booking XYZ123")
+		cal.remove_event(GoogleId, self.service)
+		self.assertTrue(len(cal.get_events(self.service, 3)) == 0)
 
 if __name__ == "__main__":
     unittest.main()

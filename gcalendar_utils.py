@@ -80,6 +80,11 @@ def insert(pickUp, dropOff, rego, make, model, service):
 
     event = service.events().insert(calendarId = "primary", body = event).execute()
     print("Event created: {}".format(event.get("htmlLink")))
+    
+    return event["id"]
+    
+def remove_event(id, service):
+    service.events().delete(calendarId='primary', eventId=id).execute()
 
 if __name__ == "__main__":
     date = datetime.now()
