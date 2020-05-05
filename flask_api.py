@@ -4,7 +4,7 @@ from flask import Flask, Blueprint, request, jsonify, render_template,session
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from config import app
-from login import verify_password
+from login import verify_password,hash_password
 import os, requests, json
 from database_utils import databaseUtils
 from flask import current_app as app
@@ -64,14 +64,24 @@ userSchema = UserSchema()
 usersSchema = UserSchema(many = True)"""
 
 # Endpoint to show all people.
-@api.route("/user", methods = ["GET"])
+@api.route("/registeruser", methods = ["POST"])
 def getTest():
     cur=myConnection.cursor()
-    cur.execute('SELECT * FROM user')
-    users=cur.fetchall()
-    print(users)
-    cur.close()
-    return jsonify(users)
+    content=request.json
+    print("\n\n*****this is in api********")
+    print(content)
+    password=hash_password(request.json['password'])
+    print("\n\n######Password########")
+    print(password,"\n\n")
+    print(request.json['email'])
+    response=dbObj.insert_user(request.json['username'],request.json['firstname'],request.json['lastname'],password,request.json['email'])
+    print("\n\nThis is in register\n\n")
+    print(response)
+    if response=='success':
+        return jsonify(response)
+    else:
+        return jsonify(response)
+        
 
 # Endpoint to get person by id.
 @api.route("/login/<email>", methods = ["GET"])
@@ -92,14 +102,7 @@ def getLogin(email):
 def getOrderHistory(email):
     
     cur=myConnection.cursor(DictCursor)
-    cur.execute('Select username from user where email= %s',email)
-    rows = cur.fetchall()
-    json_data=[]
-    for result in rows:
-        json_data.append(dict(result))
-        print(result)
-        username=result["username"]
-    rows=dbObj.get_booking_history(username)
+    rows=dbObj.get_booking_history(email)
     print("\n\n from booking history")
     print(rows)
     print("\n\n")
@@ -127,39 +130,6 @@ def searchCars(search):
     carList=json.dumps(carList,default=decimal_default)
     carList=json.loads(carList)
     return jsonify(carList)
-    """cur=myConnection.cursor(DictCursor)
-    cur.execute("Select * from car where rego= %s",search)
-    rows=cur.fetchall()
-    if rows:
-        carList=json.dumps(rows,default=decimal_default)
-        carList=json.loads(carList)
-        cur.close()
-        return jsonify(carList)
-    else:
-        cur.execute("Select * from car where make= %s",search)
-        rows=cur.fetchall()
-        if rows:
-            carList=json.dumps(rows,default=decimal_default)
-            carList=json.loads(carList)
-            cur.close()
-            return jsonify(carList)
-        else:
-            cur.execute("Select * from car where model= %s",search)
-            rows=cur.fetchall()
-            if rows:
-                carList=json.dumps(rows,default=decimal_default)
-                carList=json.loads(carList)
-                cur.close()
-                return jsonify(carList)
-            else:
-                cur.execute("Select * from car where color= %s",search)
-                rows=cur.fetchall()
-                if rows:
-                    carList=json.dumps(rows,default=decimal_default)
-                    carList=json.loads(carList)
-                    cur.close()
-                    return jsonify(carList)
-    return jsonify(rows)"""
 
 def decimal_default(obj):
     if isinstance(obj,Decimal):

@@ -1,6 +1,7 @@
 import pymysql
 import datetime
 from pymysql.cursors import DictCursor
+from login import hash_password
 
 #A class for creating a connection to the database to enable manipulation
 #and retrieval.
@@ -43,6 +44,7 @@ class databaseUtils:
 
 	#This method is designed to insert a new user into the database
 	def insert_user(self, user_name, first_name, last_name, password, email):
+		#password=hash_password(password)
 		with self.connection.cursor(DictCursor) as cur:
 			response = "success"
 			try:
@@ -67,9 +69,9 @@ class databaseUtils:
 			return cur.fetchall()	
 
 	#Gets a list of the bookings that the user has made
-	def get_booking_history(self, user_name):
+	def get_booking_history(self, email):
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT * FROM booking WHERE username='"+user_name+"'")
+			cur.execute("SELECT * FROM booking WHERE email='"+email+"'")
 
 			return cur.fetchall()
 
@@ -118,7 +120,7 @@ class databaseUtils:
 							else:
 								cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
 								colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-								AND m.bodytype = b.bodytype AND c.seats='"+search+"'")
+								AND m.bodytype = b.bodytype AND seats='"+search+"'")
 
 								cars = cur.fetchall()
 								if cars:

@@ -11,11 +11,30 @@ site = Blueprint("site", __name__)
 
 
 # Client webpage.
-@site.route("/register")
+@site.route("/register",methods=['GET','POST'])
 def register():
     # Use REST API.
     form=RegistrationForm()
-    
+    if form.validate_on_submit():
+        # encrypt this form.password.data before hitting the api
+        result=json.dumps(request.form)
+        result=json.loads(result)
+        url=("http://127.0.0.1:5000/registeruser")
+        response=requests.post(url,json=result)
+        response=response.text
+        if response:
+            response=response.strip("\"")
+            response=response.strip("\"")
+        print("\n\n******This is in SITE********")
+        print(response,"\n\n")
+        print(response=="success%")
+        if "success" in response:
+             flash(f'Account Created', 'success')
+             return redirect(url_for('site.login'))
+        else:
+            flash(f'Username or Email already in use')
+            return redirect(url_for('site.register'))
+    return render_template("register.html",title="Register", form=form)
     #Needs to be completed 
 
     return render_template("register.html",title='Register',form=form)
@@ -29,8 +48,8 @@ def login():
         url=("http://127.0.0.1:5000/login/"+form.email.data)
         response=requests.get(url)
         storedpwd = json.loads(response.text)
-        storedpwd=storedpwd.strip("\"")
         if storedpwd:
+            storedpwd=storedpwd.strip("\"")
             loggedIn=verify_password(storedpwd,form.password.data)
             if loggedIn==True:
                 session['email']=form.email.data
@@ -58,9 +77,13 @@ def home():
             print(request.form['search'])
             url=("http://127.0.0.1:5000/searchcar/"+request.form['search'])
             response=requests.get(url)
+            print("\n\n Order History \n\n")
+            print(response)
             searchcars=json.loads(response.text)
-            print
-            return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=searchcars)
+            if searchcars:
+                return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=searchcars)
+            else:
+                return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None)
         else:
             return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None)
 
