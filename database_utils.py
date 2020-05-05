@@ -69,21 +69,62 @@ class databaseUtils:
 	#Gets a list of the bookings that the user has made
 	def get_booking_history(self, user_name):
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT rego, pickuptime, dropofftime, \
-				totalcost FROM booking WHERE email='"+user_name+"'")
+			cur.execute("SELECT * FROM booking WHERE username='"+user_name+"'")
 
 			return cur.fetchall()
 
 	#Returns the details of a particular vehicle
-	def return_vehicle_details(self, rego):
+	def return_vehicle_details(self, search):
 		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
 				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-				AND m.bodytype = b.bodytype AND c.rego='"+rego+"'")
+				AND m.bodytype = b.bodytype AND c.rego='"+search+"'")
 
 			cars = cur.fetchall()
+			if cars:
+				return cars
+			else:
+				cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
+				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
+				AND m.bodytype = b.bodytype AND c.make='"+search+"'")
 
-			return cars
+				cars = cur.fetchall()
+				if cars:
+					return cars
+				else:
+					cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
+					colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
+					AND m.bodytype = b.bodytype AND c.model='"+search+"'")
+
+					cars = cur.fetchall()
+					if cars:
+						return cars
+					else:
+						cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
+						colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
+						AND m.bodytype = b.bodytype AND c.colour='"+search+"'")
+
+						cars = cur.fetchall()
+						if cars:
+							return cars
+						else:
+							cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
+							colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
+							AND m.bodytype = b.bodytype AND b.bodytype='"+search+"'")
+
+							cars = cur.fetchall()
+							if cars:
+								return cars
+							else:
+								cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
+								colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
+								AND m.bodytype = b.bodytype AND c.seats='"+search+"'")
+
+								cars = cur.fetchall()
+								if cars:
+									return cars
+
+
 
 	#Takes the details of the users location and returns all nearby cars and returns ones that aren't currently booked
 	def get_available_cars(self, lng, lat):
