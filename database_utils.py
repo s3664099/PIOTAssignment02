@@ -13,6 +13,7 @@ class databaseUtils:
 	DATABASE = ""
 	connection = None
 	area_range = 0.0025
+	service = None
 
 	#Establishes the connection by passing through the required variables
 	#The variables aren't hardcoded to enable testing on a test database
@@ -27,6 +28,8 @@ class databaseUtils:
 			myConnection = pymysql.connect(host=databaseUtils.HOST, user = databaseUtils.USER, passwd = databaseUtils.PASSWORD, 
     			db = databaseUtils.DATABASE, charset='utf8', cursorclass=pymysql.cursors.DictCursor)
 		self.connection = myConnection
+
+		self.service = gcalendar.connect_calendar()
 
 	#The following methods are for closing the database
 	def close_connection(self):
@@ -127,6 +130,11 @@ class databaseUtils:
 								if cars:
 									return cars
 
+	"""
+	1) Write tests for function above and also get cars location search
+	2) Write get cars location search
+	3) Rewrite above with better code quality
+	"""
 
 
 	#Takes the details of the users location and returns all nearby cars and returns ones that aren't currently booked
@@ -228,8 +236,8 @@ class databaseUtils:
 			cur.execute("SELECT make, model FROM car WHERE rego = '"+rego+"'")
 			car_type = cur.fetchall().pop()
 
-			service = gcalendar.connect_calendar()
-			googleId = gcalendar.insert(pickup.isoformat() +"Z", dropoff.isoformat() +"Z", rego, car_type['make'], car_type['model'], total_cost, service)
+			googleId = gcalendar.insert(pickup.isoformat() +"Z", dropoff.isoformat() +"Z", rego, car_type['make'], 
+										car_type['model'], total_cost, self.service)
 
 			#The booking is added to the database and the results returned to the user
 			cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active, googleEventId) \
@@ -244,8 +252,8 @@ class databaseUtils:
 		with self.connection.cursor(DictCursor) as cur:
 
 			#gets the booking based on the booking number
-			row_count = cur.execute("SELECT email, pickuptime, dropofftime, active, googleEventId FROM booking WHERE bookingnumber\
-									 = '"+str(booking_number)+"'")
+			row_count = cur.execute("SELECT email, pickuptime, dropofftime, active, googleEventId FROM booking WHERE \
+									bookingnumber = '"+str(booking_number)+"'")
 
 			#Checks to see if the booking exists
 			if row_count == 0:
@@ -267,8 +275,7 @@ class databaseUtils:
 				return "Can't cancel a booking in progress"
 			else:
 
-				service = gcalendar.connect_calendar()
-				gcalendar.remove_event(results['googleEventId'], service)
+				gcalendar.remove_event(results['googleEventId'], self.service)
 
 				#If they do, the booking is cancelled and the entry cleared
 				cur.execute("UPDATE booking SET active = 0 WHERE bookingnumber = '"+str(booking_number)+"'")

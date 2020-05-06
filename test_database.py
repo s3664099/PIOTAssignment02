@@ -20,7 +20,6 @@ class test_database_utils(unittest.TestCase):
 	def setUp(self):
 
 		self.db = database.databaseUtils(test_database_utils.HOST, test_database_utils.USER, test_database_utils.PASSWORD, test_database_utils.DATABASE)
-
 		self.conn = self.db.get_connection()
 
 		tdb.clearDatabases(self.conn)
@@ -62,6 +61,7 @@ class test_database_utils(unittest.TestCase):
 	def test_return_user(self):
 
 		with self.db as db:
+
 			self.assertTrue(len(db.return_user("john@password.com")) == 1)
 
 	#Tests that the return user details works. This confirms that all of the details of the particular user
@@ -71,7 +71,6 @@ class test_database_utils(unittest.TestCase):
 		with self.db as db:
 
 			user_details = db.return_user_details("john@password.com")
-
 			user_details = user_details.pop()
 
 			self.assertTrue(user_details['username'] == 'Johnno')
@@ -84,28 +83,30 @@ class test_database_utils(unittest.TestCase):
 
 		singleton_database = singleton.Singleton(test_database_utils.HOST, test_database_utils.USER, test_database_utils.PASSWORD, test_database_utils.DATABASE)
 		with self.assertRaises(Exception) as context:
+
 			singleton_database2 = singleton.Singleton(test_database_utils.HOST, test_database_utils.USER, test_database_utils.PASSWORD, test_database_utils.DATABASE)
 			self.assertTrue("You cannot create more than one connection!" in context.exception)
 
 	def test_get_booking_history(self):
 
 		with self.db as db:
-			print(db.get_booking_history("john@password.com"))
-			print(type(db.get_booking_history("john@password.com")))
 			self.assertTrue(len(db.get_booking_history("john@password.com")) == 2)
 
 	def test_get_available_local_cars(self):
 
 		with self.db as db:
+
 			self.assertTrue(len(db.get_available_cars(-37.800855,144.977234)) == 2)
 
 	def test_get_all_available_case(self):
 		with self.db as db:
+
 			self.assertTrue(len(db.get_all_cars()) == 7)
 
 	def test_get_vehicle_details(self):
 
 		with self.db as db:
+
 			vehicle_details = db.return_vehicle_details('XYZ987')
 
 			vehicle_details = vehicle_details.pop()
@@ -147,6 +148,7 @@ class test_database_utils(unittest.TestCase):
 	def test_cancel_booking(self):
 
 		with self.db as db:
+
 			pickup = datetime.datetime.now()
 			pickup = pickup + timedelta(days= 2, hours=-2)
 			dropoff = pickup + timedelta(days=2, hours=4)
@@ -163,8 +165,6 @@ class test_database_utils(unittest.TestCase):
 
 			db.book_vehicle("john@password.com", "GHR445", pickup, dropoff)
 			self.assertTrue(len(db.get_booking_history("john@password.com")) == 3)
-
-			print("Done")
 
 if __name__ == "__main__":
     unittest.main()
