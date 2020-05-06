@@ -82,120 +82,133 @@ class databaseUtils:
 	#Returns the details of a particular vehicle
 	def return_vehicle_details(self, search):
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
-				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-				AND m.bodytype = b.bodytype AND c.rego='"+search+"'")
+
+			#Sets up standard search query
+			search_query = "SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
+				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model AND m.bodytype = b.bodytype AND"
+			query_found = False
+
+			#Search by rego
+			cur.execute(search_query+" c.rego='"+search+"'")
 
 			cars = cur.fetchall()
 			if cars:
-				return cars
-			else:
-				cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
-				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-				AND m.bodytype = b.bodytype AND c.make='"+search+"'")
+				query_found = True
+			
+			#Search by make
+			if query_found == False:
+				cur.execute(search_query+" c.make='"+search+"'")
 
 				cars = cur.fetchall()
 				if cars:
-					return cars
-				else:
-					cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
-					colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-					AND m.bodytype = b.bodytype AND c.model='"+search+"'")
+					query_found = True
 
-					cars = cur.fetchall()
-					if cars:
-						return cars
-					else:
-						cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
-						colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-						AND m.bodytype = b.bodytype AND c.colour='"+search+"'")
+			#Search by model			
+			if query_found == False:
+				cur.execute(search_query+" c.model='"+search+"'")
 
-						cars = cur.fetchall()
-						if cars:
-							return cars
-						else:
-							cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
-							colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-							AND m.bodytype = b.bodytype AND b.bodytype='"+search+"'")
+				cars = cur.fetchall()
+				if cars:
+					query_found = True
+					
+			#Search by colour
+			if query_found == False:
+				cur.execute(search_query+" c.colour='"+search+"'")
 
-							cars = cur.fetchall()
-							if cars:
-								return cars
-							else:
-								cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
-								colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-								AND m.bodytype = b.bodytype AND seats='"+search+"'")
+				cars = cur.fetchall()
+				if cars:
+					query_found = True
 
-								cars = cur.fetchall()
-								if cars:
-									return cars
+			#Search by bodytype
+			if query_found == False:
+				cur.execute(search_query+" b.bodytype='"+search+"'")
 
-	"""
-	1) Write tests for function above and also get cars location search
-	2) Write get cars location search
-	3) Rewrite above with better code quality
-	"""
+				cars = cur.fetchall()
+				if cars:
+					query_found = True
 
+			#Search by number of seats
+			if query_found == False:
+				cur.execute(search_query+" seats='"+search+"'")
+
+				cars = cur.fetchall()
+
+			cars = self.sort_cars(cars)
+
+			return cars
+
+	def return_vehicle_details_location(self, lng, lat, search):
+
+		cars = self.return_vehicle_details(search)
+		cars = self.filter_location(lng, lat, cars)
+
+		return cars
+
+	def filter_location(self, lng, lat, cars):
+
+		#Variables to be used. The range is arbitrary and can be changed
+		top_long = lng + databaseUtils.area_range
+		bottom_long = lng - databaseUtils.area_range
+		left_lat = lat - databaseUtils.area_range
+		right_lat = lat + databaseUtils.area_range
+		vehicle_list = []
+
+		for car in cars:
+			if car["locationlong"] < top_long and car["locationlong"] > bottom_long and car["locationlat"] > left_lat and car["locationlat"] < right_lat:
+				vehicle_list.append(car)
+				vehicle_list = self.sort_cars(vehicle_list)
+
+		return vehicle_list
 
 	#Takes the details of the users location and returns all nearby cars and returns ones that aren't currently booked
 	def get_available_cars(self, lng, lat):
 
-		#Variables to be used. The range is arbitrary and can be changed
-		top_long = str(lng + databaseUtils.area_range)
-		bottom_long = str(lng - databaseUtils.area_range)
-		left_lat = str(lat - databaseUtils.area_range)
-		right_lat = str(lat + databaseUtils.area_range)
-		vehicle_list = []
+		cars = self.get_all_cars()
 
-		#Get a list of vehicles based on area which has been passed through
-		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT rego, make, model, locationlong, locationlat FROM car \
-				WHERE locationlong<"+top_long+" and locationlong > "+bottom_long+" and \
-				locationlat > "+left_lat+" and locationlat<"+right_lat)
-
-			vehicle_list = self.sort_cars(cur.fetchall(), cur)
+		vehicle_list = self.filter_location(lng, lat, cars)
+		vehicle_list = self.sort_cars(vehicle_list)
 
 		return vehicle_list
 
-	def sort_cars(self, vehicle_list, cur):
+	def sort_cars(self, vehicle_list):
 
-		temp_vehicle_list = []
-		unbooked_vehicle_list = []
+		with self.connection.cursor(DictCursor) as cur:
 
-		#checks each of the vehicles returned to see if they have been booked
-		for car in vehicle_list:
-			temp_vehicle_list.append(car)
+			temp_vehicle_list = []
+			unbooked_vehicle_list = []
 
-		for car in temp_vehicle_list:
+			#checks each of the vehicles returned to see if they have been booked
+			for car in vehicle_list:
+				temp_vehicle_list.append(car)
 
-			car_booked = False
+			for car in temp_vehicle_list:
 
-			#Gets a list of bookings based on that vehicle
-			cur.execute("SELECT pickuptime, dropofftime FROM booking WHERE rego = '"+car['rego']+"'")
-			car_booking = cur.fetchall()
+				car_booked = False
 
-			if car_booking:
+				#Gets a list of bookings based on that vehicle
+				cur.execute("SELECT pickuptime, dropofftime FROM booking WHERE rego = '"+car['rego']+"'")
+				car_booking = cur.fetchall()
 
-				for booking in car_booking:
+				if car_booking:
 
-					#Checks to see if the car has been booked in the current period
-					#If so, sets the flag to true so that the vehicle is not returned
-					if datetime.datetime.now() > booking['pickuptime'] and datetime.datetime.now() < booking['dropofftime']:
-						car_booked = True
+					for booking in car_booking:
 
-			if car_booked == False:
-				unbooked_vehicle_list.append(car)
+						#Checks to see if the car has been booked in the current period
+						#If so, sets the flag to true so that the vehicle is not returned
+						if datetime.datetime.now() > booking['pickuptime'] and datetime.datetime.now() < booking['dropofftime']:
+							car_booked = True
 
-		#print(len(unbooked_vehicle_list))
+				if car_booked == False:
+					unbooked_vehicle_list.append(car)
 
-		return unbooked_vehicle_list
+			return unbooked_vehicle_list
 
 
 	def get_all_cars(self):
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT rego, make, model FROM car")
+			cur.execute("SELECT rego, make, model, locationlat, locationlong FROM car")
 
-			vehicle_list = self.sort_cars(cur.fetchall(), cur)
+			vehicle_list = self.sort_cars(cur.fetchall())
 
 		return vehicle_list
 

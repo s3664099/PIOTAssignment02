@@ -83,8 +83,8 @@ def createTables(conn):
 	try:
 		cur.execute("CREATE TABLE booking(bookingnumber INT NOT NULL AUTO_INCREMENT, rego VARCHAR(10),\
 					email VARCHAR(28), pickuptime DATETIME, dropofftime DATETIME, totalcost DECIMAL (6,2), active BOOLEAN,\
-					PRIMARY KEY (bookingnumber), FOREIGN KEY (rego) REFERENCES car(rego), FOREIGN KEY (email)\
-					REFERENCES user(email))")
+					googleEventId VARCHAR(30), PRIMARY KEY (bookingnumber), FOREIGN KEY (rego) REFERENCES car(rego), \
+					FOREIGN KEY (email) REFERENCES user(email))")
 	except pymysql.Error as e:
 		print("Error 05: {}", e)
 

@@ -143,8 +143,6 @@ class test_database_utils(unittest.TestCase):
 			dropoff = pickup + timedelta(hours = 3)
 			self.assertTrue(db.book_vehicle("john@password.com", "U75PYV", pickup, dropoff) == "Vehicle already booked")
 
-	#Comment above, and also return total cost of hire
-
 	def test_cancel_booking(self):
 
 		with self.db as db:
@@ -165,6 +163,30 @@ class test_database_utils(unittest.TestCase):
 
 			db.book_vehicle("john@password.com", "GHR445", pickup, dropoff)
 			self.assertTrue(len(db.get_booking_history("john@password.com")) == 3)
+
+	def test_search_vehicle(self):
+
+		with self.db as db:
+
+			self.assertTrue(len(db.return_vehicle_details('Holden')) == 2)
+			self.assertTrue(db.return_vehicle_details('Holden').pop()['rego'] == 'XYZ987')
+			self.assertTrue(len(db.return_vehicle_details('Commodore')) == 2)
+			self.assertTrue(db.return_vehicle_details('Commodore').pop()['rego'] == 'XYZ987')
+			self.assertTrue(len(db.return_vehicle_details('silver')) == 3)
+			self.assertTrue(db.return_vehicle_details('silver').pop()['rego'] == 'GHR445')
+			self.assertTrue(len(db.return_vehicle_details('Medium')) == 1)
+			self.assertTrue(db.return_vehicle_details('Medium').pop()['rego'] == 'LMP675')
+			self.assertTrue(len(db.return_vehicle_details('5')) == 5)
+			self.assertTrue(db.return_vehicle_details('5').pop()['rego'] == 'YUPPIE')
+			self.assertTrue(len(db.return_vehicle_details('Prestige Large')) == 1)
+			self.assertTrue(db.return_vehicle_details('Prestige Large').pop()['rego'] == 'YUPPIE')
+
+	def test_search_vehicle_location(self):
+
+		with self.db as db:								
+			self.assertTrue(len(db.return_vehicle_details_location(-37.800855,144.977234,'green')) == 1)
+			self.assertTrue(db.return_vehicle_details_location(-37.800855,144.977234,'green').pop()['rego'] == 'XYZ987')
+			self.assertTrue(len(db.return_vehicle_details_location(-37.800855,144.977234,'Toyota')) == 0)
 
 if __name__ == "__main__":
     unittest.main()
