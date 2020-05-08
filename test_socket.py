@@ -1,14 +1,21 @@
 import unittest
-import socket_utils as socket
+import socket_utils as sockets
 
-class test_socket_utils:
+class test_socket_utils(unittest.TestCase):
 
-	def __init__ (self):
+	host = ""
+	address = 63000
 
-		self.socket = socket.sockets()
+	def setUp(self):
 
-	def test_listen(self):
+		self.socket = sockets.sockets(self.host, self.address)
+		print(self.socket)
 
-		self.assertTrue(self.socket.listen() == "connected")
+	def test_open_connection(self):
 
+		print(self.socket.listen())
 
+		#self.assertTrue(self.socket.listen() == "connected")
+
+if __name__ == "__main__":
+    unittest.main()
