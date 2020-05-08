@@ -1,5 +1,6 @@
 import socket, json, sys
 import struct
+
 sys.path.append("..")
 
 class sockets:
@@ -37,6 +38,7 @@ class sockets:
 				with conn:
 					connected = True
 
+			s.shutdown(socket.SHUT_RDWR)
 			s.close()
 
 			return message
@@ -51,6 +53,7 @@ class sockets:
 
 			self.sendJson(s, {"username": username, "password": password})
 
+			s.shutdown(socket.SHUT_RDWR)
 			s.close()
 
 
