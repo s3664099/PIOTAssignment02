@@ -59,27 +59,6 @@ def login():
     return render_template('login.html', title='Login', form=form)
 
 
-@site.route("/booking", method=['GET','POST'])
-def booking():
-    # Use REST API
-    form = RegisterForm()
-    if form.validate_on_submit():
-        url=("http://127.0.0.1:5000/booking/"+form.rego.data)
-        response=requests.get(url)
-        if response:
-            (pickup > bookings['pickuptime'] and pickup < bookings['dropofftime'] and bookings['active'] == 1) or (
-					dropoff > bookings['pickuptime'] and dropoff < bookings['dropofftime'] and bookings['active'] == 1)
-        if response == 1:
-            flash ('Vehicle already booked')
-            return redirect(url_for('site.booking'))
-        
-        else:
-        flash ('Vehicle Booked, your booking number is "+str(insert_id['LAST_INSERT_ID()'])+" and the price is $"+total_cost')
-        return render_template('home.html', title='Booking', form=form) 
-        
-
-
-
 
 @site.route("/home",methods=['GET','POST'])
 def home():

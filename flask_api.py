@@ -75,21 +75,11 @@ def getCars():
     cur.close()
     return jsonify(availablecars)
 
-<<<<<<< HEAD
 #@api.route("/booking",methods=['POST'])
 #def getBooking():
 #session['email'] for inserting into booking
 #write a booking.py to calculate or validate if needed , but check database_utils if code can be reused.
 #insert into booking
-=======
-@api.route("/booking",methods=['GET'])
-def getBooking():
-    cur=myConnection.cursor(DictCursor)
-    booking=get_available_cars(lng, lat).sort_cars(vehicle_list).book_vehicle(name, rego, pickup, dropoff).dbObj
-    booking=json.dumps(booking,default=decimal_default)
-    booking=json.loads(booking)
-    return jsonify(carList)
->>>>>>> fd63c84b2f1db35ae162d4cf1927034dadfb6ac3
 
 @api.route("/searchcar/<search>",methods=['GET'])
 def searchCars(search):
@@ -103,7 +93,6 @@ def searchCars(search):
 def bookcar():
     pickup=convertdatetime(request.json['pickup'])
     dropoff=convertdatetime(request.json['dropoff'])
-    cost="{:.2f}".format(15.00)
     response=dbObj.book_vehicle(request.json['email'],request.json['rego'],pickup,dropoff)
     if response=='Vehicle already booked':
         return jsonify(response)

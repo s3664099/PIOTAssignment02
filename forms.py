@@ -1,5 +1,4 @@
 from flask_wtf import FlaskForm
-<<<<<<< HEAD
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateTimeField, DateField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 
@@ -40,9 +39,6 @@ class GreaterThan(object):
             raise ValidationError(message % d)
 
 
-=======
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateTimeField, SelectField, FloatField
->>>>>>> fd63c84b2f1db35ae162d4cf1927034dadfb6ac3
 class RegistrationForm(FlaskForm):
     username = StringField('Username',
                            validators=[DataRequired(), Length(min=2, max=20),my_length_check])
@@ -65,7 +61,6 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 class BookingForm(FlaskForm):
-<<<<<<< HEAD
     email = StringField('Email',validators=[DataRequired()])
     rego = StringField('Car',validators=[DataRequired()])
     pickup = DateField('PickUp Date', format='%Y-%m-%d %H:%M:%S',validators=[DataRequired()])
@@ -73,18 +68,3 @@ class BookingForm(FlaskForm):
     submit = SubmitField('bookedcar')
 
 
-=======
-    
-    cars = car.cur.fetchall()
-    car_list = []
-    #car.rego, car.make + car.model
-    for car in cars:
-        car_make_model = car.make + " " + car.model
-        car_list.append((car.rego,car_make_model ))
-
-    rego = SelectField('Cars',choices=car_list, validators=[DataRequired()])
-    
-    pickuptime = DateTimeField('Start Date/Time', format='%Y-%m-%d %H:%M:%S',validators=[DataRequired()])
-    dropofftime = DateTimeField('End Date/Time', format='%Y-%m-%d %H:%M:%S',validators=[DataRequired()])
-    totalcost = FloatField('Total Cost', validators=[DataRequired()])
->>>>>>> fd63c84b2f1db35ae162d4cf1927034dadfb6ac3

@@ -85,7 +85,6 @@ class databaseUtils:
 	def return_vehicle_details(self, search):
 		car="Not Found"
 		with self.connection.cursor(DictCursor) as cur:
-<<<<<<< HEAD
 			cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
 				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
 				AND m.bodytype = b.bodytype AND (c.rego='"+search+"' OR c.make='"+search+"' OR c.model='"+search+"' OR c.colour='"+search+"' OR b.bodytype='"+search+"' OR  seats='"+search+"') ")
@@ -99,72 +98,6 @@ class databaseUtils:
 	def get_available_cars(self, lng, lat):
 # def get_searched_available_cars(self,lng,lat,search):
 # 
-=======
-
-			#Sets up standard search query
-			search_query = "SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
-				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model AND m.bodytype = b.bodytype AND"
-			query_found = False
-
-			#Search by rego
-			cur.execute(search_query+" c.rego='"+search+"'")
-
-			cars = cur.fetchall()
-			if cars:
-				query_found = True
-			
-			#Search by make
-			if query_found == False:
-				cur.execute(search_query+" c.make='"+search+"'")
-
-				cars = cur.fetchall()
-				if cars:
-					query_found = True
-
-			#Search by model			
-			if query_found == False:
-				cur.execute(search_query+" c.model='"+search+"'")
-
-				cars = cur.fetchall()
-				if cars:
-					query_found = True
-					
-			#Search by colour
-			if query_found == False:
-				cur.execute(search_query+" c.colour='"+search+"'")
-
-				cars = cur.fetchall()
-				if cars:
-					query_found = True
-
-			#Search by bodytype
-			if query_found == False:
-				cur.execute(search_query+" b.bodytype='"+search+"'")
-
-				cars = cur.fetchall()
-				if cars:
-					query_found = True
-
-			#Search by number of seats
-			if query_found == False:
-				cur.execute(search_query+" seats='"+search+"'")
-
-				cars = cur.fetchall()
-
-			cars = self.sort_cars(cars)
-
-			return cars
-
-	def return_vehicle_details_location(self, lng, lat, search):
-
-		cars = self.return_vehicle_details(search)
-		cars = self.filter_location(lng, lat, cars)
-
-		return cars
-
-	def filter_location(self, lng, lat, cars):
-
->>>>>>> fd63c84b2f1db35ae162d4cf1927034dadfb6ac3
 		#Variables to be used. The range is arbitrary and can be changed
 		top_long = lng + databaseUtils.area_range
 		bottom_long = lng - databaseUtils.area_range
@@ -273,17 +206,9 @@ class databaseUtils:
 										car_type['model'], total_cost, self.service)
 
 			#The booking is added to the database and the results returned to the user
-<<<<<<< HEAD
-			try:
-				cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active) \
-						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+", 1)")
-				self.connection.commit()
-			except pymysql.Error as e:
-				print(e)
-=======
 			cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active, googleEventId) \
 						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+", 1,'"+googleId+"')")
->>>>>>> fd63c84b2f1db35ae162d4cf1927034dadfb6ac3
+			self.connection.commit()
 			cur.execute("SELECT LAST_INSERT_ID()")
 			insert_id = cur.fetchall().pop()
 
