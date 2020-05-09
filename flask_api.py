@@ -124,6 +124,14 @@ def getCars():
     cur.close()
     return jsonify(availablecars)
 
+@api.route("/booking",methods=['GET'])
+def getBooking():
+    cur=myConnection.cursor(DictCursor)
+    booking=get_available_cars(lng, lat).sort_cars(vehicle_list).book_vehicle(name, rego, pickup, dropoff).dbObj
+    booking=json.dumps(booking,default=decimal_default)
+    booking=json.loads(booking)
+    return jsonify(carList)
+
 @api.route("/searchcar/<search>",methods=['GET'])
 def searchCars(search):
     carList=dbObj.return_vehicle_details(search)
