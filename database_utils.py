@@ -209,8 +209,6 @@ class databaseUtils:
 			cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active, googleEventId) \
 						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+", 1,'"+googleId+"')")
 			self.connection.commit()
-			cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active, googleEventId) \
-						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+", 1,'"+googleId+"')")
 			cur.execute("SELECT LAST_INSERT_ID()")
 			insert_id = cur.fetchall().pop()
 
