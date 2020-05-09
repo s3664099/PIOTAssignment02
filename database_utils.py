@@ -1,5 +1,6 @@
 import pymysql
 import datetime
+from datetime import datetime
 from pymysql.cursors import DictCursor
 from login import hash_password
 
@@ -50,6 +51,7 @@ class databaseUtils:
 			try:
 				cur.execute("INSERT INTO user VALUES \
 					('"+user_name+"','"+first_name+"','"+last_name+"','"+password+"','"+email+"')")
+				self.connection.commit()
 			except:
 				response = "Email already used"
 			self.connection.commit()
@@ -77,60 +79,21 @@ class databaseUtils:
 
 	#Returns the details of a particular vehicle
 	def return_vehicle_details(self, search):
+		car="Not Found"
 		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
 				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-				AND m.bodytype = b.bodytype AND c.rego='"+search+"'")
+				AND m.bodytype = b.bodytype AND (c.rego='"+search+"' OR c.make='"+search+"' OR c.model='"+search+"' OR c.colour='"+search+"' OR b.bodytype='"+search+"' OR  seats='"+search+"') ")
 
 			cars = cur.fetchall()
 			if cars:
 				return cars
-			else:
-				cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
-				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-				AND m.bodytype = b.bodytype AND c.make='"+search+"'")
-
-				cars = cur.fetchall()
-				if cars:
-					return cars
-				else:
-					cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
-					colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-					AND m.bodytype = b.bodytype AND c.model='"+search+"'")
-
-					cars = cur.fetchall()
-					if cars:
-						return cars
-					else:
-						cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
-						colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-						AND m.bodytype = b.bodytype AND c.colour='"+search+"'")
-
-						cars = cur.fetchall()
-						if cars:
-							return cars
-						else:
-							cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
-							colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-							AND m.bodytype = b.bodytype AND b.bodytype='"+search+"'")
-
-							cars = cur.fetchall()
-							if cars:
-								return cars
-							else:
-								cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
-								colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-								AND m.bodytype = b.bodytype AND seats='"+search+"'")
-
-								cars = cur.fetchall()
-								if cars:
-									return cars
-
-
+			return car
 
 	#Takes the details of the users location and returns all nearby cars and returns ones that aren't currently booked
 	def get_available_cars(self, lng, lat):
-
+# def get_searched_available_cars(self,lng,lat,search):
+# 
 		#Variables to be used. The range is arbitrary and can be changed
 		top_long = str(lng + databaseUtils.area_range)
 		bottom_long = str(lng - databaseUtils.area_range)
@@ -192,7 +155,6 @@ class databaseUtils:
 
 	#Function to book a vehicle and adds booking to the database
 	def book_vehicle(self, name, rego, pickup, dropoff):
-
 		with self.connection.cursor(DictCursor) as cur:
 
 			#gets booking history for vehicle
@@ -200,10 +162,9 @@ class databaseUtils:
 
 			#Iterates through booking history
 			for bookings in cur.fetchall():
-
 				#checks to see if booking date overlaps
-				if (pickup > bookings['pickuptime'] and pickup < bookings['dropofftime'] and bookings['active'] == 1) or (
-					dropoff > bookings['pickuptime'] and dropoff < bookings['dropofftime'] and bookings['active'] == 1):
+				if (pickup > bookings['pickuptime'] and pickup < bookings['pickuptime'] and bookings['active'] == 1) or (
+					dropoff > bookings['dropofftime'] and dropoff < bookings['dropofftime'] and bookings['active'] == 1):
 
 					#if it does returns invalid booking
 					return "Vehicle already booked"
@@ -218,6 +179,9 @@ class databaseUtils:
 			price = cur.fetchall().pop()
 			price = float(price['hourlyPrice'])
 			booking_time = dropoff - pickup
+			print("\n\n\n Booking Time ")
+			print(booking_time)
+			print("\n\n")
 			booking_time = divmod(booking_time.total_seconds(), 3600)[0]
 
 			#Source: https://kite.com/python/answers/how-to-print-a-float-with-two-decimal-places-in-python
@@ -225,8 +189,12 @@ class databaseUtils:
 			total_cost = "{:.2f}".format(total_cost)
 
 			#The booking is added to the database and the results returned to the user
-			cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active) \
+			try:
+				cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active) \
 						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+", 1)")
+				self.connection.commit()
+			except pymysql.Error as e:
+				print(e)
 			cur.execute("SELECT LAST_INSERT_ID()")
 			insert_id = cur.fetchall().pop()
 
@@ -263,6 +231,7 @@ class databaseUtils:
 				#If they do, the booking is cancelled and the entry cleared
 				cur.execute("UPDATE booking SET active = 0 WHERE bookingnumber = '"+str(booking_number)+"'")
 				return "Booking successfully cancelled"
+				self.connection.commit()
 				
 
 				

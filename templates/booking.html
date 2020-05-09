@@ -1,0 +1,71 @@
+<!-- html file to display user home page created by Bhavi Mehta 21/04/2020 -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Car Rental App</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <style>
+form { 
+margin: 0 auto; 
+width:350px;
+}
+  </style>
+</head>
+<body>
+<div class="container mt-3" style="bottom :10px">
+    {% if carid %}
+    <form method="POST" action="" >
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Book Your Car</legend>
+    <div class="form-group">
+<label >Email <input type="text" name="email" value="{{username}}" disabled class="form-control form-control-lg">
+    <input type="hidden" name="email" value="{{username}}" class="form-control form-control-lg"></label><br>
+<label>Car <input type="text" name="rego" value="{{carid}}" disabled class="form-control form-control-lg">
+    <input type="hidden" name="rego" value="{{carid}}"  class="form-control form-control-lg"></label><br>
+    </div>
+<div class="form-group">
+    <link type="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+    {{ form.pickup.label(class="form-control-label") }}
+    {% if form.pickup.errors %}
+        {{ form.pickup(class="form-control form-control-lg is-invalid",type='datetime-local') }}
+        <div class="invalid-feedback">
+            {% for error in form.pickup.errors %}
+                <span>{{ error }}</span>
+            {% endfor %}
+        </div>
+    {% else %}
+        {{ form.pickup(class="form-control form-control-lg",type='datetime-local') }}
+    {% endif %}
+</div><div class="form-group">
+    {{ form.dropoff.label(class="form-control-label") }}
+    {% if form.dropoff.errors %}
+        {{ form.dropoff(class="form-control form-control-lg is-invalid", type='datetime-local') }}
+        <div class="invalid-feedback">
+            {% for error in form.dropoff.errors %}
+                <span>{{ error }}</span>
+            {% endfor %}
+        </div>
+    {% else %}
+        {{ form.dropoff(class="form-control form-control-lg", type='datetime-local') }}
+    {% endif %}
+</div>
+<button type="submit" name="booked" class="btn btn-success">Book</button>
+<button type="submit" name="goback" class="btn btn-danger">Go Back</button>
+</form>
+{% else %}
+<div class="alert alert-success" style="left : 0; position : relative;">
+    <strong>Please Select a Car first</strong><br>
+</div>
+<a href="{{url_for('site.home')}}">Go Back</a>
+{% endif %}
+</div>
+</body>
+</html>

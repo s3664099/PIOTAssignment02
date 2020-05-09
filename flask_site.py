@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from config import app
 from flask_api import myConnection
-from forms import RegistrationForm, LoginForm
+from forms import RegistrationForm, LoginForm, BookingForm
 from login import new_user, logon, verify_register, verify_password
 import os, requests, json
 
@@ -25,9 +25,6 @@ def register():
         if response:
             response=response.strip("\"")
             response=response.strip("\"")
-        print("\n\n******This is in SITE********")
-        print(response,"\n\n")
-        print(response=="success%")
         if "success" in response:
              flash(f'Account Created', 'success')
              return redirect(url_for('site.login'))
@@ -45,18 +42,17 @@ def login():
     # Use REST API.
     form = LoginForm()    
     if form.validate_on_submit():
-        url=("http://127.0.0.1:5000/login/"+form.email.data)
-        response=requests.get(url)
-        storedpwd = json.loads(response.text)
-        if storedpwd:
-            storedpwd=storedpwd.strip("\"")
-            loggedIn=verify_password(storedpwd,form.password.data)
-            if loggedIn==True:
+        url=("http://127.0.0.1:5000/login/")
+        response=requests.post(url,json=request.form)
+        response=response.text
+        if response:
+            response=response.strip("\"")
+            response=response.strip("\"")
+        if "2" in response:    
                 session['email']=form.email.data
                 print("Session set")
                 return redirect(url_for('site.home'))
-                
-            else:
+        elif "3" in response:
                 flash(f'Password is incorrect','danger')
         else:
             flash(f'Username not found','danger')
@@ -67,7 +63,6 @@ def login():
 def home():
     url=("http://127.0.0.1:5000/orderhistory/"+session['email'])
     response=requests.get(url)
-    print("Response",response.text)
     orderhistory=json.loads(response.text)
     url=("http://127.0.0.1:5000/cars")
     response=requests.get(url)
@@ -77,8 +72,6 @@ def home():
             print(request.form['search'])
             url=("http://127.0.0.1:5000/searchcar/"+request.form['search'])
             response=requests.get(url)
-            print("\n\n Order History \n\n")
-            print(response)
             searchcars=json.loads(response.text)
             if searchcars:
                 return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=searchcars)
@@ -93,6 +86,38 @@ def home():
 def logout():
     session.clear()
     return redirect(url_for('site.login'))
+
+@site.route("/booking",methods=['GET','POST'])
+def booking():
+    form=BookingForm()
+    if request.method=="POST":
+        print("\n\n Request from home to booking")
+        print(request.form)
+        print("\n\n")
+        if('carid' in request.form):
+                return render_template("booking.html",title='Booking Car', carid=request.form['carid'],username=session['email'],form=form)
+        if('booked' in request.form):
+                result=json.dumps(request.form)
+                result=json.loads(result)
+                print("\n\n\nBooking Details ")
+                print(result)
+                print("\n\n\n")
+                url="http://127.0.0.1:5000/bookcar"
+                response=requests.post(url, json=result)
+                response=response.text
+                if response:
+                    response=response.strip("\"")
+                    response=response.strip("\"")
+                if "Vehicle Booked" in response:
+                    flash(f'Booking Successful', 'success')
+                    return redirect(url_for('site.home'))
+                else:
+                    flash(f'Booking cannot be made, please try again later or with a different car/dates\nWe apologise for inconvenience caused','danger')
+                    return response
+        elif ('goback' in request.form):
+            return redirect(url_for(site.home))
+
+    return render_template("booking.html",title='Booking Car',carid=None, username=session['email'],form=form)
 
 @site.route("/about",methods=['GET','POST'])
 def about():

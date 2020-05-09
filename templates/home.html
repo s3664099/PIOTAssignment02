@@ -57,6 +57,7 @@
                 </div>
                 {% if searchcars %}
             <div class='col-md-8' id='foundcars'>
+              <form method="POST" action="{{url_for('site.booking')}}">
               <table class='table table-striped'>
                 <thead>
                 <tr>
@@ -71,7 +72,7 @@
                 <tbody>
                   {% for row in searchcars %}
                   <tr>
-                    <td>{{row.rego}}</td>
+                    <td><input type="radio" value="{{row.rego}}" name='carid'> {{row.rego}}</td>
                     <td>{{row.make}}</td>
                     <td>{{row.model}}</td>
                     <td>{{row.locationlat}}</td>
@@ -81,7 +82,10 @@
                   {% endfor %}
                   </tbody>
             </table>
+            <button type="submit" value="booking" class="btn btn-success">Book Car</button>
+            </form>
             </div>
+            
             {% endif %}
     </div>
     <div id="history" class="tab-pane fade"><br>
