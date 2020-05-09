@@ -3,16 +3,16 @@ import unittest
 import db_singleton as singleton
 import database_utils as database
 import datetime
-import test_database_setup as tdb
+import databaseSetup as tdb
 from datetime import timedelta
 
 class test_database_utils(unittest.TestCase):
 
 	#The details of the database to be accessed
-	HOST = "localhost"
-	USER = "root"
-	PASSWORD = "root"
-	DATABASE = "People"
+	hostname = '35.197.174.1'
+	username = 'root'
+	password = 'password'
+	database = 'car_app_db'
 
 	#This sets up the test, namely by connecting to the database, clearing the table to be tested
 	#And then populating the table
@@ -20,6 +20,7 @@ class test_database_utils(unittest.TestCase):
 	def setUp(self):
 
 		self.db = database.databaseUtils(test_database_utils.HOST, test_database_utils.USER, test_database_utils.PASSWORD, test_database_utils.DATABASE)
+
 		self.conn = self.db.get_connection()
 
 		tdb.clearDatabases(self.conn)
@@ -61,7 +62,6 @@ class test_database_utils(unittest.TestCase):
 	def test_return_user(self):
 
 		with self.db as db:
-
 			self.assertTrue(len(db.return_user("john@password.com")) == 1)
 
 	#Tests that the return user details works. This confirms that all of the details of the particular user
@@ -71,6 +71,7 @@ class test_database_utils(unittest.TestCase):
 		with self.db as db:
 
 			user_details = db.return_user_details("john@password.com")
+
 			user_details = user_details.pop()
 
 			self.assertTrue(user_details['username'] == 'Johnno')
@@ -83,30 +84,28 @@ class test_database_utils(unittest.TestCase):
 
 		singleton_database = singleton.Singleton(test_database_utils.HOST, test_database_utils.USER, test_database_utils.PASSWORD, test_database_utils.DATABASE)
 		with self.assertRaises(Exception) as context:
-
 			singleton_database2 = singleton.Singleton(test_database_utils.HOST, test_database_utils.USER, test_database_utils.PASSWORD, test_database_utils.DATABASE)
 			self.assertTrue("You cannot create more than one connection!" in context.exception)
 
 	def test_get_booking_history(self):
 
 		with self.db as db:
+			print(db.get_booking_history("john@password.com"))
+			print(type(db.get_booking_history("john@password.com")))
 			self.assertTrue(len(db.get_booking_history("john@password.com")) == 2)
 
 	def test_get_available_local_cars(self):
 
 		with self.db as db:
-
 			self.assertTrue(len(db.get_available_cars(-37.800855,144.977234)) == 2)
 
 	def test_get_all_available_case(self):
 		with self.db as db:
-
 			self.assertTrue(len(db.get_all_cars()) == 7)
 
 	def test_get_vehicle_details(self):
 
 		with self.db as db:
-
 			vehicle_details = db.return_vehicle_details('XYZ987')
 
 			vehicle_details = vehicle_details.pop()
@@ -143,50 +142,30 @@ class test_database_utils(unittest.TestCase):
 			dropoff = pickup + timedelta(hours = 3)
 			self.assertTrue(db.book_vehicle("john@password.com", "U75PYV", pickup, dropoff) == "Vehicle already booked")
 
+	#Comment above, and also return total cost of hire
+
 	def test_cancel_booking(self):
 
 		with self.db as db:
-
 			pickup = datetime.datetime.now()
 			pickup = pickup + timedelta(days= 2, hours=-2)
 			dropoff = pickup + timedelta(days=2, hours=4)
-
 			db.book_vehicle("fry@planetExpress.earth", "GHR445", pickup, dropoff)
+
 			
 			self.assertTrue(db.cancel_booking("fry@planetExpress.earth", 3) == "Can't cancel a booking in progress")
 			self.assertTrue(db.cancel_booking("fry@planetExpress.earth", 4) == "Booking successfully cancelled")
 			self.assertTrue(len(db.get_booking_history("fry@planetExpress.earth")) == 2)
+			db.book_vehicle("fry@planetExpress.earth", "GHR445", pickup, dropoff)
+			self.assertTrue(len(db.get_booking_history("fry@planetExpress.earth")) == 3)
+			self.assertTrue(db.cancel_booking("fry@planetExpress.earth", 5) == "Booking successfully cancelled")
+			self.assertTrue(len(db.get_booking_history("fry@planetExpress.earth")) == 3)
 
 			self.assertTrue(db.cancel_booking("john@password.com", 3) == "Can't cancel somebody else's booking")
 			self.assertTrue(db.cancel_booking("john@password.com", 1) == "Can't cancel a previous booking")
 			self.assertTrue(db.cancel_booking("john@password.com", 20) == "No booking exists")
-
 			db.book_vehicle("john@password.com", "GHR445", pickup, dropoff)
 			self.assertTrue(len(db.get_booking_history("john@password.com")) == 3)
-
-	def test_search_vehicle(self):
-
-		with self.db as db:
-
-			self.assertTrue(len(db.return_vehicle_details('Holden')) == 2)
-			self.assertTrue(db.return_vehicle_details('Holden').pop()['rego'] == 'XYZ987')
-			self.assertTrue(len(db.return_vehicle_details('Commodore')) == 2)
-			self.assertTrue(db.return_vehicle_details('Commodore').pop()['rego'] == 'XYZ987')
-			self.assertTrue(len(db.return_vehicle_details('silver')) == 3)
-			self.assertTrue(db.return_vehicle_details('silver').pop()['rego'] == 'GHR445')
-			self.assertTrue(len(db.return_vehicle_details('Medium')) == 1)
-			self.assertTrue(db.return_vehicle_details('Medium').pop()['rego'] == 'LMP675')
-			self.assertTrue(len(db.return_vehicle_details('5')) == 5)
-			self.assertTrue(db.return_vehicle_details('5').pop()['rego'] == 'YUPPIE')
-			self.assertTrue(len(db.return_vehicle_details('Prestige Large')) == 1)
-			self.assertTrue(db.return_vehicle_details('Prestige Large').pop()['rego'] == 'YUPPIE')
-
-	def test_search_vehicle_location(self):
-
-		with self.db as db:								
-			self.assertTrue(len(db.return_vehicle_details_location(-37.800855,144.977234,'green')) == 1)
-			self.assertTrue(db.return_vehicle_details_location(-37.800855,144.977234,'green').pop()['rego'] == 'XYZ987')
-			self.assertTrue(len(db.return_vehicle_details_location(-37.800855,144.977234,'Toyota')) == 0)
 
 if __name__ == "__main__":
     unittest.main()
