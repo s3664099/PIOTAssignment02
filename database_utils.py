@@ -3,6 +3,7 @@ import datetime
 from datetime import datetime
 from pymysql.cursors import DictCursor
 from login import hash_password
+import gcalendar_utils as gcalendar
 
 #A class for creating a connection to the database to enable manipulation
 #and retrieval.
@@ -13,6 +14,7 @@ class databaseUtils:
 	DATABASE = ""
 	connection = None
 	area_range = 0.0025
+	service = None
 
 	#Establishes the connection by passing through the required variables
 	#The variables aren't hardcoded to enable testing on a test database
@@ -27,6 +29,8 @@ class databaseUtils:
 			myConnection = pymysql.connect(host=databaseUtils.HOST, user = databaseUtils.USER, passwd = databaseUtils.PASSWORD, 
     			db = databaseUtils.DATABASE, charset='utf8', cursorclass=pymysql.cursors.DictCursor)
 		self.connection = myConnection
+
+		self.service = gcalendar.connect_calendar()
 
 	#The following methods are for closing the database
 	def close_connection(self):
@@ -81,6 +85,7 @@ class databaseUtils:
 	def return_vehicle_details(self, search):
 		car="Not Found"
 		with self.connection.cursor(DictCursor) as cur:
+<<<<<<< HEAD
 			cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
 				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
 				AND m.bodytype = b.bodytype AND (c.rego='"+search+"' OR c.make='"+search+"' OR c.model='"+search+"' OR c.colour='"+search+"' OR b.bodytype='"+search+"' OR  seats='"+search+"') ")
@@ -94,62 +99,135 @@ class databaseUtils:
 	def get_available_cars(self, lng, lat):
 # def get_searched_available_cars(self,lng,lat,search):
 # 
+=======
+
+			#Sets up standard search query
+			search_query = "SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
+				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model AND m.bodytype = b.bodytype AND"
+			query_found = False
+
+			#Search by rego
+			cur.execute(search_query+" c.rego='"+search+"'")
+
+			cars = cur.fetchall()
+			if cars:
+				query_found = True
+			
+			#Search by make
+			if query_found == False:
+				cur.execute(search_query+" c.make='"+search+"'")
+
+				cars = cur.fetchall()
+				if cars:
+					query_found = True
+
+			#Search by model			
+			if query_found == False:
+				cur.execute(search_query+" c.model='"+search+"'")
+
+				cars = cur.fetchall()
+				if cars:
+					query_found = True
+					
+			#Search by colour
+			if query_found == False:
+				cur.execute(search_query+" c.colour='"+search+"'")
+
+				cars = cur.fetchall()
+				if cars:
+					query_found = True
+
+			#Search by bodytype
+			if query_found == False:
+				cur.execute(search_query+" b.bodytype='"+search+"'")
+
+				cars = cur.fetchall()
+				if cars:
+					query_found = True
+
+			#Search by number of seats
+			if query_found == False:
+				cur.execute(search_query+" seats='"+search+"'")
+
+				cars = cur.fetchall()
+
+			cars = self.sort_cars(cars)
+
+			return cars
+
+	def return_vehicle_details_location(self, lng, lat, search):
+
+		cars = self.return_vehicle_details(search)
+		cars = self.filter_location(lng, lat, cars)
+
+		return cars
+
+	def filter_location(self, lng, lat, cars):
+
+>>>>>>> fd63c84b2f1db35ae162d4cf1927034dadfb6ac3
 		#Variables to be used. The range is arbitrary and can be changed
-		top_long = str(lng + databaseUtils.area_range)
-		bottom_long = str(lng - databaseUtils.area_range)
-		left_lat = str(lat - databaseUtils.area_range)
-		right_lat = str(lat + databaseUtils.area_range)
+		top_long = lng + databaseUtils.area_range
+		bottom_long = lng - databaseUtils.area_range
+		left_lat = lat - databaseUtils.area_range
+		right_lat = lat + databaseUtils.area_range
 		vehicle_list = []
 
-		#Get a list of vehicles based on area which has been passed through
-		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT rego, make, model, locationlong, locationlat FROM car \
-				WHERE locationlong<"+top_long+" and locationlong > "+bottom_long+" and \
-				locationlat > "+left_lat+" and locationlat<"+right_lat)
-
-			vehicle_list = self.sort_cars(cur.fetchall(), cur)
+		for car in cars:
+			if car["locationlong"] < top_long and car["locationlong"] > bottom_long and car["locationlat"] > left_lat and car["locationlat"] < right_lat:
+				vehicle_list.append(car)
+				vehicle_list = self.sort_cars(vehicle_list)
 
 		return vehicle_list
 
-	def sort_cars(self, vehicle_list, cur):
+	#Takes the details of the users location and returns all nearby cars and returns ones that aren't currently booked
+	def get_available_cars(self, lng, lat):
 
-		temp_vehicle_list = []
-		unbooked_vehicle_list = []
+		cars = self.get_all_cars()
 
-		#checks each of the vehicles returned to see if they have been booked
-		for car in vehicle_list:
-			temp_vehicle_list.append(car)
+		vehicle_list = self.filter_location(lng, lat, cars)
+		vehicle_list = self.sort_cars(vehicle_list)
 
-		for car in temp_vehicle_list:
+		return vehicle_list
 
-			car_booked = False
+	def sort_cars(self, vehicle_list):
 
-			#Gets a list of bookings based on that vehicle
-			cur.execute("SELECT pickuptime, dropofftime FROM booking WHERE rego = '"+car['rego']+"'")
-			car_booking = cur.fetchall()
+		with self.connection.cursor(DictCursor) as cur:
 
-			if car_booking:
+			temp_vehicle_list = []
+			unbooked_vehicle_list = []
 
-				for booking in car_booking:
+			#checks each of the vehicles returned to see if they have been booked
+			for car in vehicle_list:
+				temp_vehicle_list.append(car)
 
-					#Checks to see if the car has been booked in the current period
-					#If so, sets the flag to true so that the vehicle is not returned
-					if datetime.datetime.now() > booking['pickuptime'] and datetime.datetime.now() < booking['dropofftime']:
-						car_booked = True
+			for car in temp_vehicle_list:
 
-			if car_booked == False:
-				unbooked_vehicle_list.append(car)
+				car_booked = False
 
-		#print(len(unbooked_vehicle_list))
+				#Gets a list of bookings based on that vehicle
+				cur.execute("SELECT pickuptime, dropofftime FROM booking WHERE rego = '"+car['rego']+"'")
+				car_booking = cur.fetchall()
 
-		return unbooked_vehicle_list
+				if car_booking:
+
+					for booking in car_booking:
+
+						#Checks to see if the car has been booked in the current period
+						#If so, sets the flag to true so that the vehicle is not returned
+						if datetime.datetime.now() > booking['pickuptime'] and datetime.datetime.now() < booking['dropofftime']:
+							car_booked = True
+
+				if car_booked == False:
+					unbooked_vehicle_list.append(car)
+
+			return unbooked_vehicle_list
 
 
 	def get_all_cars(self):
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT rego, make, model FROM car")
+			cur.execute("SELECT rego, make, model, locationlat, locationlong FROM car")
 
-			vehicle_list = self.sort_cars(cur.fetchall(), cur)
+			vehicle_list = self.sort_cars(cur.fetchall())
 
 		return vehicle_list
 
@@ -188,13 +266,24 @@ class databaseUtils:
 			total_cost = price*booking_time
 			total_cost = "{:.2f}".format(total_cost)
 
+			cur.execute("SELECT make, model FROM car WHERE rego = '"+rego+"'")
+			car_type = cur.fetchall().pop()
+
+			googleId = gcalendar.insert(pickup.isoformat() +"Z", dropoff.isoformat() +"Z", rego, car_type['make'], 
+										car_type['model'], total_cost, self.service)
+
 			#The booking is added to the database and the results returned to the user
+<<<<<<< HEAD
 			try:
 				cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active) \
 						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+", 1)")
 				self.connection.commit()
 			except pymysql.Error as e:
 				print(e)
+=======
+			cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active, googleEventId) \
+						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+", 1,'"+googleId+"')")
+>>>>>>> fd63c84b2f1db35ae162d4cf1927034dadfb6ac3
 			cur.execute("SELECT LAST_INSERT_ID()")
 			insert_id = cur.fetchall().pop()
 
@@ -205,8 +294,8 @@ class databaseUtils:
 		with self.connection.cursor(DictCursor) as cur:
 
 			#gets the booking based on the booking number
-			row_count = cur.execute("SELECT email, pickuptime, dropofftime, active FROM booking WHERE bookingnumber\
-									 = '"+str(booking_number)+"'")
+			row_count = cur.execute("SELECT email, pickuptime, dropofftime, active, googleEventId FROM booking WHERE \
+									bookingnumber = '"+str(booking_number)+"'")
 
 			#Checks to see if the booking exists
 			if row_count == 0:
@@ -227,6 +316,8 @@ class databaseUtils:
 			elif time > pickup:
 				return "Can't cancel a booking in progress"
 			else:
+
+				gcalendar.remove_event(results['googleEventId'], self.service)
 
 				#If they do, the booking is cancelled and the entry cleared
 				cur.execute("UPDATE booking SET active = 0 WHERE bookingnumber = '"+str(booking_number)+"'")
