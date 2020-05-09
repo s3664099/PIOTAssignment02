@@ -96,8 +96,11 @@ def booking():
         print(request.form)
         print("\n\n")
         if('carid' in request.form):
-                return render_template("booking.html",title='Booking Car', carid=request.form['carid'],username=session['email'],form=form)
+                return render_template("booking.html",title='Booking Car', carid=request.form['carid'],username=session['email'],datetime=None,form=form)
         if('booked' in request.form):
+                if(request.form['pickup']>request.form['dropoff']):
+                    error=True
+                    return render_template("booking.html",title='Booking Car',carid=request.form['rego'], username=session['email'],error=error,form=form)
                 result=json.dumps(request.form)
                 result=json.loads(result)
                 print("\n\n\nBooking Details ")
@@ -116,7 +119,7 @@ def booking():
                     flash(f'Booking cannot be made, please try again later or with a different car/dates\nWe apologise for inconvenience caused','danger')
                     return response
         elif ('goback' in request.form):
-            return redirect(url_for(site.home))
+            return redirect(url_for('site.home'))
 
     return render_template("booking.html",title='Booking Car',carid=None, username=session['email'],form=form)
 

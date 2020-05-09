@@ -20,6 +20,11 @@ width:350px;
 </head>
 <body>
 <div class="container mt-3" style="bottom :10px">
+    {% if error==true %}
+<div class="alert alert-success" style="left : 0; position : relative;">
+    <strong>Drop Off Time has to be ahead of pickup time</strong><br>
+</div>
+{%endif%}
     {% if carid %}
     <form method="POST" action="" >
         {{ form.hidden_tag() }}
@@ -60,7 +65,7 @@ width:350px;
 <button type="submit" name="booked" class="btn btn-success">Book</button>
 <button type="submit" name="goback" class="btn btn-danger">Go Back</button>
 </form>
-{% else %}
+{%else%}
 <div class="alert alert-success" style="left : 0; position : relative;">
     <strong>Please Select a Car first</strong><br>
 </div>
