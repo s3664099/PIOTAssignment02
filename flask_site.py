@@ -92,9 +92,6 @@ def logout():
 def booking():
     form=BookingForm()
     if request.method=="POST":
-        print("\n\n Request from home to booking")
-        print(request.form)
-        print("\n\n")
         if('carid' in request.form):
                 return render_template("booking.html",title='Booking Car', carid=request.form['carid'],username=session['email'],datetime=None,form=form)
         if('booked' in request.form):
@@ -103,9 +100,6 @@ def booking():
                     return render_template("booking.html",title='Booking Car',carid=request.form['rego'], username=session['email'],error=error,form=form)
                 result=json.dumps(request.form)
                 result=json.loads(result)
-                print("\n\n\nBooking Details ")
-                print(result)
-                print("\n\n\n")
                 url="http://127.0.0.1:5000/bookcar"
                 response=requests.post(url, json=result)
                 response=response.text

@@ -39,7 +39,7 @@ cur.close()
 dbObj=databaseUtils(db_hostname,db_username,db_password,database)
 #Endpoint to create a new user
 @api.route("/registeruser", methods = ["POST"])
-def getTest():
+def registerUser():
     password=hash_password(request.json['password'])
     response=dbObj.insert_user(request.json['username'],request.json['firstname'],request.json['lastname'],password,request.json['email'])
     print("\n\nThis is in register\n\n")
@@ -48,11 +48,25 @@ def getTest():
         return jsonify(response)
     else:
         return jsonify(response)
-        
 
 @api.route("/login", methods = ["POST"])
 def getLogin():
     result=logon(request.json['email'],request.json['password'])
+    return jsonify(result)
+
+@api.route("/username=<username>/firstname=<firstname>/lastname=<lastname>")
+def getUser(username,firstname,lastname):
+    result=dbObj.return_user_details(username)
+    for row in result:
+        if(firstname == row['firstname'] and lastname == row['lastname']):
+            response='Success'
+            print("\n\n\nIn API")
+            print(response)
+            print("\n\n\n")
+            return jsonify(response)
+        else:
+            response='User Does not exist in the system'
+            return jsonify(response)
     return jsonify(result)
 
 

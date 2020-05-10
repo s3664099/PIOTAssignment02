@@ -70,7 +70,7 @@ class databaseUtils:
 	#Return user details
 	def return_user_details(self, user_name):
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT * FROM user WHERE email='"+user_name+"'")
+			cur.execute("SELECT * FROM user WHERE username='"+user_name+"'")
 
 			return cur.fetchall()	
 
