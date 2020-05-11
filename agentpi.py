@@ -69,13 +69,14 @@ def main():
             print("Invalid input, try again.")
             print()
 
+#This function handles the console login part
 def console_login():
 
+    #Takes the username & password
     username= input("Enter your username:\n")
     password= input("Enter your password:\n")
-    print(username)
-    print(password)
 
+    #checks to see if it is stored locally, and password is correct
     user=getUser_locally(username, password)
 
     if (user == 1):
@@ -86,10 +87,11 @@ def console_login():
     elif (user == 2):
         return("Password Incorrect")
 
-    #unlocked=login(user,client)
-    #if(unlocked==True):
-        #bluetooth and pushbullet code here
-        #break
+    else:
+        #Otherwise checks remotely
+        user = getUser_remotely(username,password)
+
+
 
 #This function checks to see if the user has been stored locally
 #in the sqlite database. If it is, the passwords are compared.
