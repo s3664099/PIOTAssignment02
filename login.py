@@ -1,4 +1,3 @@
-
 import binascii
 import hashlib
 import os
@@ -8,17 +7,21 @@ import pymysql
 # The following code for hashing, salting, and verifying a password was provided by
 # https://www.vitoshacademy.com/hashing-passwords-in-python/
 def hash_password(password):
-    """Hash a password for storing."""
+
+    #The password is hashed, and salted, and the salt is added to the hash
     salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
     pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'),
                                   salt, 100000)
     pwdhash = binascii.hexlify(pwdhash)
 
+    #The encrypted password is then returned to the user
     return (salt + pwdhash).decode('ascii')
 
 
 def verify_password(stored_password, provided_password):
-    """Verify a stored password against one provided by user"""
+
+    #The stored, and entered passwords are provided.
+    #The provided password is hashed, and salted with the salt from the stored password
     salt = stored_password[:64]
     stored_password = stored_password[64:]
     pwdhash = hashlib.pbkdf2_hmac('sha512',
@@ -26,6 +29,8 @@ def verify_password(stored_password, provided_password):
                                   salt.encode('ascii'),
                                   100000)
     pwdhash = binascii.hexlify(pwdhash).decode('ascii')
+
+    #The two are then compared and a true or false is returned
     return pwdhash == stored_password
 
 

@@ -1,5 +1,4 @@
 import unittest
-#import pymysql
 import db_singleton as singleton
 import database_utils as database
 import datetime
