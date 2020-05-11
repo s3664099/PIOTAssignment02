@@ -82,7 +82,7 @@ def createTables(conn):
 		print("Error 04: {}", e)
 	try:
 		cur.execute("CREATE TABLE booking(bookingnumber INT NOT NULL AUTO_INCREMENT, rego VARCHAR(10),\
-					email VARCHAR(28), pickuptime DATETIME, dropofftime DATETIME, totalcost DECIMAL (6,2), active BOOLEAN,\
+					email VARCHAR(28), pickuptime DATETIME, dropofftime DATETIME, totalcost DECIMAL (6,2), status VARCHAR(10),\
 					googleEventId VARCHAR(30), PRIMARY KEY (bookingnumber), FOREIGN KEY (rego) REFERENCES car(rego), \
 					FOREIGN KEY (email) REFERENCES user(email))")
 	except pymysql.Error as e:
@@ -134,19 +134,19 @@ def createTables(conn):
 
 		pickup = datetime.datetime(2020,4,21,13)
 		dropoff = pickup + timedelta(hours=4)
-		cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active) VALUES\
-					 ('XYZ987', 'john@password.com', '"+str(pickup)+"','"+str(dropoff)+"',60.00, 1)")
+		cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, status) VALUES\
+					 ('XYZ987', 'john@password.com', '"+str(pickup)+"','"+str(dropoff)+"',60.00, 'CONFIRMED')")
 
 		pickup = datetime.datetime(2020,5,5,9)
 		dropoff = pickup + timedelta(hours=6)
-		cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active) VALUES\
-					 ('U75PYV', 'john@password.com', '"+str(pickup)+"','"+str(dropoff)+"',42.00, 1)")
+		cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, status) VALUES\
+					 ('U75PYV', 'john@password.com', '"+str(pickup)+"','"+str(dropoff)+"',42.00, 'CONFIRMED')")
 
 		pickup = datetime.datetime.now()
 		pickup = pickup + timedelta(hours=-2)
 		dropoff = pickup + timedelta(hours=4)
-		cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active) VALUES\
-					 ('U75PYV', 'fry@planetExpress.earth', '"+str(pickup)+"','"+str(dropoff)+"',42.00,1)")
+		cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, status) VALUES\
+					 ('U75PYV', 'fry@planetExpress.earth', '"+str(pickup)+"','"+str(dropoff)+"',42.00,'CONFIRMED')")
 
 		print("Inserted")
 

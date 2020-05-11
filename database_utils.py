@@ -1,8 +1,6 @@
 import pymysql
 import datetime
-from datetime import datetime
 from pymysql.cursors import DictCursor
-from login import hash_password
 import gcalendar_utils as gcalendar
 
 #A class for creating a connection to the database to enable manipulation
@@ -95,7 +93,7 @@ class databaseUtils:
 			return car
 
 	#Takes the details of the users location and returns all nearby cars and returns ones that aren't currently booked
-	def get_available_cars(self, lng, lat):
+	def filter_location(self, lng, lat, cars):
 # def get_searched_available_cars(self,lng,lat,search):
 # 
 		#Variables to be used. The range is arbitrary and can be changed
