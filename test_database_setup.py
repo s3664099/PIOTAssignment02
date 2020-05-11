@@ -54,7 +54,7 @@ def createTables(conn):
 	cur = conn.cursor()
 
 	try:
-		cur.execute("CREATE TABLE bodytype (bodytype VARCHAR(20), seats INTEGER(2), hourlyPrice DECIMAL(4,2),\
+		cur.execute("CREATE TABLE bodytype (bodytype VARCHAR(20), seats VARCHAR(3), hourlyPrice DECIMAL(4,2),\
 					icon VARCHAR(20), PRIMARY KEY (bodytype))")
 	except pymysql.Error as e:
 		print("Error 01: {}", e)
@@ -130,18 +130,18 @@ def createTables(conn):
 		pickup = datetime.datetime(2020,4,21,13)
 		dropoff = pickup + timedelta(hours=4)
 		cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, status) VALUES\
-					 ('XYZ987', 'john@password.com', '"+str(pickup)+"','"+str(dropoff)+"',60.00, 'CONFIRMED')")
+					 ('XYZ987', 'john@password.com', '"+str(pickup)+"','"+str(dropoff)+"',60.00, 'BOOKED')")
 
 		pickup = datetime.datetime(2020,5,5,9)
 		dropoff = pickup + timedelta(hours=6)
 		cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, status) VALUES\
-					 ('U75PYV', 'john@password.com', '"+str(pickup)+"','"+str(dropoff)+"',42.00, 'CONFIRMED')")
+					 ('U75PYV', 'john@password.com', '"+str(pickup)+"','"+str(dropoff)+"',42.00, 'BOOKED')")
 
 		pickup = datetime.datetime.now()
 		pickup = pickup + timedelta(hours=-2)
 		dropoff = pickup + timedelta(hours=4)
 		cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, status) VALUES\
-					 ('U75PYV', 'fry@planetExpress.earth', '"+str(pickup)+"','"+str(dropoff)+"',42.00,'CONFIRMED')")
+					 ('U75PYV', 'fry@planetExpress.earth', '"+str(pickup)+"','"+str(dropoff)+"',42.00,'BOOKED')")
 
 	except pymysql.Error as e:
 		print("Error 06: {}", e)

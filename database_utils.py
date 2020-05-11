@@ -61,16 +61,29 @@ class databaseUtils:
 
 	#This method returns the password and the user name of the user
 	def return_user(self, user_name):
+
+		query = "SELECT username, password FROM user WHERE"
+
+		return self.get_user(user_name, query)
+
+	#Function that handles the return_user requests
+	#Checks to see if the query is for a username, or for an email
+	def get_user(self, user_name, query):
+
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT username, password FROM user WHERE email='"+user_name+"'")
+			results = cur.execute(query+" email='"+user_name+"'")
+			
+			if results == 0:
+				cur.execute(query+" username='"+user_name+"'")
+
 			return cur.fetchall()
 
 	#Return user details
 	def return_user_details(self, user_name):
-		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT * FROM user WHERE username='"+user_name+"'")
 
-			return cur.fetchall()	
+		query = "SELECT * FROM user WHERE"
+
+		return self.get_user(user_name, query)	
 
 	#Gets a list of the bookings that the user has made
 	def get_booking_history(self, email):
@@ -85,17 +98,24 @@ class databaseUtils:
 		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
 				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-				AND m.bodytype = b.bodytype AND (c.rego='"+search+"' OR c.make='"+search+"' OR c.model='"+search+"' OR c.colour='"+search+"' OR b.bodytype='"+search+"' OR  seats='"+search+"') ")
+				AND m.bodytype = b.bodytype AND (c.rego='"+search+"' OR c.make='"+search+"' OR c.model='"+search+"' \
+				OR c.colour='"+search+"' OR b.bodytype='"+search+"' OR  seats='"+search+"') ")
 
 			cars = cur.fetchall()
 			if cars:
 				return cars
 			return car
 
+	def return_vehicle_details_location(self, lng, lat, search):
+
+		cars = self.return_vehicle_details(search)
+		cars = self.filter_location(lng, lat, cars)
+
+		return cars
+
 	#Takes the details of the users location and returns all nearby cars and returns ones that aren't currently booked
 	def filter_location(self, lng, lat, cars):
-# def get_searched_available_cars(self,lng,lat,search):
-# 
+
 		#Variables to be used. The range is arbitrary and can be changed
 		top_long = lng + databaseUtils.area_range
 		bottom_long = lng - databaseUtils.area_range
@@ -120,6 +140,7 @@ class databaseUtils:
 
 		return vehicle_list
 
+	#Function designed to sort the cars based of whether they have been booked or not
 	def sort_cars(self, vehicle_list):
 
 		with self.connection.cursor(DictCursor) as cur:
@@ -136,7 +157,7 @@ class databaseUtils:
 				car_booked = False
 
 				#Gets a list of bookings based on that vehicle
-				cur.execute("SELECT pickuptime, dropofftime FROM booking WHERE rego = '"+car['rego']+"'")
+				cur.execute("SELECT pickuptime, dropofftime, status FROM booking WHERE rego = '"+car['rego']+"'")
 				car_booking = cur.fetchall()
 
 				if car_booking:
@@ -146,7 +167,9 @@ class databaseUtils:
 						#Checks to see if the car has been booked in the current period
 						#If so, sets the flag to true so that the vehicle is not returned
 						if datetime.datetime.now() > booking['pickuptime'] and datetime.datetime.now() < booking['dropofftime']:
-							car_booked = True
+
+							if (booking['status'] == 'BOOKED') or (booking['status'] == 'ACTIVE'):
+								car_booked = True
 
 				if car_booked == False:
 					unbooked_vehicle_list.append(car)
@@ -167,30 +190,31 @@ class databaseUtils:
 		with self.connection.cursor(DictCursor) as cur:
 
 			#gets booking history for vehicle
-			cur.execute("SELECT pickuptime, dropofftime, active FROM booking WHERE rego = '"+rego+"'")
+			cur.execute("SELECT pickuptime, dropofftime, status FROM booking WHERE rego = '"+rego+"'")
 
 			#Iterates through booking history
 			for bookings in cur.fetchall():
 				#checks to see if booking date overlaps
-				if (pickup > bookings['pickuptime'] and pickup < bookings['pickuptime'] and bookings['active'] == 1) or (
-					dropoff > bookings['dropofftime'] and dropoff < bookings['dropofftime'] and bookings['active'] == 1):
+				if (pickup > bookings['pickuptime'] and pickup < bookings['dropofftime']) or (
+					dropoff > bookings['pickuptime'] and dropoff < bookings['dropofftime']):
 
-					#if it does returns invalid booking
-					return "Vehicle already booked"
+					if (bookings['status'] == 'BOOKED') or (bookings['status'] == 'ACTIVE'):
+
+						#if it does returns invalid booking
+						return "Vehicle already booked"
 
 			#The hourly price for that particular car is retrieved form the database
 			cur.execute("SELECT hourlyPrice FROM bodytype JOIN makemodel on makemodel.bodytype = bodytype.bodytype\
-						JOIN car ON car.model = makemodel.model\
-						WHERE rego = '"+rego+"'")
+						JOIN car ON car.model = makemodel.model WHERE rego = '"+rego+"'")
 
 			#Source: https://stackoverflow.com/questions/1345827/how-do-i-find-the-time-difference-between-two-datetime-objects-in-python
 			#Calculates the total cost of the booking
 			price = cur.fetchall().pop()
 			price = float(price['hourlyPrice'])
 			booking_time = dropoff - pickup
-			print("\n\n\n Booking Time ")
-			print(booking_time)
-			print("\n\n")
+#			print("\n\n\n Booking Time ")
+#			print(booking_time)
+#			print("\n\n")
 			booking_time = divmod(booking_time.total_seconds(), 3600)[0]
 
 			#Source: https://kite.com/python/answers/how-to-print-a-float-with-two-decimal-places-in-python
@@ -204,8 +228,8 @@ class databaseUtils:
 										car_type['model'], total_cost, self.service)
 
 			#The booking is added to the database and the results returned to the user
-			cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, active, googleEventId) \
-						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+", 1,'"+googleId+"')")
+			cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, status, googleEventId) \
+						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+", 'BOOKED','"+googleId+"')")
 			self.connection.commit()
 			cur.execute("SELECT LAST_INSERT_ID()")
 			insert_id = cur.fetchall().pop()
@@ -217,7 +241,7 @@ class databaseUtils:
 		with self.connection.cursor(DictCursor) as cur:
 
 			#gets the booking based on the booking number
-			row_count = cur.execute("SELECT email, pickuptime, dropofftime, active, googleEventId FROM booking WHERE \
+			row_count = cur.execute("SELECT email, pickuptime, dropofftime, status, googleEventId FROM booking WHERE \
 									bookingnumber = '"+str(booking_number)+"'")
 
 			#Checks to see if the booking exists
@@ -243,7 +267,7 @@ class databaseUtils:
 				gcalendar.remove_event(results['googleEventId'], self.service)
 
 				#If they do, the booking is cancelled and the entry cleared
-				cur.execute("UPDATE booking SET active = 0 WHERE bookingnumber = '"+str(booking_number)+"'")
+				cur.execute("UPDATE booking SET status = 'CANCELLED' WHERE bookingnumber = '"+str(booking_number)+"'")
 				return "Booking successfully cancelled"
 				self.connection.commit()
 				
