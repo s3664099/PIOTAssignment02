@@ -212,9 +212,7 @@ class databaseUtils:
 			price = cur.fetchall().pop()
 			price = float(price['hourlyPrice'])
 			booking_time = dropoff - pickup
-#			print("\n\n\n Booking Time ")
-#			print(booking_time)
-#			print("\n\n")
+
 			booking_time = divmod(booking_time.total_seconds(), 3600)[0]
 
 			#Source: https://kite.com/python/answers/how-to-print-a-float-with-two-decimal-places-in-python
@@ -270,7 +268,22 @@ class databaseUtils:
 				cur.execute("UPDATE booking SET status = 'CANCELLED' WHERE bookingnumber = '"+str(booking_number)+"'")
 				return "Booking successfully cancelled"
 				self.connection.commit()
-				
+
+	#Returns the booking status of the vehicle. For testing purposes
+	def get_booking_status(self, booking_number):
+
+		with self.connection.cursor(DictCursor) as cur:
+
+			cur.execute("SELECT status FROM booking WHERE bookingnumber = '"+str(booking_number)+"'")
+
+			return cur.fetchall()
+
+	#Updates the booking status of the booking.
+	def change_booking_status(self, booking_number, status):
+
+		with self.connection.cursor(DictCursor) as cur:
+
+			cur.execute("UPDATE booking SET status = '"+status+"' WHERE bookingnumber = '"+str(booking_number)+"'")			
 
 				
 

@@ -107,14 +107,14 @@ class test_database_utils(unittest.TestCase):
 
 		with self.db as db:
 			print("Test Get Available Cars")
-			print(len(db.get_available_cars(-37.800855,144.977234)))
+
 			self.assertTrue(len(db.get_available_cars(-37.800855,144.977234)) == 2)
 
 
 	def test_get_all_available_case(self):
 		with self.db as db:
 			print("Test Get All Available Cars")
-			print(len(db.get_all_cars()))
+
 			self.assertTrue(len(db.get_all_cars()) == 7)
 
 	def test_get_vehicle_details(self):
@@ -201,6 +201,20 @@ class test_database_utils(unittest.TestCase):
 			self.assertTrue(len(db.return_vehicle_details_location(-37.800855,144.977234,'green')) == 1)
 			self.assertTrue(db.return_vehicle_details_location(-37.800855,144.977234,'green').pop()['rego'] == 'XYZ987')
 			self.assertTrue(len(db.return_vehicle_details_location(-37.800855,144.977234,'Toyota')) == 0)
+
+	def test_booking_update(self):
+		print("Test booking update")
+		with self.db as db:
+
+			self.assertTrue(db.get_booking_status(1).pop()['status']=='BOOKED')
+
+			db.change_booking_status(1,'ACTIVE')
+			self.assertTrue(db.get_booking_status(1).pop()['status']=='ACTIVE')
+
+			db.change_booking_status(1,'COMPLETED')
+			self.assertTrue(db.get_booking_status(1).pop()['status']=='COMPLETED')
+
+
 
 if __name__ == "__main__":
     unittest.main()
