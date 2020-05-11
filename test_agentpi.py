@@ -13,16 +13,19 @@ class test_agent_pi_utils(unittest.TestCase):
 		self.assertTrue(agent.getUser_locally('Geralt','willy')==2)
 		self.assertTrue(agent.getUser_locally('Milly','Milkshake')==0)
 
-	def test_get_user(self):
+	def test_get_input(self):
 
-		#with mock.patch.object(__builtins__, 'input', lambda x: 'Geralt'):
-		#	self.assertTrue(agent.console_login() == "car unlocked")
+		agent.input = lambda x: 'Geralt'
+		self.assertTrue(agent.get_input("Please Enter Username: ") == "Geralt")
 
-		#with mock.patch.object(__builtins__, 'input', lambda x: 'Geralt', lambda y: 'Winkler'):
-		#	self.assertTrue(agent.console_login() == 'password incorrect')
+	def test_console_login(self):
 
-		self.assertTrue(agent.console_login()=="Car Unlocked")
-		self.assertTrue(agent.console_login()=="Password Incorrect")
+		name = 'Geralt'
+		pswd = 'Witcher'
+		bad_pswd = 'willy'
+
+		self.assertTrue(agent.console_login(name, pswd)=="Car Unlocked")
+		self.assertTrue(agent.console_login(name, bad_pswd)=="Password Incorrect")
 
 
 

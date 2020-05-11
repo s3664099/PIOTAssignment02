@@ -1,5 +1,6 @@
 import sqlite3
 
+#Source: https://docs.python.org/3/library/sqlite3.html
 class sqlite_utils:
 	DB_NAME = None
 	connection = None

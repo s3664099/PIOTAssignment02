@@ -17,6 +17,7 @@ ADDRESS = (HOST, PORT)
 DB = "reception.db"
 operating = True
 unlocked = False
+rego = data["rego"]
 
 def main():
     try:
@@ -48,7 +49,7 @@ def main():
             if (unlocked == True):
                 print("Car already unlocked")
 
-            print(console_login())
+            print(console_login(get_input("Enter your username:\n"),get_input("Enter your password:\n")))
 
         elif(text == "2"):
             facialrecognition()
@@ -70,18 +71,13 @@ def main():
             print()
 
 #This function handles the console login part
-def console_login():
-
-    #Takes the username & password
-    username= input("Enter your username:\n")
-    password= input("Enter your password:\n")
+def console_login(username, password):
 
     #checks to see if it is stored locally, and password is correct
     user=getUser_locally(username, password)
 
     if (user == 1):
 
-        unlocked == True
         return("Car Unlocked")
 
     elif (user == 2):
@@ -91,7 +87,12 @@ def console_login():
         #Otherwise checks remotely
         user = getUser_remotely(username,password)
 
+#Source: https://stackoverflow.com/questions/35851323/how-to-test-a-function-with-input-call
+def get_input(input_type):
 
+    entry = input(input_type)
+
+    return entry
 
 #This function checks to see if the user has been stored locally
 #in the sqlite database. If it is, the passwords are compared.
