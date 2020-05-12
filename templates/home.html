@@ -11,6 +11,9 @@
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+
+
 </head>
 <body>
 <div class="content-section">
@@ -35,6 +38,7 @@
     <li><a class="nav-link" data-toggle="tab" href="#available">Show available cars</a></li>
     <li><a class="nav-link" data-toggle="tab" href="#manage">Manage My Booking</a></li>
     <li><a class="nav-link" data-toggle="tab" href="#cancel">Cancel My Booking</a></li>
+      <li><a class="nav-link" data-toggle="tab" href="#map">Map</a></li>
 </ul>
 
   <!-- Tab panes -->
@@ -85,11 +89,11 @@
             <button type="submit" value="booking" class="btn btn-success">Book Car</button>
             </form>
             </div>
-            
+
             {% endif %}
     </div>
     <div id="history" class="tab-pane fade"><br>
-      
+
           <div class='col-md-8'>
             {%if orderhistory%}
             <table class='table table-striped'>
@@ -114,7 +118,7 @@
                 {%endif%}
             </tbody>
             </table>
-          
+
           </div>
   </div>
   <div id="available" class="tab-pane fade"><br>
@@ -189,9 +193,9 @@
 
 
           <hr>
-    
+
      <p class="font-weight-bold">Cancellation options</p>
-    
+
     <section class="section-preview">
       <form action="{{ url_for('site.about') }}" method="POST">
         <!-- Material unchecked -->
@@ -225,6 +229,55 @@
   </small>
 </div>
 
+      <div id="map" class="tab-pane fade"></div>
+      <style>
+        #map {
+        height: 400px;
+        width: 100%;
+        }
+    </style>
+      <script>
+          function initMap() { //start initMap
+          
+          var request = new XMLHttpRequest();
+          var url = "http://127.0.0.1:5000/cars";
+          var carsArray = [];
+          request.open('GET', url);
+          request.onload = function() {
+          carsArray = JSON.parse(request.responseText);
+          
+          // TODO lat and long are mixed up in db
+          for (i = 0; i < carsArray.length; i++) {
+            addMarker({coords:{lat:carsArray[i].locationLong, lng:carsArray[i].locationLat}});
+          }
+
+          };
+          request.send();
+
+
+          //Map options
+          var options = {
+          zoom:13,
+          center: {lat:-37.8136,lng:144.9631}
+          }
+
+          // Initialising new map
+          var map = new google.maps.Map(document.getElementById('map'), options);
+          
+          // Add Marker Function
+      function addMarker(props){
+        var marker = new google.maps.Marker({
+          position:props.coords,
+          map:map,
+          icon:'https://img.icons8.com/android/24/000000/car.png',
+          content:props.content
+        });
+
+          }
+
+          } //end initMap
+        </script>
+
 <script>
 
 $("document").ready(function(){
@@ -257,6 +310,14 @@ $(document).ready(function(){
     }
 });
 </script>
+
+
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD4SCXnc_FkHnGqlEMXnDCxyrb_EE_YIkc&callback=initMap">
+</script>
+
+
+
 </body>
 </html>
 
