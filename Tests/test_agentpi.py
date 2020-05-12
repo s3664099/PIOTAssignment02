@@ -1,3 +1,7 @@
+import sys
+sys.path.append('../')
+sys.path.append('../AgentPi')
+
 import unittest
 import mock
 import agentpi as agent

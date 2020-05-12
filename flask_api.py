@@ -1,3 +1,6 @@
+import os
+sys.path.append('/Database')
+
 import pymysql,datetime
 from pymysql.cursors import DictCursor
 from flask import Flask, Blueprint, request, jsonify, render_template,session
@@ -5,7 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from config import app
 from login import verify_password,hash_password,logon
-import os, requests, json
+import requests, json
 from database_utils import databaseUtils
 from flask import current_app as app
 from decimal import Decimal

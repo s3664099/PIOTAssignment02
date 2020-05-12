@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 # Documentation: https://docs.python.org/3/library/socket.html
+import sys
+sys.path.append('../')
+sys.path.append('../FacialRecognition')
+
 import socket 
 import json
 import sys
@@ -8,16 +12,16 @@ import socket_utils
 import sqlite_utils as sqlite
 import login,glob
 from getpass import getpass
-from FacialRecognition.recognise import recognise
+#from FacialRecognition.recognise import recognise
 
 
-with open("config.json", "r") as file:
+with open("../AgentPi/config.json", "r") as file:
     data = json.load(file)
     
 HOST = data["masterpi_ip"] # The server's hostname or IP address.
 PORT = 63000               # The port used by the server.
 ADDRESS = (HOST, PORT)
-DB = "reception.db"
+DB = "../AgentPi/reception.db"
 operating = True
 unlocked = False
 rego = data["rego"]

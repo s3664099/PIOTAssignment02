@@ -1,3 +1,7 @@
+import sys
+sys.path.append('../')
+sys.path.append('../Database')
+
 import unittest
 import db_singleton as singleton
 import database_utils as database

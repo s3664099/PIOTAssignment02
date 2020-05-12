@@ -21,7 +21,7 @@ class sqlite_utils:
 		with self.connection as conn:
 			cur = conn.cursor()
 
-			cur.execute("INSERT into user Values ('"+user_name+"','"+password+"','\
+			cur.execute("INSERT into User Values ('"+user_name+"','"+password+"','\
     					"+first_name+"','"+last_name+"','"+email+"')")
 			conn.commit()
 

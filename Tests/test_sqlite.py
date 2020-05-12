@@ -1,3 +1,7 @@
+import sys
+sys.path.append('../')
+sys.path.append('../AgentPi')
+
 import unittest
 import sqlite_utils as sqlite
 import test_sqlite_setup as setup
