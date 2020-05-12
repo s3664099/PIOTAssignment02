@@ -17,17 +17,30 @@ class ClientThread(threading.Thread):
         print ("Connection from : ", self.caddr)
         #self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
         while(True):
-            user = socket_utils.recvJson(self.csocket )
-            url="http://127.0.0.1:5000/username="+user["username"]+"/firstname="+user["firstname"]+"/lastname="+user["lastname"]
-            response=requests.get(url)
-            login=json.loads(response.text)
+            user = socket_utils.recvJson(self.csocket)
+            password= socket_utils.recvJson(self.csocket)
+            data={"username": user,"password":password}
+            url=("http://127.0.0.1:5000/login")
+            response=requests.post(url,json=data)
+            response=response.text
+            if response:
+                response=response.strip("\"")
+                response=response.strip("\"")
+            if "2" in response:    
+                    socket_utils.sendJson(self.csocket , { "Unlock": True })
+                    self.csocket.close()
+                    break
+            else:
+                    socket_utils.sendJson(self.csocket , { "Lock": True })
+                
+            """login=json.loads(response.text)
 
             if(login=="Success"):  
                 socket_utils.sendJson(self.csocket , { "Unlock": True })
                 self.csocket.close()
                 break
             else:
-             socket_utils.sendJson(self.csocket , { "Lock": True })
+             socket_utils.sendJson(self.csocket , { "Lock": True })"""
 
 
 
