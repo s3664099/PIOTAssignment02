@@ -1,5 +1,4 @@
 import unittest
-#import pymysql
 import db_singleton as singleton
 import database_utils as database
 import datetime
@@ -47,7 +46,7 @@ class test_database_utils(unittest.TestCase):
 
 	def test_insert_person(self):
 		with self.db as db:
-
+			print("Test Insert")
 			count = self.countPeople()
 			self.assertTrue(db.insert_user("Ralphie", "Ralpho", "Emmerson", "poetry", "ralph@deadpoet.com") == "success")
 			self.assertTrue(count+1 == self.countPeople())
@@ -61,16 +60,27 @@ class test_database_utils(unittest.TestCase):
 	def test_return_user(self):
 
 		with self.db as db:
-
+			print("Test Return User")
 			self.assertTrue(len(db.return_user("john@password.com")) == 1)
+			self.assertTrue(len(db.return_user("Johnno")) == 1)
 
 	#Tests that the return user details works. This confirms that all of the details of the particular user
 	#Is returned.
 	def test_return_user_details(self):
 
 		with self.db as db:
+			print("Test Return User Details")
 
 			user_details = db.return_user_details("john@password.com")
+			user_details = user_details.pop()
+
+			self.assertTrue(user_details['username'] == 'Johnno')
+			self.assertTrue(user_details['firstname'] == 'John')
+			self.assertTrue(user_details['lastname'] == 'Delaney')
+			self.assertTrue(user_details['password'] == 'abc123')
+			self.assertTrue(user_details['email'] == 'john@password.com')
+
+			user_details = db.return_user_details("Johnno")
 			user_details = user_details.pop()
 
 			self.assertTrue(user_details['username'] == 'Johnno')
@@ -83,30 +93,33 @@ class test_database_utils(unittest.TestCase):
 
 		singleton_database = singleton.Singleton(test_database_utils.HOST, test_database_utils.USER, test_database_utils.PASSWORD, test_database_utils.DATABASE)
 		with self.assertRaises(Exception) as context:
-
+			print("Test Singleton")
 			singleton_database2 = singleton.Singleton(test_database_utils.HOST, test_database_utils.USER, test_database_utils.PASSWORD, test_database_utils.DATABASE)
 			self.assertTrue("You cannot create more than one connection!" in context.exception)
 
 	def test_get_booking_history(self):
-
+		print("Test get Booking history")
 		with self.db as db:
 			self.assertTrue(len(db.get_booking_history("john@password.com")) == 2)
 
 	def test_get_available_local_cars(self):
 
 		with self.db as db:
+			print("Test Get Available Cars")
 
 			self.assertTrue(len(db.get_available_cars(-37.800855,144.977234)) == 2)
 
+
 	def test_get_all_available_case(self):
 		with self.db as db:
+			print("Test Get All Available Cars")
 
 			self.assertTrue(len(db.get_all_cars()) == 7)
 
 	def test_get_vehicle_details(self):
 
 		with self.db as db:
-
+			print("Test Get Vehicle Details")
 			vehicle_details = db.return_vehicle_details('XYZ987')
 
 			vehicle_details = vehicle_details.pop()
@@ -118,13 +131,13 @@ class test_database_utils(unittest.TestCase):
 			self.assertEqual(float(vehicle_details['locationlat']), 144.977393)
 			self.assertTrue(vehicle_details['colour'] == 'green')
 			self.assertTrue(vehicle_details['bodytype'] == 'Family')
-			self.assertTrue(vehicle_details['seats'] == 5)
+			self.assertTrue(vehicle_details['seats'] == '5')
 			self.assertTrue(float(vehicle_details['b.colour']) == 15.00)
 
 	def test_book_vehicle(self):
 
 		with self.db as db:
-
+			print("Test Book Vehicle")
 			pickup = datetime.datetime(2020,5,1,13)
 			dropoff = pickup + timedelta(hours=4)
 
@@ -146,7 +159,7 @@ class test_database_utils(unittest.TestCase):
 	def test_cancel_booking(self):
 
 		with self.db as db:
-
+			print("Test Cancel Booking")
 			pickup = datetime.datetime.now()
 			pickup = pickup + timedelta(days= 2, hours=-2)
 			dropoff = pickup + timedelta(days=2, hours=4)
@@ -167,7 +180,7 @@ class test_database_utils(unittest.TestCase):
 	def test_search_vehicle(self):
 
 		with self.db as db:
-
+			print("Test Search Vehicle")
 			self.assertTrue(len(db.return_vehicle_details('Holden')) == 2)
 			self.assertTrue(db.return_vehicle_details('Holden').pop()['rego'] == 'XYZ987')
 			self.assertTrue(len(db.return_vehicle_details('Commodore')) == 2)
@@ -182,11 +195,25 @@ class test_database_utils(unittest.TestCase):
 			self.assertTrue(db.return_vehicle_details('Prestige Large').pop()['rego'] == 'YUPPIE')
 
 	def test_search_vehicle_location(self):
-
+		print("Test Search vehicle location")
 		with self.db as db:								
 			self.assertTrue(len(db.return_vehicle_details_location(-37.800855,144.977234,'green')) == 1)
 			self.assertTrue(db.return_vehicle_details_location(-37.800855,144.977234,'green').pop()['rego'] == 'XYZ987')
 			self.assertTrue(len(db.return_vehicle_details_location(-37.800855,144.977234,'Toyota')) == 0)
+
+	def test_booking_update(self):
+		print("Test booking update")
+		with self.db as db:
+
+			self.assertTrue(db.get_booking_status(1).pop()['status']=='BOOKED')
+
+			db.change_booking_status(1,'ACTIVE')
+			self.assertTrue(db.get_booking_status(1).pop()['status']=='ACTIVE')
+
+			db.change_booking_status(1,'COMPLETED')
+			self.assertTrue(db.get_booking_status(1).pop()['status']=='COMPLETED')
+
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,6 +1,7 @@
 *.json
 *.json
 .gitignore
+*.db
 
 __pycache__/
 
