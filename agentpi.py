@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # Documentation: https://docs.python.org/3/library/socket.html
-import socket, json, sqlite3, sys
+import socket, json, sqlite3, sys, glob
 sys.path.append("..")
 import socket_utils
+from recognise import recognise
 
 DB_NAME = "reception.db"
 
@@ -46,7 +47,15 @@ def main():
                 #bluetooth and pushbullet code here
                 break
         elif(text == "2"):
-            facialrecognition()
+            x=[f for f in glob.glob("*.png")]
+            j=1
+            for i in range(len(x)):
+                print(j,x[i])
+                j=j+1
+            options=input("Select photo from uploaded photos")
+            index=type(int(options))
+            img=x[index-1]
+            facialrecognition(img)
             #facial recognition code here
         elif(text == "3"):
             username= input("Enter your username:\n")
@@ -93,8 +102,10 @@ def login(user,client):
             return unlocked
 
 
-def facialrecognition():
+def facialrecognition(img):
     print("In Facial recognition")
+    name=recognise('encodings.pickle',img)
+    print(name)
     return
 
 def returnCar(username,client):

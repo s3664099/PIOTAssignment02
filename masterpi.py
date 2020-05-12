@@ -16,17 +16,18 @@ class ClientThread(threading.Thread):
     def run(self):
         print ("Connection from : ", self.caddr)
         #self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
-        user = socket_utils.recvJson(self.csocket )
-        time.sleep(10)
-        url="http://127.0.0.1:5000/username="+user["username"]+"/firstname="+user["firstname"]+"/lastname="+user["lastname"]
-        response=requests.get(url)
-        login=json.loads(response.text)
+        while(True):
+            user = socket_utils.recvJson(self.csocket )
+            url="http://127.0.0.1:5000/username="+user["username"]+"/firstname="+user["firstname"]+"/lastname="+user["lastname"]
+            response=requests.get(url)
+            login=json.loads(response.text)
 
-        if(login=="Success"):  
-            socket_utils.sendJson(self.csocket , { "Unlock": True })
-            self.csocket.close()
-        else:
-            socket_utils.sendJson(self.csocket , { "Lock": True })
+            if(login=="Success"):  
+                socket_utils.sendJson(self.csocket , { "Unlock": True })
+                self.csocket.close()
+                break
+            else:
+             socket_utils.sendJson(self.csocket , { "Lock": True })
 
 
 
@@ -34,7 +35,12 @@ HOST = ""    # Empty string means to listen on all IP's on the machine, also wor
              # Note "0.0.0.0" also works but only with IPv4.
 PORT = 63000 # Port to listen on (non-privileged ports are > 1023).
 ADDRESS = (HOST, PORT)
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+try:
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+except socket.error as e:
+    print("Error creating socket: %s" % e)
+    sys.exit(1)
+
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server.bind((HOST, PORT))
 print("Server started")
