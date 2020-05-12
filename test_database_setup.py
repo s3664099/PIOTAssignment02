@@ -67,7 +67,7 @@ def createTables(conn):
 
 	try:
 		cur.execute("CREATE TABLE car (rego VARCHAR(10), make VARCHAR(20), model VARCHAR(20), locationLong DECIMAL(9,6),\
-					locationLat DECIMAL(9,6), colour VARCHAR(10), PRIMARY KEY (rego), FOREIGN KEY (make, model)\
+					locationLat DECIMAL(9,6), colour VARCHAR(10), available BOOLEAN, PRIMARY KEY (rego), FOREIGN KEY (make, model)\
 					REFERENCES makemodel(make, model))")
 	except pymysql.Error as e:
 		print("Error 03: {}", e)
@@ -118,14 +118,14 @@ def createTables(conn):
 		cur.execute("INSERT INTO user VALUES ('Johnno', 'John','Delaney','abc123','john@password.com') ")
 		cur.execute("INSERT INTO user VALUES ('Fry', 'Philip','Fry','Leelha','fry@planetExpress.earth') ")
 
-		cur.execute("INSERT INTO car VALUES ('XYZ987', 'Holden', 'Commodore',-37.799972,144.977393,'green')")
-		cur.execute("INSERT INTO car VALUES ('ABC123', 'Holden', 'Commodore',-37.800633,144.979356,'blue')")
-		cur.execute("INSERT INTO car VALUES ('U75PYV', 'Ford', 'Festiva',-37.801642,144.976127,'green')")
-		cur.execute("INSERT INTO car VALUES ('YUPPIE', 'BMW', 'F32',-37.850139,144.997052,'silver')")
-		cur.execute("INSERT INTO car VALUES ('AH786B', 'Toyota', 'Yaris',-37.859375,144.971699,'silver')")
-		cur.execute("INSERT INTO car VALUES ('LMP675', 'Toyota', 'Camry',-37.856707,144.9678956,'blue')")
-		cur.execute("INSERT INTO car VALUES ('XTK999', 'Ford', 'Falcon',-37.835074,144.9810364,'red')")
-		cur.execute("INSERT INTO car VALUES ('GHR445', 'Toyota', 'Rav 4',-37.833413,144.982732,'silver')")
+		cur.execute("INSERT INTO car VALUES ('XYZ987', 'Holden', 'Commodore',-37.799972,144.977393,'green',1)")
+		cur.execute("INSERT INTO car VALUES ('ABC123', 'Holden', 'Commodore',-37.800633,144.979356,'blue',1)")
+		cur.execute("INSERT INTO car VALUES ('U75PYV', 'Ford', 'Festiva',-37.801642,144.976127,'green',0)")
+		cur.execute("INSERT INTO car VALUES ('YUPPIE', 'BMW', 'F32',-37.850139,144.997052,'silver',1)")
+		cur.execute("INSERT INTO car VALUES ('AH786B', 'Toyota', 'Yaris',-37.859375,144.971699,'silver',1)")
+		cur.execute("INSERT INTO car VALUES ('LMP675', 'Toyota', 'Camry',-37.856707,144.9678956,'blue',1)")
+		cur.execute("INSERT INTO car VALUES ('XTK999', 'Ford', 'Falcon',-37.835074,144.9810364,'red',1)")
+		cur.execute("INSERT INTO car VALUES ('GHR445', 'Toyota', 'Rav 4',-37.833413,144.982732,'silver',1)")
 
 		pickup = datetime.datetime(2020,4,21,13)
 		dropoff = pickup + timedelta(hours=4)

@@ -105,7 +105,7 @@ class databaseUtils:
 		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
 				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-				AND m.bodytype = b.bodytype AND (c.rego='"+search+"' OR c.make='"+search+"' OR c.model='"+search+"' \
+				AND m.bodytype = b.bodytype AND c.available = 1 AND (c.rego='"+search+"' OR c.make='"+search+"' OR c.model='"+search+"' \
 				OR c.colour='"+search+"' OR b.bodytype='"+search+"' OR  seats='"+search+"') ")
 
 			cars = cur.fetchall()
@@ -133,62 +133,39 @@ class databaseUtils:
 		for car in cars:
 			if car["locationlong"] < top_long and car["locationlong"] > bottom_long and car["locationlat"] > left_lat and car["locationlat"] < right_lat:
 				vehicle_list.append(car)
-				vehicle_list = self.sort_cars(vehicle_list)
 
 		return vehicle_list
 
 	#Takes the details of the users location and returns all nearby cars and returns ones that aren't currently booked
 	def get_available_cars(self, lng, lat):
-
-		cars = self.get_all_cars()
-
-		vehicle_list = self.filter_location(lng, lat, cars)
-		vehicle_list = self.sort_cars(vehicle_list)
-
-		return vehicle_list
-
-	#Function designed to sort the cars based of whether they have been booked or not
-	def sort_cars(self, vehicle_list):
-
 		with self.connection.cursor(DictCursor) as cur:
 
-			temp_vehicle_list = []
-			unbooked_vehicle_list = []
+			cur.execute("SELECT rego, make, model, locationlat, locationlong FROM car WHERE available = '1'")
 
-			#checks each of the vehicles returned to see if they have been booked
-			for car in vehicle_list:
-				temp_vehicle_list.append(car)
+			cars = cur.fetchall()
 
-			for car in temp_vehicle_list:
+			vehicle_list = self.filter_location(lng, lat, cars)
 
-				car_booked = False
+			return vehicle_list
 
-				#Gets a list of bookings based on that vehicle
-				cur.execute("SELECT pickuptime, dropofftime, status FROM booking WHERE rego = '"+car['rego']+"'")
-				car_booking = cur.fetchall()
+	def update_availability(self, rego, available):
+		with self.connection.cursor(DictCursor) as cur:
 
-				if car_booking:
+			cur.execute("UPDATE car SET available = "+str(available)+" WHERE rego = '"+rego+"'")
 
-					for booking in car_booking:
+	def get_availability(self, rego):
+		with self.connection.cursor(DictCursor) as cur:
 
-						#Checks to see if the car has been booked in the current period
-						#If so, sets the flag to true so that the vehicle is not returned
-						if datetime.datetime.now() > booking['pickuptime'] and datetime.datetime.now() < booking['dropofftime']:
+			cur.execute("SELECT available FROM car WHERE rego = '"+rego+"'")	
 
-							if (booking['status'] == 'BOOKED') or (booking['status'] == 'ACTIVE'):
-								car_booked = True
-
-				if car_booked == False:
-					unbooked_vehicle_list.append(car)
-
-			return unbooked_vehicle_list
-
+			return cur.fetchall()	
 
 	def get_all_cars(self):
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT rego, make, model, locationlat, locationlong FROM car")
 
-			vehicle_list = self.sort_cars(cur.fetchall())
+			cur.execute("SELECT rego, make, model, locationlat, locationlong FROM car WHERE available ='1'")
+
+			vehicle_list = cur.fetchall()
 
 		return vehicle_list
 
