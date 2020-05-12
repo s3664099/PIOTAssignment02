@@ -1,6 +1,4 @@
 import os
-sys.path.append('/Database')
-
 import pymysql,datetime
 from pymysql.cursors import DictCursor
 from flask import Flask, Blueprint, request, jsonify, render_template,session
@@ -9,7 +7,7 @@ from flask_marshmallow import Marshmallow
 from config import app
 from login import verify_password,hash_password,logon
 import requests, json
-from database_utils import databaseUtils
+from Database.database_utils import databaseUtils
 from flask import current_app as app
 from decimal import Decimal
 from datetimeconverter import convertdatetime
@@ -85,6 +83,15 @@ def getOrderHistory(email):
         return jsonify(orderhistory)
     return jsonify(rows)
 
+@api.route("/confirmedbookings/<email>", methods = ["GET"])
+def getConfirmedBookings(email):
+    rows=dbObj.get_confirmed_bookings(email)
+    if rows:
+        confirmedbookings=json.dumps(rows,default=decimal_default)
+        confirmedbookings=json.loads(confirmedbookings)
+        return jsonify(confirmedbookings)
+    return jsonify(rows)
+
 @api.route("/cars",methods=['GET'])
 def getCars():
     cur=myConnection.cursor(DictCursor)
@@ -114,6 +121,9 @@ def bookcar():
     pickup=convertdatetime(request.json['pickup'])
     dropoff=convertdatetime(request.json['dropoff'])
     response=dbObj.book_vehicle(request.json['email'],request.json['rego'],pickup,dropoff)
+    print("\n\n***This is in bookcar api")
+    print(response)
+    print("\n\n\n")
     if response=='Vehicle already booked':
         return jsonify(response)
     else:

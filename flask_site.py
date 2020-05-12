@@ -65,6 +65,9 @@ def home():
     url=("http://127.0.0.1:5000/orderhistory/"+session['email'])
     response=requests.get(url)
     orderhistory=json.loads(response.text)
+    url=("http://127.0.0.1:5000/confirmedbookings/"+session['email'])
+    response=requests.get(url)
+    confirmedbookings=json.loads(response.text)
     url=("http://127.0.0.1:5000/cars")
     response=requests.get(url)
     availablecars=json.loads(response.text)
@@ -75,13 +78,13 @@ def home():
             response=requests.get(url)
             searchcars=json.loads(response.text)
             if searchcars:
-                return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=searchcars)
+                return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=searchcars,confirmedbookings=confirmedbookings)
             else:
-                return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None)
+                return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None,confirmedbookings=confirmedbookings)
         else:
-            return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None)
+            return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None,confirmedbookings=confirmedbookings)
 
-    return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars)
+    return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,confirmedbookings=confirmedbookings)
 
 @site.route("/logout",methods=['GET','POST'])
 def logout():

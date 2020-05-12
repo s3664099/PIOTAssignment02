@@ -1,7 +1,7 @@
 import pymysql
 import datetime
 from pymysql.cursors import DictCursor
-import gcalendar_utils as gcalendar
+import Database.gcalendar_utils as gcalendar
 
 #A class for creating a connection to the database to enable manipulation
 #and retrieval.
@@ -92,10 +92,17 @@ class databaseUtils:
 
 			return cur.fetchall()
 
-	#Gets confirmed booking for a user		
+	#Gets confirmed booking for a user for a particular car	
 	def get_active_booking_for_user(self,email,rego):
 		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT * FROM booking where email='"+email+"' and status='BOOKED' and rego='"+rego+"'")
+
+			return cur.fetchall()
+			
+	#Gets confirmed bookings for a user
+	def get_confirmed_bookings(self,email):
+		with self.connection.cursor(DictCursor) as cur:
+			cur.execute("SELECT * FROM booking where email='"+email+"' and status='BOOKED'")
 
 			return cur.fetchall()
 
