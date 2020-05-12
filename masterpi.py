@@ -17,16 +17,18 @@ class ClientThread(threading.Thread):
         print ("Connection from : ", self.caddr)
         #self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
         while(True):
-            user = socket_utils.recvJson(self.csocket)
-            password= socket_utils.recvJson(self.csocket)
-            data={"username": user,"password":password}
-            url=("http://127.0.0.1:5000/login")
+            data= socket_utils.recvJson(self.csocket)
+            url=("http://127.0.0.1:5000/validate")
             response=requests.post(url,json=data)
             response=response.text
             if response:
                 response=response.strip("\"")
                 response=response.strip("\"")
-            if "2" in response:    
+            if "Success" in response:    
+                    socket_utils.sendJson(self.csocket , { "Unlock": True })
+                    self.csocket.close()
+                    break
+            elif "Booking Not Found" in response:
                     socket_utils.sendJson(self.csocket , { "Unlock": True })
                     self.csocket.close()
                     break

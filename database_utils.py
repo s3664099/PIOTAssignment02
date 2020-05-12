@@ -92,6 +92,13 @@ class databaseUtils:
 
 			return cur.fetchall()
 
+	#Gets confirmed booking for a user		
+	def get_active_booking_for_user(self,email,rego):
+		with self.connection.cursor(DictCursor) as cur:
+			cur.execute("SELECT * FROM booking where email='"+email+"' and status='BOOKED' and rego='"+rego+"'")
+
+			return cur.fetchall()
+
 	#Returns the details of a particular vehicle
 	def return_vehicle_details(self, search):
 		car="Not Found"

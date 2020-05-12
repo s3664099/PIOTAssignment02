@@ -8,7 +8,7 @@ import socket_utils
 import sqlite_utils as sqlite
 import login,glob
 from getpass import getpass
-from recognise import recognise
+from FacialRecognition.recognise import recognise
 
 
 with open("config.json", "r") as file:
@@ -51,19 +51,19 @@ def main():
 
             if (unlocked == True):
                 print("Car already unlocked")
-            username=input("Enter your username :")
+            username=input("Enter your email :")
             password = getpass()
-            result= console_login(username,password)
+            #result= console_login(username,password)
 
-            if "Unlocked" in result:
-                verification=getUser_remotely(username,password,client)
-                if verification==True:
+            #if "Unlocked" in result:
+            verification=getUser_remotely(username,password,client)
+            if verification==True:
                     #bluetooth code
-                    break
-                else:
-                    print("Unable to verify in master database, please try again")
+                break
             else:
-                print("Credentials were incorrect, please try again")
+                    print("Unable to verify in master database, please try again")
+            #else:
+             #   print("Credentials were incorrect, please try again")
 
         elif(text == "2"):
             x=[f for f in glob.glob("*.png")]
@@ -72,9 +72,14 @@ def main():
                 print(j,x[i])
                 j=j+1
             options=input("Select photo from uploaded photos")
-            index=type(int(options))
+            index=int(options)
             img=x[index-1]
-            facialrecognition(img)
+            verification=facialrecognition(img,client)
+            if verification==True:
+                    #bluetooth code
+                break
+            else:
+                    print("Unable to verify in master database, please try again")
             #facial recognition code here
         elif(text == "3"):
             username = input("Enter your username:\n")
@@ -143,8 +148,7 @@ def getUser_locally(username,password):
 def getUser_remotely(user,password,client):
     unlocked=False
     print("Logging in as {}".format(user))
-    socket_utils.sendJson(client, user)
-    socket_utils.sendJson(client, password)
+    socket_utils.sendJson(client,{"email":user,"password":password,"rego":rego})
     print("Waiting for Confirmation...")
     while(True):
         object = socket_utils.recvJson(client)
@@ -159,11 +163,12 @@ def getUser_remotely(user,password,client):
             return unlocked
 
 
-def facialrecognition(img):
+def facialrecognition(img,client):
     print("In Facial recognition")
     name=recognise('encodings.pickle',img)
-    print(name)
-    return
+    user=name.split(":")
+    unlocked=getUser_remotely(user[0],user[1],client)
+    return unlocked
 
 def returnCar(username,client):
     print("Trying to return car for {}".format(username["username"]))

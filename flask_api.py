@@ -51,23 +51,26 @@ def registerUser():
 
 @api.route("/login", methods = ["POST"])
 def getLogin():
-    result=logon(request.json['email'],request.json['password'])
+    result=logon(request.json['email'],request.json['password'],myConnection)
     return jsonify(result)
+    
 
-@api.route("/username=<username>/firstname=<firstname>/lastname=<lastname>")
-def getUser(username,firstname,lastname):
-    result=dbObj.return_user_details(username)
-    for row in result:
-        if(firstname == row['firstname'] and lastname == row['lastname']):
-            response='Success'
-            print("\n\n\nIn API")
-            print(response)
-            print("\n\n\n")
-            return jsonify(response)
+@api.route("/validate",methods=["POST"])
+def validateUserAndBooking():
+    result=logon(request.json["email"],request.json["password"],myConnection)
+    print("\n\n****IN API")
+    print(result)
+    print("****\n\n")
+    if result == 2:
+        booking =dbObj.get_active_booking_for_user(request.json['email'],request.json['rego'])
+        if booking:
+            response= "Success"
         else:
-            response='User Does not exist in the system'
-            return jsonify(response)
-    return jsonify(result)
+            response= "Booking Not Found"
+    else:
+        response="Credentials not found"
+    
+    return jsonify(response)
 
 
 @api.route("/orderhistory/<email>", methods = ["GET"])
