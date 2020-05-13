@@ -109,7 +109,7 @@ def booking():
                 if response:
                     response=response.strip("\"")
                     response=response.strip("\"")
-                if response._contains__("Vehicle Booked"):
+                if response.__contains__("Vehicle Booked"):
                     flash(f'Booking Successful', 'success')
                     return redirect(url_for('site.home'))
                 else:

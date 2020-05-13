@@ -17,7 +17,6 @@ def hash_password(password):
     #The encrypted password is then returned to the user
     return (salt + pwdhash).decode('ascii')
 
-
 def verify_password(stored_password, provided_password):
 
     #The stored, and entered passwords are provided.

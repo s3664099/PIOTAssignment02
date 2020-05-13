@@ -22,7 +22,13 @@ class test_agent_pi_utils(unittest.TestCase):
 		name = 'Geralt'
 		pswd = 'Witcher'
 		hashed_pswd = '7e03a6c8ff248e1ecc9a94bc59ab37f26d7ed478a25fd4775473399599fe060b5ed442fd067ee3e31d3cfa78bd348e4d331b646364ac13ef96a83142b27e7effd91445035866a2776a0c6ec804e5c4f4bb3bcca2ca85ad4daa047540a658a8fc'
-		self.assertTrue(agent.get_password(name, pswd).pop()[0] == hashed_pswd)
+		self.assertTrue(agent.get_password(name, pswd) == hashed_pswd)
+
+	def test_wrong_password(self):
+
+		name = 'Geralt'
+		pswd = 'Tiddly Winks'
+		self.assertTrue(agent.get_password(name, pswd) == False)
 
 	def test_non_password(self):
 

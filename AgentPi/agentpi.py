@@ -121,26 +121,49 @@ def get_input(input_type):
 
     return entry
 
+def get_password(user,password):
+
+	db = sqlite.sqlite_utils(DB)
+	stored_password = db.get_user(user)
+
+	if len(stored_password)>0:
+		stored_password = stored_password.pop()[0]
+	else:
+		stored_password = ""
+
+	if (login.verify_password(stored_password, password)) == True:
+
+		return stored_password
+
+	else:
+
+		return False
+
 #Function that sends user details to the master pi for validation
 def getUser_remotely(user,password,client):
 
-	db = sqlite.sqlite_utils()
-	
+	unlocked = False
 
-    print("Logging in as {}".format(user))
-    socket_utils.sendJson(client,{"email":user,"password":password,"rego":rego,"date_time": str(datetime.datetime.now())})
-    print("Waiting for Confirmation...")
-    while(True):
-        object = socket_utils.recvJson(client)
-        if("Unlock" in object):
-            print("Master Pi validated user, Unlock code to be sent from here to bluetooth device.")
-            print()
-            client.close()
-            unlocked=True
-            return unlocked
-        else:
-            print("Master Pi responded negative to unlock the car, again notify the user from here")
-            return unlocked
+	stored_password = get_password(user, password)
+
+	if (stored_password != False):
+		print("Logging in as {}".format(user))
+		socket_utils.sendJson(client,{"email":user,"password":stored_password.pop(),"rego":rego,"date_time": str(datetime.datetime.now())})
+		print("Waiting for Confirmation...")
+		while(True):
+			object = socket_utils.recvJson(client)
+			if("Unlock" in object):
+				print("Master Pi validated user, Unlock code to be sent from here to bluetooth device.")
+				print()
+				client.close()
+				unlocked=True
+				return unlocked
+			else:
+				print("Master Pi responded negative to unlock the car, again notify the user from here")
+				client.close()
+				return unlocked
+	else:
+		return unlocked   
 
 #Fuction for facial recognition
 def facialrecognition(img,client):
@@ -164,6 +187,8 @@ def returnCar(username,client):
             return True
         else:
             print("Master Pi responded negative to unlock the car, again notify the user from here")
+            client.close()
+            return False
 
 #Function to run the facial recognition
 def recognise_face(unlocked, client):
