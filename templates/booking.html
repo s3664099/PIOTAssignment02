@@ -20,11 +20,18 @@ width:350px;
 </head>
 <body>
 <div class="container mt-3" style="bottom :10px">
-    {% if error==true %}
+    {% if pickuperror==true %}
+<div class="alert alert-success" style="left : 0; position : relative;">
+    <strong>Pickup time cannot be in the past</strong><br>
+</div>
+{%endif%}
+{% if dropofferror==true %}
 <div class="alert alert-success" style="left : 0; position : relative;">
     <strong>Drop Off Time has to be ahead of pickup time</strong><br>
 </div>
 {%endif%}
+
+
     {% if carid %}
     <form method="POST" action="" >
         {{ form.hidden_tag() }}

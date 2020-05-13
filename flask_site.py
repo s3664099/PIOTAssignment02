@@ -6,6 +6,9 @@ from flask_api import myConnection
 from forms import RegistrationForm, LoginForm, BookingForm
 from login import new_user, logon, verify_register, verify_password
 import os, requests, json
+from datetime import datetime
+
+
 
 site = Blueprint("site", __name__)
 
@@ -98,9 +101,17 @@ def booking():
         if('carid' in request.form):
                 return render_template("booking.html",title='Booking Car', carid=request.form['carid'],username=session['email'],datetime=None,form=form)
         if('booked' in request.form):
+                now = datetime.now()
+                print("pickup from form")
+                print(type(request.form['pickup']))
+                print("\n\n\n")
+                pickup=datetime.strptime(request.form['pickup'],'%Y-%m-%dT%H:%M')
+                if(now>pickup):
+                    pickuperror=True
+                    return render_template("booking.html",title='Booking Car',carid=request.form['rego'], username=session['email'],pickuperror=pickuperror,form=form,dropofferror=False)
                 if(request.form['pickup']>request.form['dropoff']):
-                    error=True
-                    return render_template("booking.html",title='Booking Car',carid=request.form['rego'], username=session['email'],error=error,form=form)
+                    dropofferror=True
+                    return render_template("booking.html",title='Booking Car',carid=request.form['rego'], username=session['email'],dropofferror=dropofferror,form=form,pickuperror=False)
                 result=json.dumps(request.form)
                 result=json.loads(result)
                 url="http://127.0.0.1:5000/bookcar"
@@ -109,7 +120,7 @@ def booking():
                 if response:
                     response=response.strip("\"")
                     response=response.strip("\"")
-                if response._contains__("Vehicle Booked"):
+                if response.__contains__("Vehicle Booked"):
                     flash(f'Booking Successful', 'success')
                     return redirect(url_for('site.home'))
                 else:
