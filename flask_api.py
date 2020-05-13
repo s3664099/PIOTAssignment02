@@ -53,7 +53,16 @@ def registerUser():
 @api.route("/login", methods = ["POST"])
 def getLogin():
     result=logon(request.json['email'],request.json['password'],myConnection)
-    return jsonify(result)
+    print("This is in api")
+    print(result)
+    if result==2:
+        response="success"
+    elif result==3:
+        response="password incorrect"
+    else:
+        response="username incorrect"
+    print("\n\n\n")
+    return jsonify(response)
     
 
 @api.route("/validate",methods=["POST"])
@@ -124,10 +133,7 @@ def bookcar():
     print("\n\n***This is in bookcar api")
     print(response)
     print("\n\n\n")
-    if response=='Vehicle already booked':
-        return jsonify(response)
-    else:
-        return jsonify(response)
+    return jsonify(response)
 
 
 

@@ -217,8 +217,12 @@ class databaseUtils:
 										car_type['model'], total_cost, self.service)
 
 			#The booking is added to the database and the results returned to the user
-			cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, status, googleEventId) \
+			try:
+				cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, status, googleEventId) \
 						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+", 'BOOKED','"+googleId+"')")
+			except pymysql.Error as e:
+				print("Caught error %d: %s" % (e.args[0], e.args[1]))
+				return "Error"
 			self.connection.commit()
 			cur.execute("SELECT LAST_INSERT_ID()")
 			insert_id = cur.fetchall().pop()
