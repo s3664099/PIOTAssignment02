@@ -18,13 +18,15 @@ from oauth2client import file, client, tools
 #may be stored
 def connect_calendar():
 
+    #TODO: Change location of credentials to allow testing
+
     # If modifying these scopes, delete the file token.json.
     SCOPES = "https://www.googleapis.com/auth/calendar"
-    store = file.Storage("token.json")
+    store = file.Storage("Database/token.json")
     creds = store.get()
 
     if(not creds or creds.invalid):
-        flow = client.flow_from_clientsecrets("credentials.json", SCOPES)
+        flow = client.flow_from_clientsecrets("Database/credentials.json", SCOPES)
         creds = tools.run_flow(flow, store)
 
     return build("calendar", "v3", http=creds.authorize(Http()))

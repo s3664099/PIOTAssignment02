@@ -42,6 +42,9 @@ def main():
         sys.exit(1)
 
     while(operating == True):
+
+    	option = menu(unlocked)
+
         print("1. Login via Console")
         print("2. Login via Facial Recognition")
         print("3. Return Car")
@@ -55,6 +58,7 @@ def main():
 
             if (unlocked == True):
                 print("Car already unlocked")
+
             username=input("Enter your email :")
             password = getpass()
             #result= console_login(username,password)

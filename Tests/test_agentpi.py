@@ -31,6 +31,11 @@ class test_agent_pi_utils(unittest.TestCase):
 		self.assertTrue(agent.console_login(name, pswd)=="Car Unlocked")
 		self.assertTrue(agent.console_login(name, bad_pswd)=="Password Incorrect")
 
+	def test_input(self):
+
+		agent.option(False)
+		agent.option(True)
+
 
 
 if __name__ == "__main__":
