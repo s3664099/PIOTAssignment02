@@ -1,5 +1,5 @@
-import os
-sys.path.append('/Database')
+import sys
+sys.path.append('Database/')
 
 import pymysql,datetime
 from pymysql.cursors import DictCursor
