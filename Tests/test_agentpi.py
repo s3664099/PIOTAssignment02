@@ -19,15 +19,10 @@ class test_agent_pi_utils(unittest.TestCase):
 
 	def test_retrieve_password(self):
 
-		name = 'Tommy Boy'
-		pswd = 'Witcher'
-
-		self.assertTrue(agent.get_password(name, pswd) == 'Witcher')
-
 		name = 'Geralt'
 		pswd = 'Witcher'
-		hashed_pswd = '5ed442fd067ee3e31d3cfa78bd348e4d331b646364ac13ef96a83142b27e7effd91445035866a2776a0c6ec804e5c4f4bb3bcca2ca85ad4daa047540a658a8fc'
-		self.assertTrue(agent.get_password(name, pswd) == hashed_pswd)
+		hashed_pswd = '7e03a6c8ff248e1ecc9a94bc59ab37f26d7ed478a25fd4775473399599fe060b5ed442fd067ee3e31d3cfa78bd348e4d331b646364ac13ef96a83142b27e7effd91445035866a2776a0c6ec804e5c4f4bb3bcca2ca85ad4daa047540a658a8fc'
+		self.assertTrue(agent.get_password(name, pswd).pop()[0] == hashed_pswd)
 
 	def test_non_password(self):
 
@@ -37,11 +32,13 @@ class test_agent_pi_utils(unittest.TestCase):
 
 		self.assertTrue(agent.getUser_remotely(name, pswd, client) == False)
 
+	#These test the socket connections
 	def test_socket(self):
 
 		mock_socket = mock.Mock()
 		mock_socket.recv.return_value = True
 
+		#First tests a correct validation
 		input("Press Enter")
 		server_host = "192.168.3.6"
 		port = 63000
@@ -54,10 +51,9 @@ class test_agent_pi_utils(unittest.TestCase):
 
 		self.assertTrue(agent.getUser_remotely(name,pswd,client) == True)
 
-
-
 		client.close()
 
+		#Then we test a bad validation
 		input("Press Enter")
 		server_host = "192.168.3.6"
 		port = 63000
@@ -69,6 +65,7 @@ class test_agent_pi_utils(unittest.TestCase):
 
 		client.close()
 
+		#We test that a car is returned successfully
 		input("Press Enter")
 		server_host = "192.168.3.6"
 		port = 63000
@@ -78,6 +75,7 @@ class test_agent_pi_utils(unittest.TestCase):
 
 		self.assertTrue(agent.returnCar(name, client) == True)
 
+		#And a car returned unsuccessfully
 		input("Press Enter")
 		server_host = "192.168.3.6"
 		port = 63000
