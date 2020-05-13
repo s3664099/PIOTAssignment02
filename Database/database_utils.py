@@ -1,7 +1,7 @@
 import pymysql
 import datetime
 from pymysql.cursors import DictCursor
-import gcalendar_utils as gcalendar
+import Database.gcalendar_utils as gcalendar
 
 #A class for creating a connection to the database to enable manipulation
 #and retrieval.
@@ -92,10 +92,17 @@ class databaseUtils:
 
 			return cur.fetchall()
 
-	#Gets confirmed booking for a user		
+	#Gets confirmed booking for a user for a particular car	
 	def get_active_booking_for_user(self,email,rego):
 		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT * FROM booking where email='"+email+"' and status='BOOKED' and rego='"+rego+"'")
+
+			return cur.fetchall()
+			
+	#Gets confirmed bookings for a user
+	def get_confirmed_bookings(self,email):
+		with self.connection.cursor(DictCursor) as cur:
+			cur.execute("SELECT * FROM booking where email='"+email+"' and status='BOOKED'")
 
 			return cur.fetchall()
 
@@ -210,8 +217,12 @@ class databaseUtils:
 										car_type['model'], total_cost, self.service)
 
 			#The booking is added to the database and the results returned to the user
-			cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, status, googleEventId) \
+			try:
+				cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, status, googleEventId) \
 						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+", 'BOOKED','"+googleId+"')")
+			except pymysql.Error as e:
+				print("Caught error %d: %s" % (e.args[0], e.args[1]))
+				return "Error"
 			self.connection.commit()
 			cur.execute("SELECT LAST_INSERT_ID()")
 			insert_id = cur.fetchall().pop()

@@ -1,6 +1,7 @@
 import sys
 sys.path.append('Database/')
 
+import os
 import pymysql,datetime
 from pymysql.cursors import DictCursor
 from flask import Flask, Blueprint, request, jsonify, render_template,session
@@ -9,7 +10,7 @@ from flask_marshmallow import Marshmallow
 from config import app
 from login import verify_password,hash_password,logon
 import requests, json
-from database_utils import databaseUtils
+from Database.database_utils import databaseUtils
 from flask import current_app as app
 from decimal import Decimal
 from datetimeconverter import convertdatetime
@@ -55,7 +56,16 @@ def registerUser():
 @api.route("/login", methods = ["POST"])
 def getLogin():
     result=logon(request.json['email'],request.json['password'],myConnection)
-    return jsonify(result)
+    print("This is in api")
+    print(result)
+    if result==2:
+        response="success"
+    elif result==3:
+        response="password incorrect"
+    else:
+        response="username incorrect"
+    print("\n\n\n")
+    return jsonify(response)
     
 
 @api.route("/validate",methods=["POST"])
@@ -83,6 +93,15 @@ def getOrderHistory(email):
         orderhistory=json.dumps(rows,default=decimal_default)
         orderhistory=json.loads(orderhistory)
         return jsonify(orderhistory)
+    return jsonify(rows)
+
+@api.route("/confirmedbookings/<email>", methods = ["GET"])
+def getConfirmedBookings(email):
+    rows=dbObj.get_confirmed_bookings(email)
+    if rows:
+        confirmedbookings=json.dumps(rows,default=decimal_default)
+        confirmedbookings=json.loads(confirmedbookings)
+        return jsonify(confirmedbookings)
     return jsonify(rows)
 
 @api.route("/cars",methods=['GET'])
@@ -114,10 +133,10 @@ def bookcar():
     pickup=convertdatetime(request.json['pickup'])
     dropoff=convertdatetime(request.json['dropoff'])
     response=dbObj.book_vehicle(request.json['email'],request.json['rego'],pickup,dropoff)
-    if response=='Vehicle already booked':
-        return jsonify(response)
-    else:
-        return jsonify(response)
+    print("\n\n***This is in bookcar api")
+    print(response)
+    print("\n\n\n")
+    return jsonify(response)
 
 
 

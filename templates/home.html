@@ -11,9 +11,12 @@
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-
-
-
+  <style>
+    #map {
+    height: 400px;
+    width: 100%;
+    }
+</style>
 </head>
 <body>
 <div class="content-section">
@@ -36,7 +39,7 @@
     <li><a class="nav-link" data-toggle="tab" href="#history">Order History</a></li>
     <li><a class="nav-link" data-toggle="tab" href="#search">Search For Cars</a></li>
     <li><a class="nav-link" data-toggle="tab" href="#available">Show available cars</a></li>
-    <li><a class="nav-link" data-toggle="tab" href="#manage">Manage My Booking</a></li>
+    <!--<li><a class="nav-link" data-toggle="tab" href="#manage">Manage My Booking</a></li>-->
     <li><a class="nav-link" data-toggle="tab" href="#cancel">Cancel My Booking</a></li>
       <li><a class="nav-link" data-toggle="tab" href="#map">Map</a></li>
 </ul>
@@ -115,6 +118,8 @@
                   <td>{{row.totalcost}}</td>
               </tr>
                 {% endfor %}
+                {%else%}
+                <h5>It's empty in here! We are waiting to work with you, hire a car from us today!</h5>
                 {%endif%}
             </tbody>
             </table>
@@ -156,72 +161,35 @@
         </table>
         </div>
 </div>
-    <div id="manage" class="tab-pane fade"><br>
-            <label><h3>Manage my booking</h3></label>
-            <div class='col-md-8'>
-              {% if booking %}
-              <table class='table table-striped'>
-              <thead>
-              <tr>
-              <th>Order Number</th>
-              <th>Placed on</th>
-              <th>Car Details</th>
-              <th>Pickup Time</th>
-              <th>Dropoff Time</th>
-              <th>Cost</th>
-              </tr></thead>
-              <tbody>
-              {% for row in booking %}
-              <tr>
-                <td>{{row[0]}}</td>
-                <td>{{row[1]}}</td>
-                <td>{{row[2]}}</td>
-                <td>{{row[3]}}</td>
-                <td>{{row[4]}}</td>
-                <td>{{row[5]}}</td>
-            </tr>
-              {% endfor %}
-              </tbody>
-          </table>
-          {% else %}
-          <label>You have no booking history</label>
-          {%endif%}
-          </div>
-    </div>
+ 
     <div id="cancel" class="tab-pane fade"><br>
-        <h5></h5>
-
-
-          <hr>
-
-     <p class="font-weight-bold">Cancellation options</p>
-
-    <section class="section-preview">
-      <form action="{{ url_for('site.about') }}" method="POST">
-        <!-- Material unchecked -->
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="id1">
-          <label class="form-check-label" for="id1">Booking 1</label>
-        </div>
-
-        <div class="my-2"></div>
-
-        <!-- Material unchecked disabled -->
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="id2">
-          <label class="form-check-label" for="id2">Booking 2</label>
-        </div>
-
-        <div class="my-2"></div>
-
-        <!-- Material unchecked disabled -->
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="id3" disabled="">
-          <label class="form-check-label disabled" for="id3">Booking 3</label>
-        </div>
-        <button type="submit" name="cancel" class="btn btn-outline-danger">Cancel</button>
-      </section>
-    </form>
+      <div class='col-md-8'>
+        {%if confirmedbookings%}
+        <table class='table table-striped'>
+            <thead>
+            <tr>
+            <th>Order Number</th>
+            <th>Car Details</th>
+            <th>Pickup Time</th>
+            <th>Dropoff Time</th>
+            <th>Cost</th>
+            </tr></thead>
+            <tbody>
+            {% for row in orderhistory %}
+            <tr>
+              <td><input type="checkbox" value="{{row.bookingnumber}}" id="{{row.bookingnumber}}"> {{row.bookingnumber}}</td>
+              <td>{{row.rego}}</td>
+              <td>{{row.pickuptime}}</td>
+              <td>{{row.dropofftime}}</td>
+              <td>{{row.totalcost}}</td>
+          </tr>
+            {% endfor %}
+            {%else%}
+            <h5> You don't have any confirmed bookings to be able to cancel! </h5>
+            {%endif%}
+        </tbody>
+        </table>
+</div>
 </div>
 <div class="border-top" style="position: fixed; bottom: 10px; left:5px">
   <small class="text-muted">
@@ -230,17 +198,12 @@
 </div>
 
       <div id="map" class="tab-pane fade"></div>
-      <style>
-        #map {
-        height: 400px;
-        width: 100%;
-        }
-    </style>
+   
       <script>
           function initMap() { //start initMap
           
           var request = new XMLHttpRequest();
-          var url = "http://127.0.0.1:5000/cars";
+          var url = "http://localhost:5000/cars"
           var carsArray = [];
           request.open('GET', url);
           request.onload = function() {

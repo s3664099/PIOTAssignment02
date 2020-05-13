@@ -25,7 +25,8 @@ def register():
         if response:
             response=response.strip("\"")
             response=response.strip("\"")
-        if "success" in response:
+        print(response)
+        if response.__contains__("success"):
              flash(f'Account Created', 'success')
              return redirect(url_for('site.login'))
         else:
@@ -42,17 +43,16 @@ def login():
     # Use REST API.
     form = LoginForm()    
     if form.validate_on_submit():
-        url=("http://127.0.0.1:5000/login/")
+        url=("http://127.0.0.1:5000/login")
         response=requests.post(url,json=request.form)
         response=response.text
-        if response:
-            response=response.strip("\"")
-            response=response.strip("\"")
-        if "2" in response:    
+        print("This is in site")
+        print(response)
+        if response.__contains__("success"):    
                 session['email']=form.email.data
                 print("Session set")
                 return redirect(url_for('site.home'))
-        elif "3" in response:
+        elif response.__contains__("password incorrect"):
                 flash(f'Password is incorrect','danger')
         else:
             flash(f'Username not found','danger')
@@ -65,6 +65,9 @@ def home():
     url=("http://127.0.0.1:5000/orderhistory/"+session['email'])
     response=requests.get(url)
     orderhistory=json.loads(response.text)
+    url=("http://127.0.0.1:5000/confirmedbookings/"+session['email'])
+    response=requests.get(url)
+    confirmedbookings=json.loads(response.text)
     url=("http://127.0.0.1:5000/cars")
     response=requests.get(url)
     availablecars=json.loads(response.text)
@@ -75,13 +78,13 @@ def home():
             response=requests.get(url)
             searchcars=json.loads(response.text)
             if searchcars:
-                return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=searchcars)
+                return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=searchcars,confirmedbookings=confirmedbookings)
             else:
-                return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None)
+                return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None,confirmedbookings=confirmedbookings)
         else:
-            return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None)
+            return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None,confirmedbookings=confirmedbookings)
 
-    return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars)
+    return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,confirmedbookings=confirmedbookings)
 
 @site.route("/logout",methods=['GET','POST'])
 def logout():
@@ -106,7 +109,7 @@ def booking():
                 if response:
                     response=response.strip("\"")
                     response=response.strip("\"")
-                if "Vehicle Booked" in response:
+                if response._contains__("Vehicle Booked"):
                     flash(f'Booking Successful', 'success')
                     return redirect(url_for('site.home'))
                 else:
