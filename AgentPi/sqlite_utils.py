@@ -40,7 +40,7 @@ class sqlite_utils:
 	def get_user(self, user_name):
 
 		with self.connection as conn:
-			query = "select * from User"
+			query = "select password from User"
 			cur = conn.cursor()
 
 			cur.execute(query+" where username = ?", (user_name,))

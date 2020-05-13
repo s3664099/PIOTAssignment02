@@ -2,15 +2,14 @@
 # Documentation: https://docs.python.org/3/library/socket.html
 import sys
 sys.path.append('../')
-sys.path.append('../FacialRecognition')
+sys.path.append('FacialRecognition')
 
 import socket 
 import json
-import sys
-sys.path.append("..")
 import socket_utils
 import sqlite_utils as sqlite
 import login,glob
+import datetime
 from getpass import getpass
 #from FacialRecognition.recognise import recognise
 
@@ -22,105 +21,98 @@ HOST = data["masterpi_ip"] # The server's hostname or IP address.
 PORT = 63000               # The port used by the server.
 ADDRESS = (HOST, PORT)
 DB = "../AgentPi/reception.db"
-operating = True
-unlocked = False
 rego = data["rego"]
 
 def main():
-    try:
-        client=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    except socket.error as e:
-        print("Error creating socket: %s" % e)
-        sys.exit(1)
-    
-    try:
-        print("Connecting to {}...".format(ADDRESS))
-        client.connect(ADDRESS)
-        print("Connected.")
-    except socket.gaierror as e:
-        print("Address-related error connecting to server: %s" % e)
-        sys.exit(1)
+	unlocked = False
+	operating = True
 
-    while(operating == True):
+	try:
+		client=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	except socket.error as e:
+		print("Error creating socket: %s" % e)
+		sys.exit(1)
 
-    	option = menu(unlocked)
+	try:
+		print("Connecting to {}...".format(ADDRESS))
+		client.connect(ADDRESS)
+		print("Connected.")
+	except socket.gaierror as e:
+		print("Address-related error connecting to server: %s" % e)
+		sys.exit(1)
 
-        print("1. Login via Console")
-        print("2. Login via Facial Recognition")
-        print("3. Return Car")
-        print("0. Quit")
-        print()
+	while(operating == True):
 
-        text = input("Select an option: ")
-        print()
+		option = menu(unlocked)
 
-        if(text == "1"):
+		if option == "1":
 
-            if (unlocked == True):
-                print("Car already unlocked")
+			unlocked = getUser_remotely(get_input("Enter your username/email:\n"),get_input("Enter your Password:\n"),client)
+			if unlocked == True:
+				print("Bluetooth sent")
+			else:
+				print("Credentials were incorrect, please try again")
 
-            username=input("Enter your email :")
-            password = getpass()
-            #result= console_login(username,password)
+		elif(option == "2"):
+			unlocked = recognise_face(unlocked)
 
-            #if "Unlocked" in result:
-            verification=getUser_remotely(username,password,client)
-            if verification==True:
-                    #bluetooth code
-                break
-            else:
-                    print("Unable to verify in master database, please try again")
-            #else:
-             #   print("Credentials were incorrect, please try again")
+			#facial recognition code here
+		elif(option == "3"):
 
-        elif(text == "2"):
-            x=[f for f in glob.glob("*.png")]
-            j=1
-            for i in range(len(x)):
-                print(j,x[i])
-                j=j+1
-            options=input("Select photo from uploaded photos")
-            index=int(options)
-            img=x[index-1]
-            verification=facialrecognition(img,client)
-            if verification==True:
-                    #bluetooth code
-                break
-            else:
-                    print("Unable to verify in master database, please try again")
-            #facial recognition code here
-        elif(text == "3"):
-            username = input("Enter your username:\n")
-            user=returnCar(username,client)
-            if(user == True):
-                print("Car returned successfully")
-            else:
-                print("Username incorrect, please try again")
+			user = returnCar(get_input("Enter your username:\n"),client)
+			if(user == True):
+				print("Car returned successfully")
+				unlocked = False
+			else:
+				print("Username incorrect, please try again")
         
-        elif(text == "0"):
-            print("Goodbye.")
-            print()
-            break
-        else:
-            print("Invalid input, try again.")
-            print()
+		elif(option == "0"):
+			print("Goodbye.")
+			print()
+			operating = False
+		else:
+			print("Invalid input, try again.")
+			print()
 
-#This function handles the console login part
-def console_login(username, password):
+#Menu to enable user to chose which code to use
+def menu(unlocked):
 
-    #checks to see if it is stored locally, and password is correct
-    user=getUser_locally(username, password)
+	valid_input = False
 
-    if (user == 1):
+	while valid_input == False:
 
-        return("Car Unlocked")
+		if unlocked == False:
+			print("1. Login via Console")
+			print("2. Login via Facial Recognition")
+		else:
+			print("1. Return Car")
 
-    elif (user == 2):
-        return("Password Incorrect")
+		print("0. Quit")
+		print()
 
-#    else:
-        #Otherwise checks remotely
- #       user = getUser_remotely(username)
+		text = input("Select an option: ")
+
+		#Validates the input in restricting options
+		if unlocked == False:
+
+			if (text == "1") or (text == "2") or (text == "0"):
+
+				valid_input = True
+
+			else:
+				print("Invalid Input")
+		else:
+			if text == "1":
+				text = "3"
+				valid_input = True
+			elif text == "0":
+				valid_input = True
+			else:
+				print("Invalid Input")
+
+		print()
+
+	return text   
 
 #Source: https://stackoverflow.com/questions/35851323/how-to-test-a-function-with-input-call
 def get_input(input_type):
@@ -129,34 +121,14 @@ def get_input(input_type):
 
     return entry
 
-#This function checks to see if the user has been stored locally
-#in the sqlite database. If it is, the passwords are compared.
-def getUser_locally(username,password):
-
-    #Default no user is present
-    verified_user = 0
-
-    #credentials obtained fro the database
-    db = sqlite.sqlite_utils(DB)
-    credentials = db.get_user(username)
-
-    if len(credentials) > 0:
-
-        #The credentials are compared with the hashing function
-        #And returned based on validity or not
-        credentials = credentials.pop()
-        if (login.verify_password(credentials[1], password)) == True:
-            verified_user = 1
-        else:
-            verified_user = 2
-
-    return verified_user
-
-
+#Function that sends user details to the master pi for validation
 def getUser_remotely(user,password,client):
-    unlocked=False
+
+	db = sqlite.sqlite_utils()
+	
+
     print("Logging in as {}".format(user))
-    socket_utils.sendJson(client,{"email":user,"password":password,"rego":rego})
+    socket_utils.sendJson(client,{"email":user,"password":password,"rego":rego,"date_time": str(datetime.datetime.now())})
     print("Waiting for Confirmation...")
     while(True):
         object = socket_utils.recvJson(client)
@@ -170,7 +142,7 @@ def getUser_remotely(user,password,client):
             print("Master Pi responded negative to unlock the car, again notify the user from here")
             return unlocked
 
-
+#Fuction for facial recognition
 def facialrecognition(img,client):
     print("In Facial recognition")
     name=recognise('encodings.pickle',img)
@@ -178,9 +150,10 @@ def facialrecognition(img,client):
     unlocked=getUser_remotely(user[0],user[1],client)
     return unlocked
 
+#Function that performs the return car function
 def returnCar(username,client):
-    print("Trying to return car for {}".format(username["username"]))
-    socket_utils.sendJson(client, username)
+    print("Trying to return car for {}".format(username))
+    socket_utils.sendJson(client, {"username": username, "rego": rego})
     print("Waiting for Confirmation...")
     while(True):
         object = socket_utils.recvJson(client)
@@ -192,6 +165,22 @@ def returnCar(username,client):
         else:
             print("Master Pi responded negative to unlock the car, again notify the user from here")
 
+#Function to run the facial recognition
+def recognise_face(unlocked, client):
+	x=[f for f in glob.glob("*.png")]
+	j=1
+	for i in range(len(x)):
+		print(j,x[i])
+		j=j+1
+		options=input("Select photo from uploaded photos")
+		index=int(options)
+		img=x[index-1]
+		unlocked=facialrecognition(img,client)
+		if unlocked==True:
+			print("Bluetooth sent")
+			return unlocked
+		else:
+			print("Unable to verify in master database, please try again")
 
 
 # Execute program.

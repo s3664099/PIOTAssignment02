@@ -33,8 +33,8 @@ class test_agent_pi_utils(unittest.TestCase):
 
 	def test_input(self):
 
-		agent.option(False)
-		agent.option(True)
+		agent.menu(False)
+		agent.menu(True)
 
 
 
