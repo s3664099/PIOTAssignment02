@@ -138,8 +138,6 @@
             <th>Rego</th>
             <th>Make</th>
             <th>Model</th>
-            <th>Latitude</th>
-            <th>Longitude</th>
             <th>Color</th>
             </tr>
             </thead>
@@ -149,8 +147,6 @@
                 <td>{{row.rego}}</td>
                 <td>{{row.make}}</td>
                 <td>{{row.model}}</td>
-                <td>{{row.locationLat}}</td>
-                <td>{{row.locationLong}}</td>
                 <td>{{row.colour}}</td>
             </tr>
               {% endfor %}
@@ -165,6 +161,7 @@
     <div id="cancel" class="tab-pane fade"><br>
       <div class='col-md-8'>
         {%if confirmedbookings%}
+        <form action="" method="POST">
         <table class='table table-striped'>
             <thead>
             <tr>
@@ -173,22 +170,25 @@
             <th>Pickup Time</th>
             <th>Dropoff Time</th>
             <th>Cost</th>
+            <th>Status</th>
             </tr></thead>
             <tbody>
-            {% for row in orderhistory %}
+            {% for row in confirmedbookings %}
             <tr>
-              <td><input type="checkbox" value="{{row.bookingnumber}}" id="{{row.bookingnumber}}"> {{row.bookingnumber}}</td>
+              <td><input type="checkbox" value="{{row.bookingnumber}}" name="bookingnumber"> {{row.bookingnumber}}</td>
               <td>{{row.rego}}</td>
               <td>{{row.pickuptime}}</td>
               <td>{{row.dropofftime}}</td>
               <td>{{row.totalcost}}</td>
+              <td>{{row.status}}</td>
           </tr>
             {% endfor %}
-            {%else%}
-            <h5> You don't have any confirmed bookings to be able to cancel! </h5>
-            {%endif%}
         </tbody>
         </table>
+        <button type="submit" name="cancel" class="btn btn-outline-danger">Cancel</button>
+        {%else%}
+            <h5> You don't have any confirmed bookings to be able to cancel! </h5>
+            {%endif%}
 </div>
 </div>
 <div class="border-top" style="position: fixed; bottom: 10px; left:5px">

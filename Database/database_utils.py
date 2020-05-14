@@ -170,7 +170,7 @@ class databaseUtils:
 	def get_all_cars(self):
 		with self.connection.cursor(DictCursor) as cur:
 
-			cur.execute("SELECT rego, make, model, locationlat, locationlong FROM car WHERE available ='1'")
+			cur.execute("SELECT rego, make, model, colour, locationlat, locationlong FROM car WHERE available ='1'")
 
 			vehicle_list = cur.fetchall()
 
@@ -259,10 +259,16 @@ class databaseUtils:
 
 				gcalendar.remove_event(results['googleEventId'], self.service)
 
-				#If they do, the booking is cancelled and the entry cleared
-				cur.execute("UPDATE booking SET status = 'CANCELLED' WHERE bookingnumber = '"+str(booking_number)+"'")
-				return "Booking successfully cancelled"
+				try:
+
+					#If they do, the booking is cancelled and the entry cleared
+					cur.execute("UPDATE booking SET status = 'CANCELLED' WHERE bookingnumber = '"+str(booking_number)+"'")
+				except pymysql.Error as e:
+					print("Caught error %d: %s" % (e.args[0], e.args[1]))
+					return "Error"
 				self.connection.commit()
+				return "Booking successfully cancelled"
+				
 
 	#Returns the booking status of the vehicle. For testing purposes
 	def get_booking_status(self, booking_number):

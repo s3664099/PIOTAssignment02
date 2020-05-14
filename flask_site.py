@@ -68,13 +68,13 @@ def login():
 
 @site.route("/home",methods=['GET','POST'])
 def home():
-    url=("http://127.0.0.1:5000/orderhistory/"+session['email'])
+    url=("http://127.0.0.1:5000/orderhistory/"+session['email']) #API call to fetch booking history of the logged in customer
     response=requests.get(url)
     orderhistory=json.loads(response.text)
-    url=("http://127.0.0.1:5000/confirmedbookings/"+session['email'])
+    url=("http://127.0.0.1:5000/confirmedbookings/"+session['email']) #API call to fetch confirmed bookings of the logged in customer to be able to display on cancel page
     response=requests.get(url)
     confirmedbookings=json.loads(response.text)
-    url=("http://127.0.0.1:5000/cars")
+    url=("http://127.0.0.1:5000/cars") #API call to fetch available cars' list
     response=requests.get(url)
     availablecars=json.loads(response.text)
     if request.method=='POST':
@@ -86,6 +86,32 @@ def home():
                 return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=searchcars,confirmedbookings=confirmedbookings)
             else:
                 return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None,confirmedbookings=confirmedbookings)
+            #If Customer tries to cancel a booking
+        elif ('cancel' in request.form):
+                if len(request.form)>1: 
+                    list=request.form.getlist('bookingnumber')
+                    result=json.dumps(list)
+                    result=json.loads(result)
+                    url=("http://127.0.0.1:5000/cancelcar/email="+session['email'])
+                    response=requests.post(url, json=result)
+                    response=response.text
+                    if response:
+                        response=response.replace('"',"")
+                        response=response.replace("\n","")
+                    print("This is the cancellation response")
+                    print(response)
+                    print("\n\n\n")
+                    if response.__contains__("Booking successfully cancelled"):
+                        flash(f'Booking Cancelled', 'success')
+                        url=("http://127.0.0.1:5000/confirmedbookings/"+session['email']) #API call to fetch confirmed bookings of the logged in customer to be able to display on cancel page
+                        response=requests.get(url)
+                        confirmedbookings=json.loads(response.text)
+                        return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None,confirmedbookings=confirmedbookings)
+                    else:
+                        flash(response,'danger')
+                else:
+                   flash(f'No Booking selected for cancllation','danger')
+
         else:
             return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None,confirmedbookings=confirmedbookings)
 
