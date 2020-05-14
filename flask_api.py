@@ -52,7 +52,7 @@ def registerUser():
         return jsonify(response)
 
 @api.route("/login", methods = ["POST"])
-def getLogin():
+def Login():
     result=login(request.json['email'],request.json['password'],myConnection)
     if result==2:
         response="success"
@@ -98,15 +98,24 @@ def getConfirmedBookings(email):
     return jsonify(rows)
 
 @api.route("/hashme", methods = ["POST"])
-def getHashedPassword():
+def HashedPassword():
     result=hashing_password(request.json['email'],request.json['password'],myConnection)
+    return jsonify(result)
+
+
+@api.route("/cancelcar/email=<emailid>",methods=['POST'])
+def cancelBooking(emailid):
+    for i in request.json:
+        result=dbObj.cancel_booking(emailid,i)
+        if result == "Error":
+            break
+            return jsonify(result)
+
     return jsonify(result)
 
 @api.route("/cars",methods=['GET'])
 def getCars():
-    cur=myConnection.cursor(DictCursor)
-    cur.execute("Select * from car")
-    rows=cur.fetchall()
+    rows=dbObj.get_all_cars()
     availablecars=json.dumps(rows,default=decimal_default)
     availablecars=json.loads(availablecars)
     cur.close()
