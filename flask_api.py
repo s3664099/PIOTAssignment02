@@ -78,6 +78,15 @@ def validateUserAndBooking():
     
     return jsonify(response)
 
+@api.route("/username/<email>",methods=["GET"])
+def getUsername(email):
+    rows=dbObj.return_user_details(email)
+    if rows:
+        for row in rows:
+            user=json.dumps(row['username'],default=decimal_default)
+            user=json.loads(user)
+        return jsonify(user)
+    return jsonify(rows)
 
 @api.route("/orderhistory/<email>", methods = ["GET"])
 def getOrderHistory(email):

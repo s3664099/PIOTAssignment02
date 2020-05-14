@@ -68,6 +68,9 @@ def login():
 
 @site.route("/home",methods=['GET','POST'])
 def home():
+    url=("http://127.0.0.1:5000/username/"+session['email'])
+    response=requests.get(url)
+    username=json.loads(response.text)
     url=("http://127.0.0.1:5000/orderhistory/"+session['email']) #API call to fetch booking history of the logged in customer
     response=requests.get(url)
     orderhistory=json.loads(response.text)
@@ -83,9 +86,9 @@ def home():
             response=requests.get(url)
             searchcars=json.loads(response.text)
             if searchcars:
-                return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=searchcars,confirmedbookings=confirmedbookings)
+                return render_template('home.html',user=username,title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=searchcars,confirmedbookings=confirmedbookings)
             else:
-                return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None,confirmedbookings=confirmedbookings)
+                return render_template('home.html',title='Home',user=username,orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None,confirmedbookings=confirmedbookings)
             #If Customer tries to cancel a booking
         elif ('cancel' in request.form):
                 if len(request.form)>1: 
@@ -106,16 +109,16 @@ def home():
                         url=("http://127.0.0.1:5000/confirmedbookings/"+session['email']) #API call to fetch confirmed bookings of the logged in customer to be able to display on cancel page
                         response=requests.get(url)
                         confirmedbookings=json.loads(response.text)
-                        return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None,confirmedbookings=confirmedbookings)
+                        return render_template('home.html',title='Home',user=username,orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None,confirmedbookings=confirmedbookings)
                     else:
                         flash(response,'danger')
                 else:
                    flash(f'No Booking selected for cancllation','danger')
 
         else:
-            return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None,confirmedbookings=confirmedbookings)
-
-    return render_template('home.html',title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,confirmedbookings=confirmedbookings)
+            return render_template('home.html',title='Home',user=username,orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None,confirmedbookings=confirmedbookings)
+    print("\n\n\n")
+    return render_template('home.html',title='Home',user=username,orderhistory=orderhistory, booking=None,availablecars=availablecars,confirmedbookings=confirmedbookings)
 
 @site.route("/logout",methods=['GET','POST'])
 def logout():

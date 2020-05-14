@@ -31,7 +31,9 @@
     {% endif %}
     {% endwith %}
 <div class="container mt-3">
-  <h2>Welcome to RMIT Carpooling {{ email }}</h2>
+  {%if user%}
+  <h2>Welcome to RMIT Carpooling {{ user }}</h2>
+  {%endif%}
   <br>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" id="myTab">
