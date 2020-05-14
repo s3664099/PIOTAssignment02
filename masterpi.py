@@ -18,31 +18,25 @@ class ClientThread(threading.Thread):
         #self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
         while(True):
             data= socket_utils.recvJson(self.csocket)
-            url=("http://127.0.0.1:5000/validate")
-            response=requests.post(url,json=data)
-            response=response.text
-            if response:
-                response=response.strip("\"")
-                response=response.strip("\"")
-            if "Success" in response:    
-                    socket_utils.sendJson(self.csocket , { "Unlock": True })
-                    self.csocket.close()
-                    break
-            elif "Booking Not Found" in response:
-                    socket_utils.sendJson(self.csocket , { "Unlock": True })
-                    self.csocket.close()
-                    break
-            else:
-                    socket_utils.sendJson(self.csocket , { "Lock": True })
-                
-            """login=json.loads(response.text)
-
-            if(login=="Success"):  
-                socket_utils.sendJson(self.csocket , { "Unlock": True })
-                self.csocket.close()
-                break
-            else:
-             socket_utils.sendJson(self.csocket , { "Lock": True })"""
+            if(data["ForLogin"]==True):
+                url=("http://127.0.0.1:5000/validate")
+                response=requests.post(url,json=data)
+                response=response.text
+                if response:
+                    response=response.strip("\"")
+                    response=response.strip("\"")
+                if "Success" in response:    
+                        socket_utils.sendJson(self.csocket , { "Unlock": True })
+                        self.csocket.close()
+                        break
+                elif "Booking Not Found" in response:
+                        socket_utils.sendJson(self.csocket , { "Unlock": True })
+                        self.csocket.close()
+                        break
+                else:
+                        socket_utils.sendJson(self.csocket , { "Lock": True })
+            elif (data["ForReturnCar"]==True):
+                url=("http://127.0.0.1:5000/returncar/email="+data["email"])
 
 
 

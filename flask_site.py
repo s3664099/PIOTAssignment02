@@ -28,7 +28,6 @@ def register():
         if response:
             response=response.strip("\"")
             response=response.strip("\"")
-        print(response)
         if response.__contains__("success"):
              flash(f'Account Created', 'success')
              return redirect(url_for('site.login'))
@@ -46,11 +45,15 @@ def login():
     # Use REST API.
     form = LoginForm()    
     if form.validate_on_submit():
+        url=("http://127.0.0.1:5000/hashme")
+        password=requests.post(url, json=request.form)
+        password=password.text
+        password=password.replace("\n",'')
+        password=password.replace('"','')
+        data={"email":request.form["email"],"password": password}
         url=("http://127.0.0.1:5000/login")
-        response=requests.post(url,json=request.form)
+        response=requests.post(url,json=data)
         response=response.text
-        print("This is in site")
-        print(response)
         if response.__contains__("success"):    
                 session['email']=form.email.data
                 print("Session set")
@@ -76,7 +79,6 @@ def home():
     availablecars=json.loads(response.text)
     if request.method=='POST':
         if ('find' in request.form):
-            print(request.form['search'])
             url=("http://127.0.0.1:5000/searchcar/"+request.form['search'])
             response=requests.get(url)
             searchcars=json.loads(response.text)
@@ -102,9 +104,6 @@ def booking():
                 return render_template("booking.html",title='Booking Car', carid=request.form['carid'],username=session['email'],datetime=None,form=form)
         if('booked' in request.form):
                 now = datetime.now()
-                print("pickup from form")
-                print(type(request.form['pickup']))
-                print("\n\n\n")
                 pickup=datetime.strptime(request.form['pickup'],'%Y-%m-%dT%H:%M')
                 if(now>pickup):
                     pickuperror=True

@@ -84,4 +84,66 @@ def verify_register(email,username,db_connection):
     if result:
         return 1
     else:
-        return 2        
+        return 2
+
+
+# ADDED BELOW MODIFIED CODE FOR LOGIN, PLEASE INCORPORATE IN TESTS 
+
+#writing a new function to test API call for hashing the input password
+def hashing_password(email,password,db_connection):
+    cur = db_connection.cursor()
+    # SQL Query to search for the user and retrieves the password
+    try:
+        result = cur.execute("SELECT email, password FROM user WHERE email='" + email + "'")
+    except pymysql.Error as e:
+        print(e)
+        return 1
+
+    # Checks to see whether the user has been found
+    if result:
+
+        for email, stored_password in cur.fetchall():
+            salt = stored_password[:64]
+            stored_password = stored_password[64:]
+            encryptedPassword = hashlib.pbkdf2_hmac('sha512',
+                                  password.encode('utf-8'),
+                                  salt.encode('ascii'),
+                                  100000)
+    encryptedPassword = binascii.hexlify(encryptedPassword).decode('ascii')
+    return encryptedPassword
+
+#new Function to verify hashed password input against the password stored in the database
+def verify_password_new(stored_password,provided_password):
+    stored_password = stored_password[64:]
+    return stored_password == provided_password
+
+#modified function to login when encrypted password is passed
+def login(email, user_password, db_connection):
+    cur = db_connection.cursor()
+    # SQL Query to search for the user and retrieves the password
+    try:
+        result = cur.execute("SELECT email, password FROM user WHERE email='" + email + "'")
+    except pymysql.Error as e:
+        print(e)
+        return 1
+
+    # Checks to see whether the user has been found
+    if result:
+
+        for email, password in cur.fetchall():
+
+            # Verifies the password is correct
+            new_key = verify_password_new(password, user_password)
+
+            if (new_key == True):
+
+                # Returns that the log in is successful
+                return 2
+            else:
+
+                # Returns that the password is incorrect
+                return 3
+    else:
+
+        # Returns that the user has not been found
+        return 1

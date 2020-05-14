@@ -1,5 +1,5 @@
 import sys
-sys.path.append('Database/')
+#sys.path.append('Database/')
 
 import os
 import pymysql,datetime
@@ -8,7 +8,7 @@ from flask import Flask, Blueprint, request, jsonify, render_template,session
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from config import app
-from login import verify_password,hash_password,logon
+from login import verify_password,hash_password,logon,hashing_password,login
 import requests, json
 from Database.database_utils import databaseUtils
 from flask import current_app as app
@@ -46,8 +46,6 @@ dbObj=databaseUtils(db_hostname,db_username,db_password,database)
 def registerUser():
     password=hash_password(request.json['password'])
     response=dbObj.insert_user(request.json['username'],request.json['firstname'],request.json['lastname'],password,request.json['email'])
-    print("\n\nThis is in register\n\n")
-    print(response)
     if response=='success':
         return jsonify(response)
     else:
@@ -55,25 +53,20 @@ def registerUser():
 
 @api.route("/login", methods = ["POST"])
 def getLogin():
-    result=logon(request.json['email'],request.json['password'],myConnection)
-    print("This is in api")
-    print(result)
+    result=login(request.json['email'],request.json['password'],myConnection)
     if result==2:
         response="success"
     elif result==3:
         response="password incorrect"
     else:
         response="username incorrect"
-    print("\n\n\n")
+
     return jsonify(response)
     
 
 @api.route("/validate",methods=["POST"])
 def validateUserAndBooking():
-    result=logon(request.json["email"],request.json["password"],myConnection)
-    print("\n\n****IN API")
-    print(result)
-    print("****\n\n")
+    result=login(request.json['email'],request.json['password'],myConnection)
     if result == 2:
         booking =dbObj.get_active_booking_for_user(request.json['email'],request.json['rego'])
         if booking:
@@ -104,6 +97,11 @@ def getConfirmedBookings(email):
         return jsonify(confirmedbookings)
     return jsonify(rows)
 
+@api.route("/hashme", methods = ["POST"])
+def getHashedPassword():
+    result=hashing_password(request.json['email'],request.json['password'],myConnection)
+    return jsonify(result)
+
 @api.route("/cars",methods=['GET'])
 def getCars():
     cur=myConnection.cursor(DictCursor)
@@ -133,9 +131,6 @@ def bookcar():
     pickup=convertdatetime(request.json['pickup'])
     dropoff=convertdatetime(request.json['dropoff'])
     response=dbObj.book_vehicle(request.json['email'],request.json['rego'],pickup,dropoff)
-    print("\n\n***This is in bookcar api")
-    print(response)
-    print("\n\n\n")
     return jsonify(response)
 
 
