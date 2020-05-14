@@ -31,9 +31,7 @@
     {% endif %}
     {% endwith %}
 <div class="container mt-3">
-  {%if user%}
-  <h2>Welcome to RMIT Carpooling {{ user }}</h2>
-  {%endif%}
+  <h2>Welcome to RMIT Carpooling {{ email }}</h2>
   <br>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" id="myTab">
@@ -43,7 +41,6 @@
     <li><a class="nav-link" data-toggle="tab" href="#available">Show available cars</a></li>
     <!--<li><a class="nav-link" data-toggle="tab" href="#manage">Manage My Booking</a></li>-->
     <li><a class="nav-link" data-toggle="tab" href="#cancel">Cancel My Booking</a></li>
-      <li><a class="nav-link" data-toggle="tab" href="#map">Map</a></li>
 </ul>
 
   <!-- Tab panes -->
@@ -129,6 +126,47 @@
           </div>
   </div>
   <div id="available" class="tab-pane fade"><br>
+    <div id ="map" style="width: 1000px; height: 500px;"></div><br>
+      <script>
+        function initMap() { //start initMap
+        var request = new XMLHttpRequest();
+        var url = "http://localhost:5000/cars"
+        var carsArray = [];
+        request.open('GET', url);
+        request.onload = function() {
+        carsArray = JSON.parse(request.responseText);
+        
+        // TODO lat and long are mixed up in db
+        for (i = 0; i < carsArray.length; i++) {
+          addMarker({coords:{lat:carsArray[i].locationLong, lng:carsArray[i].locationLat}});
+        }
+
+        };
+        request.send();
+
+
+        //Map options
+        var options = {
+        zoom:13,
+        center: {lat:-37.8136,lng:144.9631}
+        }
+
+        // Initialising new map
+        var map = new google.maps.Map(document.getElementById('map'), options);
+        
+        // Add Marker Function
+    function addMarker(props){
+      var marker = new google.maps.Marker({
+        position:props.coords,
+        map:map,
+        icon:'https://img.icons8.com/android/24/000000/car.png',
+        content:props.content
+      });
+
+        }
+
+        } //end initMap
+      </script>
     <div class='col-md-4'>
         <h3>Find Cars</h3>
             </div>
@@ -140,6 +178,8 @@
             <th>Rego</th>
             <th>Make</th>
             <th>Model</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
             <th>Color</th>
             </tr>
             </thead>
@@ -149,6 +189,8 @@
                 <td>{{row.rego}}</td>
                 <td>{{row.make}}</td>
                 <td>{{row.model}}</td>
+                <td>{{row.locationLat}}</td>
+                <td>{{row.locationLong}}</td>
                 <td>{{row.colour}}</td>
             </tr>
               {% endfor %}
@@ -158,12 +200,12 @@
               </tbody>
         </table>
         </div>
-</div>
+        </div>
+  </div>
  
     <div id="cancel" class="tab-pane fade"><br>
       <div class='col-md-8'>
         {%if confirmedbookings%}
-        <form action="" method="POST">
         <table class='table table-striped'>
             <thead>
             <tr>
@@ -172,25 +214,22 @@
             <th>Pickup Time</th>
             <th>Dropoff Time</th>
             <th>Cost</th>
-            <th>Status</th>
             </tr></thead>
             <tbody>
-            {% for row in confirmedbookings %}
+            {% for row in orderhistory %}
             <tr>
-              <td><input type="checkbox" value="{{row.bookingnumber}}" name="bookingnumber"> {{row.bookingnumber}}</td>
+              <td><input type="checkbox" value="{{row.bookingnumber}}" id="{{row.bookingnumber}}"> {{row.bookingnumber}}</td>
               <td>{{row.rego}}</td>
               <td>{{row.pickuptime}}</td>
               <td>{{row.dropofftime}}</td>
               <td>{{row.totalcost}}</td>
-              <td>{{row.status}}</td>
           </tr>
             {% endfor %}
-        </tbody>
-        </table>
-        <button type="submit" name="cancel" class="btn btn-outline-danger">Cancel</button>
-        {%else%}
+            {%else%}
             <h5> You don't have any confirmed bookings to be able to cancel! </h5>
             {%endif%}
+        </tbody>
+        </table>
 </div>
 </div>
 <div class="border-top" style="position: fixed; bottom: 10px; left:5px">
@@ -198,50 +237,7 @@
      <a class="ml-2" href="{{ url_for('site.logout') }}">Logout</a>
   </small>
 </div>
-
-      <div id="map" class="tab-pane fade"></div>
-   
-      <script>
-          function initMap() { //start initMap
-          
-          var request = new XMLHttpRequest();
-          var url = "http://localhost:5000/cars"
-          var carsArray = [];
-          request.open('GET', url);
-          request.onload = function() {
-          carsArray = JSON.parse(request.responseText);
-          
-          // TODO lat and long are mixed up in db
-          for (i = 0; i < carsArray.length; i++) {
-            addMarker({coords:{lat:carsArray[i].locationLong, lng:carsArray[i].locationLat}});
-          }
-
-          };
-          request.send();
-
-
-          //Map options
-          var options = {
-          zoom:13,
-          center: {lat:-37.8136,lng:144.9631}
-          }
-
-          // Initialising new map
-          var map = new google.maps.Map(document.getElementById('map'), options);
-          
-          // Add Marker Function
-      function addMarker(props){
-        var marker = new google.maps.Marker({
-          position:props.coords,
-          map:map,
-          icon:'https://img.icons8.com/android/24/000000/car.png',
-          content:props.content
-        });
-
-          }
-
-          } //end initMap
-        </script>
+      
 
 <script>
 
