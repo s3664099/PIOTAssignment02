@@ -138,7 +138,7 @@
         
         // TODO lat and long are mixed up in db
         for (i = 0; i < carsArray.length; i++) {
-          addMarker({coords:{lat:carsArray[i].locationLong, lng:carsArray[i].locationLat}});
+          addMarker({coords:{lat:carsArray[i].locationlong, lng:carsArray[i].locationlat}});
         }
 
         };
@@ -189,8 +189,8 @@
                 <td>{{row.rego}}</td>
                 <td>{{row.make}}</td>
                 <td>{{row.model}}</td>
-                <td>{{row.locationLat}}</td>
-                <td>{{row.locationLong}}</td>
+                <td>{{row.locationlat}}</td>
+                <td>{{row.locationlong}}</td>
                 <td>{{row.colour}}</td>
             </tr>
               {% endfor %}
