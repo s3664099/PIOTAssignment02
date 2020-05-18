@@ -207,7 +207,7 @@ class databaseUtils:
 			booking_time = divmod(booking_time.total_seconds(), 3600)[0]
 
 			#Source: https://kite.com/python/answers/how-to-print-a-float-with-two-decimal-places-in-python
-			total_cost = price*booking_time
+			total_cost = price*(booking_time+1)
 			total_cost = "{:.2f}".format(total_cost)
 
 			cur.execute("SELECT make, model FROM car WHERE rego = '"+rego+"'")

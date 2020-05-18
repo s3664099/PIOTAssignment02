@@ -117,11 +117,7 @@ class test_database_utils(unittest.TestCase):
 	def test_get_all_available_case(self):
 		with self.db as db:
 			print("Test Get All Available Cars")
-
 			
-			print(type(db.get_all_cars()))
-			print(len(db.get_all_cars()))
-
 			self.assertTrue(len(db.get_all_cars()) == 7)
 
 	def test_get_vehicle_details(self):
@@ -149,7 +145,7 @@ class test_database_utils(unittest.TestCase):
 			pickup = datetime.datetime(2020,5,1,13)
 			dropoff = pickup + timedelta(hours=4)
 
-			test_result = "Vehicle Booked, your booking number is 4 and the price is $36.00"
+			test_result = "Vehicle Booked, your booking number is 4 and the price is $45.00"
 
 			self.assertTrue(db.book_vehicle("john@password.com", "AH786B", pickup, dropoff) == test_result)
 			self.assertTrue(len(db.get_booking_history("john@password.com")) == 3)

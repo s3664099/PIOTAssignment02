@@ -155,11 +155,23 @@ def createTables(conn):
 	except pymysql.Error as e:
 		print("Error 06: {}", e)
 
-	conn.commit()	
+	conn.commit()
+
+def sql_queries(conn):
+
+	cur = conn.cursor()
+
+	#cur.execute('DELETE FROM user WHERE firstname = "Dave"')
+
+	cur.execute('SELECT * FROM booking')
+
+	for x in cur.fetchall():
+		print(x)	
 
 conn = db.get_connection()
-clearDatabases(conn)
-createTables(conn)
+#clearDatabases(conn)
+#createTables(conn)
+sql_queries(conn)
 
 
 

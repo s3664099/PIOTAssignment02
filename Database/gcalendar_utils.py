@@ -8,26 +8,31 @@
 # download the credentials.json file and place it in the same directory as this file.
 
 from __future__ import print_function
+import os.path
 from datetime import datetime
 from datetime import timedelta
 from googleapiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file, client, tools
 
+SCOPES = ["https://www.googleapis.com/auth/calendar"]
+
 #Function to connect to the user's calendar so that the event
 #may be stored
 def connect_calendar():
 
-    #TODO: Change location of credentials to allow testing
+    store = None
+    creds = None
 
     # If modifying these scopes, delete the file token.json.
-    SCOPES = "https://www.googleapis.com/auth/calendar"
-    store = file.Storage("token.json")
-    creds = store.get()
+    if os.path.exists("../token.json"):
+        store = file.Storage("../token.json")
+        creds = store.get()
 
     if(not creds or creds.invalid):
-        flow = client.flow_from_clientsecrets("credentials.json", SCOPES)
-        creds = tools.run_flow(flow, store)
+
+        flow = client.flow_from_clientsecrets("../credentials.json", SCOPES)
+        creds = tools.run_flow(flow, store)       
 
     return build("calendar", "v3", http=creds.authorize(Http()))
     
