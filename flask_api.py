@@ -13,7 +13,7 @@ import requests, json
 from Database.database_utils import databaseUtils
 from flask import current_app as app
 from decimal import Decimal
-from datetimeconverter import convertdatetime
+from datetimeconverter import convertdatetime,convertdatetimeforinsert
 
 
 
@@ -63,20 +63,57 @@ def Login():
 
     return jsonify(response)
     
-
+#validates if the user account exists in MP and if the user has a valid booking
 @api.route("/validate",methods=["POST"])
 def validateUserAndBooking():
+    response="Not found"
     result=login(request.json['email'],request.json['password'],myConnection)
     if result == 2:
-        booking =dbObj.get_active_booking_for_user(request.json['email'],request.json['rego'])
-        if booking:
-            response= "Success"
+        booking =dbObj.get_confirmed_booking_for_user(request.json['email'],request.json['rego'],request.json['date_time'])
+        if "<!DOCTYPE" not in booking:
+            print("This is in API for validate, after get_active_booking_for_user is called")
+            print(booking)
+            print("\n\n\n\n")
+            if booking:
+                for row in booking:
+                    result=dbObj.change_booking_status(row['bookingnumber'],"ACTIVE")
+                    print("This is in API for validate, after changing booking status is called")
+                    print(result)
+                    print("\n\n\n\n")
+                    if result == "Success":
+                        response= "Success"
+                    else:
+                        response=result
+            else:
+                print("Checking for active bookings for user")
+                checkActiveBooking=dbObj.get_active_booking_for_user(request.json['email'],request.json['rego'])
+                print(checkActiveBooking)
+                if checkActiveBooking:
+                    response="Car Already Unlocked"
+                    return jsonify(response)
+                response= "Booking Not Found"
         else:
-            response= "Booking Not Found"
-    else:
-        response="Credentials not found"
+            response="Credentials not found"
     
     return jsonify(response)
+
+#Updates the availability of a car to 0 which means unavailable
+@api.route("/updatecarstatus",methods=["POST"])
+def updateCarStatus():
+    result=dbObj.update_availability(request.json['rego'],0)
+    return result
+
+@api.route("/returncar",methods=["POST"])
+def returnCar():
+    result=dbObj.get_active_booking_for_user(request.json['email'],request.json['rego'])
+    if "<!DOCTYPE" not in result:
+        for row in result:
+            update=dbObj.change_booking_status(row['bookingnumber'],"COMPLETED")
+            if update=="Success":
+                updatecar=dbObj.update_availability(request.json['rego'],1)
+                return jsonify(updatecar)
+    return jsonify("Could not complete return")
+
 
 @api.route("/username/<email>",methods=["GET"])
 def getUsername(email):
@@ -112,7 +149,7 @@ def HashedPassword():
     return jsonify(result)
 
 
-@api.route("/cancelcar/email=<emailid>",methods=['POST'])
+@api.route("/cancelbooking/email=<emailid>",methods=['POST'])
 def cancelBooking(emailid):
     for i in request.json:
         result=dbObj.cancel_booking(emailid,i)
@@ -146,8 +183,8 @@ def searchCars(search):
 
 @api.route("/bookcar", methods = ["POST"])
 def bookcar():
-    pickup=convertdatetime(request.json['pickup'])
-    dropoff=convertdatetime(request.json['dropoff'])
+    pickup=convertdatetimeforinsert(request.json['pickup'])
+    dropoff=convertdatetimeforinsert(request.json['dropoff'])
     response=dbObj.book_vehicle(request.json['email'],request.json['rego'],pickup,dropoff)
     return jsonify(response)
 

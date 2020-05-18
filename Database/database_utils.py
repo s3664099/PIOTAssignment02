@@ -2,6 +2,7 @@ import pymysql
 import datetime
 from pymysql.cursors import DictCursor
 import Database.gcalendar_utils as gcalendar
+from datetimeconverter import convertdatetime
 
 #A class for creating a connection to the database to enable manipulation
 #and retrieval.
@@ -91,11 +92,19 @@ class databaseUtils:
 			cur.execute("SELECT * FROM booking WHERE email='"+email+"'")
 
 			return cur.fetchall()
-
+	#Added changes to handle time of booking once the user attempts to login via AP
 	#Gets confirmed booking for a user for a particular car	
-	def get_active_booking_for_user(self,email,rego):
+	def get_confirmed_booking_for_user(self,email,rego,time):
+		#time=convertdatetime(time)
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT * FROM booking where email='"+email+"' and status='BOOKED' and rego='"+rego+"'")
+			cur.execute("SELECT * FROM booking where email='"+email+"' and status='BOOKED' and rego='"+rego+"' and (pickuptime <='"+time+"' and dropofftime>='"+time+"')")
+
+			return cur.fetchall()
+	#Gets Active booking for a user for a particular car
+	def get_active_booking_for_user(self,email,rego):
+		#time=convertdatetime(time)
+		with self.connection.cursor(DictCursor) as cur:
+			cur.execute("SELECT * FROM booking where email='"+email+"' and status='ACTIVE' and rego='"+rego+"'")
 
 			return cur.fetchall()
 			
@@ -157,8 +166,13 @@ class databaseUtils:
 
 	def update_availability(self, rego, available):
 		with self.connection.cursor(DictCursor) as cur:
-
-			cur.execute("UPDATE car SET available = "+str(available)+" WHERE rego = '"+rego+"'")
+			try:
+				cur.execute("UPDATE car SET available = "+str(available)+" WHERE rego = '"+rego+"' and available!='"+str(available)+"'")
+			except pymysql.Error as e:
+					print("Caught error %d: %s" % (e.args[0], e.args[1]))
+					return "Error"
+			self.connection.commit()
+			return "Success"
 
 	def get_availability(self, rego):
 		with self.connection.cursor(DictCursor) as cur:
@@ -283,8 +297,14 @@ class databaseUtils:
 	def change_booking_status(self, booking_number, status):
 
 		with self.connection.cursor(DictCursor) as cur:
+			try:
+				cur.execute("UPDATE booking SET status = '"+status+"' WHERE bookingnumber = '"+str(booking_number)+"'")
+			except pymysql.Error as e:
+					print("Caught error %d: %s" % (e.args[0], e.args[1]))
+					return "Error"
+			self.connection.commit()
+			return "Success"
 
-			cur.execute("UPDATE booking SET status = '"+status+"' WHERE bookingnumber = '"+str(booking_number)+"'")			
 
 				
 

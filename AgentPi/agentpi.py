@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # Documentation: https://docs.python.org/3/library/socket.html
 import sys
-sys.path.append('../')
-sys.path.append('FacialRecognition')
 import socket ,requests,json,socket_utils
 import sqlite_utils as sqlite
 import login,glob
@@ -11,7 +9,7 @@ from getpass import getpass
 from FacialRecognition.recognise import recognise
 
 
-with open("../AgentPi/config.json", "r") as file:
+with open("config.json", "r") as file:
     data = json.load(file)
     
 HOST = data["masterpi_ip"] # The server's hostname or IP address.
@@ -48,7 +46,7 @@ def main():
 			if unlocked == True:
 				print("Bluetooth sent")
 			else:
-				print("Credentials were incorrect, please try again")
+				print("please try again")
 
 		elif(option == "2"):
 			unlocked = recognise_face(unlocked)
@@ -64,9 +62,12 @@ def main():
 				print("Username incorrect, please try again")
         
 		elif(option == "0"):
+			data={"Quit": True}
+			socket_utils.sendJson(client,data)
 			print("Goodbye.")
 			print()
 			operating = False
+			client.close()
 		else:
 			print("Invalid input, try again.")
 			print()
@@ -118,47 +119,31 @@ def get_input(input_type):
 
     return entry
 
-"""def get_password(user,password):
-
-	db = sqlite.sqlite_utils(DB)
-	stored_password = db.get_user(user)
-
-	if len(stored_password)>0:
-		stored_password = stored_password.pop()[0]
-	else:
-		stored_password = ""
-
-	if (login.verify_password(stored_password, password)) == True:
-
-		return stored_password
-
-	else:
-
-		return False"""
-
 #Function that sends user details to the master pi for validation
 def getUser_remotely(user,password,client):
     unlocked = False
     data={"email":user ,"password": password}
-    url=("http://127.0.0.1:5000/hashme")
+    url=("http://10.0.0.25:5000/hashme")
     password=requests.post(url, json=data)
     password=password.text
     password=password.replace("\n",'')
     password=password.replace('"','')
     print("Logging in as {}".format(user))
-    print("hashed password : \""+password+"\"")
     socket_utils.sendJson(client,{"ForLogin": True,"ForReturnCar":False, "email":user,"password":password,"rego":rego,"date_time": str(datetime.datetime.now())})
     print("Waiting for Confirmation...")
     while(True):
         object = socket_utils.recvJson(client)
         if("Unlock" in object):
-            print("Master Pi validated user, Unlock code to be sent from here to bluetooth device.")
-            print()
-            client.close()
-            unlocked=True
-            return unlocked
+			if("Response" in object):
+				print(object['Response'])
+				return True
+			print("Master Pi validated user, Unlock code to be sent from here to bluetooth device.")
+			print()
+			#client.close()
+			unlocked=True
+			return unlocked
         else:
-            print("Master Pi responded negative to unlock the car, again notify the user from here")
+            print(object['Response'])
             return unlocked
 
 #Fuction for facial recognition
@@ -176,14 +161,13 @@ def returnCar(username,client):
     print("Waiting for Confirmation...")
     while(True):
         object = socket_utils.recvJson(client)
-        if("Return" in object):
-            print("Car Return validated")
+        if(object['Response']=="Success"):
+            print("Car Returned successfully, thank you for using our services")
             print()
             client.close()
             return True
         else:
-            print("Master Pi responded negative to unlock the car, again notify the user from here")
-            client.close()
+            print(object['Response'])
             return False
 
 #Function to run the facial recognition
