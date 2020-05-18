@@ -18,26 +18,43 @@ class ClientThread(threading.Thread):
         #self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
         while(True):
             data= socket_utils.recvJson(self.csocket)
-            if(data["ForLogin"]==True):
-                url=("http://127.0.0.1:5000/validate")
-                response=requests.post(url,json=data)
-                response=response.text
-                if response:
-                    response=response.strip("\"")
-                    response=response.strip("\"")
-                if "Success" in response:    
-                        socket_utils.sendJson(self.csocket , { "Unlock": True })
-                        self.csocket.close()
-                        break
-                elif "Booking Not Found" in response:
-                        socket_utils.sendJson(self.csocket , { "Unlock": True })
-                        self.csocket.close()
-                        break
-                else:
-                        socket_utils.sendJson(self.csocket , { "Lock": True })
-            elif (data["ForReturnCar"]==True):
-                url=("http://127.0.0.1:5000/returncar/email="+data["email"])
+            if("ForLogin" in data):
+                if(data["ForLogin"]==True):
+                    url=("http://127.0.0.1:5000/validate")
+                    response=requests.post(url,json=data)
+                    response=response.text
+                    if response:
+                        response=response.replace('"','')
+                        response=response.replace('\n','')
+                    if "Success" in response:
+                            url=("http://127.0.0.1:5000/updatecarstatus")
+                            car={"rego" :data['rego']}
+                            response=requests.post(url,json=car)
+                            response=response.text
+                            if response=="Success":
+                                socket_utils.sendJson(self.csocket , { "Unlock": True })
+                            else:
+                                socket_utils.sendJson(self.csocket, {"Lock" : True, "Response" : 'Unable to update car status, please try later'})
+                    elif response=="Car Already Unlocked":
+                            socket_utils.sendJson(self.csocket, {"Unlock" : True, "Response" : 'Car Already Unlocked'})
+                            
+                    elif "Booking Not Found" in response:
+                            socket_utils.sendJson(self.csocket , { "Lock": True,"Response" : 'Booking not found' })
 
+                    else:
+                            socket_utils.sendJson(self.csocket , { "Lock": True,"Response" : 'Credentials not found, please check and try again' })
+
+                elif (data["ForReturnCar"]==True):
+                    url=("http://127.0.0.1:5000/returncar")
+                    response=requests.post(url, json=data)
+                    response=response.text
+                    if response:
+                        response=response.replace('"','')
+                        response=response.replace('\n','')
+                        socket_utils.sendJson(self.csocket,{"Response": response})
+            elif (data["Quit"]==True):
+                self.csocket.close()
+                break
 
 
 HOST = ""    # Empty string means to listen on all IP's on the machine, also works with IPv6.

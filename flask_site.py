@@ -95,7 +95,7 @@ def home():
                     list=request.form.getlist('bookingnumber')
                     result=json.dumps(list)
                     result=json.loads(result)
-                    url=("http://127.0.0.1:5000/cancelcar/email="+session['email'])
+                    url=("http://127.0.0.1:5000/cancelbooking/email="+session['email'])
                     response=requests.post(url, json=result)
                     response=response.text
                     if response:
