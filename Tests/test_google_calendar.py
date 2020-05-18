@@ -17,7 +17,7 @@ class test_database_utils(unittest.TestCase):
 		self.service = cal.connect_calendar()
 
 	def test_add_event(self):
-		GoogleId = cal.insert(self.time_start, self.time_end, "XYZ123", "BMW", "X3", "36.00",self.service)
+		GoogleId = cal.insert(self.time_start, self.time_end, "XYZ123", "BMW", "X3", "36.00", "dasarkies@gmail.com",self.service)
 		self.assertTrue(len(cal.get_events(self.service, 3)) == 1)
 		self.assertTrue(cal.print_events(cal.get_events(self.service, 1)) == self.time_start+" "+self.time_end+" Vehicle Booking XYZ123")
 		cal.remove_event(GoogleId, self.service)

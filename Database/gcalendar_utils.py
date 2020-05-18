@@ -8,7 +8,6 @@
 # download the credentials.json file and place it in the same directory as this file.
 
 from __future__ import print_function
-import os.path
 from datetime import datetime
 from datetime import timedelta
 from googleapiclient.discovery import build
@@ -21,13 +20,9 @@ SCOPES = ["https://www.googleapis.com/auth/calendar"]
 #may be stored
 def connect_calendar():
 
-    store = None
-    creds = None
-
     # If modifying these scopes, delete the file token.json.
-    if os.path.exists("../token.json"):
-        store = file.Storage("../token.json")
-        creds = store.get()
+    store = file.Storage("../token.json")
+    creds = store.get()
 
     if(not creds or creds.invalid):
 
@@ -66,7 +61,7 @@ def print_events(events):
         results += str(start)+" "+str(end)+" "+event["summary"]
     return results
 
-def insert(pickUp, dropOff, rego, make, model, cost, service):
+def insert(pickUp, dropOff, rego, make, model, cost, email, service):
 
     event = {
         "summary": "Vehicle Booking "+rego,
@@ -79,16 +74,19 @@ def insert(pickUp, dropOff, rego, make, model, cost, service):
             "dateTime": dropOff,
             "timeZone": "Australia/Melbourne",
         },
+        "attendees": [
+            { "email": email},
+            ],
         "reminders": {
             "useDefault": False,
             "overrides": [
-                { "method": "email", "minutes": 5 },
-                { "method": "popup", "minutes": 10 },
+                { "method": "email", "minutes": 90 },
+                { "method": "popup", "minutes": 30 },
             ],
-        }
+        },
     }
 
-    event = service.events().insert(calendarId = "primary", body = event).execute()
+    event = service.events().insert(calendarId = "primary", body = event, sendUpdates = 'all').execute()
     #print("Event created: {}".format(event.get("htmlLink")))
     
     return event["id"]

@@ -92,6 +92,7 @@ class databaseUtils:
 			cur.execute("SELECT * FROM booking WHERE email='"+email+"'")
 
 			return cur.fetchall()
+
 	#Added changes to handle time of booking once the user attempts to login via AP
 	#Gets confirmed booking for a user for a particular car	
 	def get_confirmed_booking_for_user(self,email,rego,time):
@@ -100,6 +101,7 @@ class databaseUtils:
 			cur.execute("SELECT * FROM booking where email='"+email+"' and status='BOOKED' and rego='"+rego+"' and (pickuptime <='"+time+"' and dropofftime>='"+time+"')")
 
 			return cur.fetchall()
+
 	#Gets Active booking for a user for a particular car
 	def get_active_booking_for_user(self,email,rego):
 		#time=convertdatetime(time)
@@ -164,6 +166,7 @@ class databaseUtils:
 
 			return vehicle_list
 
+	#Changes the availability status of the vehicle
 	def update_availability(self, rego, available):
 		with self.connection.cursor(DictCursor) as cur:
 			try:
@@ -174,6 +177,7 @@ class databaseUtils:
 			self.connection.commit()
 			return "Success"
 
+	#Returns the availability status of the vehicle
 	def get_availability(self, rego):
 		with self.connection.cursor(DictCursor) as cur:
 
@@ -227,8 +231,11 @@ class databaseUtils:
 			cur.execute("SELECT make, model FROM car WHERE rego = '"+rego+"'")
 			car_type = cur.fetchall().pop()
 
-			googleId = gcalendar.insert(pickup.isoformat() +"Z", dropoff.isoformat() +"Z", rego, car_type['make'], 
-										car_type['model'], total_cost, self.service)
+			try:
+				googleId = gcalendar.insert(pickup.isoformat() +"Z", dropoff.isoformat() +"Z", rego, car_type['make'], 
+										car_type['model'], total_cost, name, self.service)
+			except:
+				print("unable to update calendar")
 
 			#The booking is added to the database and the results returned to the user
 			try:
@@ -271,7 +278,10 @@ class databaseUtils:
 				return "Can't cancel a booking in progress"
 			else:
 
-				gcalendar.remove_event(results['googleEventId'], self.service)
+				try:
+					gcalendar.remove_event(results['googleEventId'], self.service)
+				except:
+					print("Unable to update calendar")
 
 				try:
 

@@ -161,12 +161,6 @@ def sql_queries(conn):
 
 	cur = conn.cursor()
 
-	#cur.execute('DELETE FROM user WHERE firstname = "Dave"')
-
-	cur.execute('SELECT * FROM booking')
-
-	for x in cur.fetchall():
-		print(x)	
 
 conn = db.get_connection()
 #clearDatabases(conn)
