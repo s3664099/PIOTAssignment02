@@ -94,7 +94,6 @@ def menu(unlocked):
 		if unlocked == False:
 
 			if (text == "1") or (text == "2") or (text == "0"):
-
 				valid_input = True
 
 			else:
@@ -121,30 +120,31 @@ def get_input(input_type):
 
 #Function that sends user details to the master pi for validation
 def getUser_remotely(user,password,client):
-    unlocked = False
-    data={"email":user ,"password": password}
-    url=("http://10.0.0.25:5000/hashme")
-    password=requests.post(url, json=data)
-    password=password.text
-    password=password.replace("\n",'')
-    password=password.replace('"','')
-    print("Logging in as {}".format(user))
-    socket_utils.sendJson(client,{"ForLogin": True,"ForReturnCar":False, "email":user,"password":password,"rego":rego,"date_time": str(datetime.datetime.now())})
-    print("Waiting for Confirmation...")
-    while(True):
-        object = socket_utils.recvJson(client)
-        if("Unlock" in object):
+	unlocked = False
+	data={"email":user ,"password": password}
+	url=("http://10.0.0.25:5000/hashme")
+	password=requests.post(url, json=data)
+	password=password.text
+	password=password.replace("\n",'')
+	password=password.replace('"','')
+	print("Logging in as {}".format(user))
+	socket_utils.sendJson(client,{"ForLogin": True,"ForReturnCar":False, "email":user,"password":password,"rego":rego,"date_time": str(datetime.datetime.now())})
+	print("Waiting for Confirmation...")
+	while(True):
+		object = socket_utils.recvJson(client)
+		if("Unlock" in object):
 			if("Response" in object):
 				print(object['Response'])
 				return True
+			else:
+				print()
 			print("Master Pi validated user, Unlock code to be sent from here to bluetooth device.")
 			print()
-			#client.close()
 			unlocked=True
 			return unlocked
-        else:
-            print(object['Response'])
-            return unlocked
+		else:
+			print(object['Response'])
+			return unlocked
 
 #Fuction for facial recognition
 def facialrecognition(img,client):
@@ -164,7 +164,6 @@ def returnCar(username,client):
         if(object['Response']=="Success"):
             print("Car Returned successfully, thank you for using our services")
             print()
-            client.close()
             return True
         else:
             print(object['Response'])
