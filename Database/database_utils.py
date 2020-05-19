@@ -48,7 +48,7 @@ class databaseUtils:
 
 	#This method is designed to insert a new user into the database
 	def insert_user(self, user_name, first_name, last_name, password, email):
-		#password=hash_password(password)
+
 		with self.connection.cursor(DictCursor) as cur:
 			response = "success"
 			try:
@@ -60,15 +60,15 @@ class databaseUtils:
 			self.connection.commit()
 			return response
 
-	#This method returns the password and the user name of the user
+	#These three methods below work to return user details, one for everything
+	#About the user, and the othe ronly the username/email and password
+	#The third, middle, function actually handles the user requests
 	def return_user(self, user_name):
 
 		query = "SELECT username, password FROM user WHERE"
 
 		return self.get_user(user_name, query)
 
-	#Function that handles the return_user requests
-	#Checks to see if the query is for a username, or for an email
 	def get_user(self, user_name, query):
 
 		with self.connection.cursor(DictCursor) as cur:
@@ -79,7 +79,6 @@ class databaseUtils:
 
 			return cur.fetchall()
 
-	#Return user details
 	def return_user_details(self, user_name):
 
 		query = "SELECT * FROM user WHERE"
@@ -93,18 +92,20 @@ class databaseUtils:
 
 			return cur.fetchall()
 
-	#Added changes to handle time of booking once the user attempts to login via AP
-	#Gets confirmed booking for a user for a particular car	
+	#The following three methods 
+	#Gets confirmed booking for a user for a particular car, active books, bookings within a particular time
+	#TODO: Try to merge them to help with code quality
 	def get_confirmed_booking_for_user(self,email,rego,time):
-		#time=convertdatetime(time)
+
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT * FROM booking where email='"+email+"' and status='BOOKED' and rego='"+rego+"' and (pickuptime <='"+time+"' and dropofftime>='"+time+"')")
+			cur.execute("SELECT * FROM booking where email='"+email+"' and status='BOOKED' and rego='"+rego+"' and \
+						(pickuptime <='"+time+"' and dropofftime>='"+time+"')")
 
 			return cur.fetchall()
 
 	#Gets Active booking for a user for a particular car
 	def get_active_booking_for_user(self,email,rego):
-		#time=convertdatetime(time)
+
 		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT * FROM booking where email='"+email+"' and status='ACTIVE' and rego='"+rego+"'")
 
@@ -117,7 +118,8 @@ class databaseUtils:
 
 			return cur.fetchall()
 
-	#Returns the details of a particular vehicle
+	#Returns the details of a particular vehicle, the query is structured to search by
+	#specific values for the vehicle
 	def return_vehicle_details(self, search):
 		car="Not Found"
 		with self.connection.cursor(DictCursor) as cur:
@@ -131,6 +133,7 @@ class databaseUtils:
 				return cars
 			return car
 
+	#This method returns vehicles in a specified loations based on specific parameters
 	def return_vehicle_details_location(self, lng, lat, search):
 
 		cars = self.return_vehicle_details(search)
@@ -250,6 +253,7 @@ class databaseUtils:
 
 			return "Vehicle Booked, your booking number is "+str(insert_id['LAST_INSERT_ID()'])+" and the price is $"+total_cost
 
+	#This method is used to cancel a booking for the vehicle.
 	def cancel_booking(self, name, booking_number):
 
 		with self.connection.cursor(DictCursor) as cur:

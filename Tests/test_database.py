@@ -50,7 +50,7 @@ class test_database_utils(unittest.TestCase):
 
 	def test_insert_person(self):
 		with self.db as db:
-			print("Test Insert")
+
 			count = self.countPeople()
 			self.assertTrue(db.insert_user("Ralphie", "Ralpho", "Emmerson", "poetry", "ralph@deadpoet.com") == "success")
 			self.assertTrue(count+1 == self.countPeople())
@@ -64,16 +64,16 @@ class test_database_utils(unittest.TestCase):
 	def test_return_user(self):
 
 		with self.db as db:
-			print("Test Return User")
+
 			self.assertTrue(len(db.return_user("john@password.com")) == 1)
 			self.assertTrue(len(db.return_user("Johnno")) == 1)
 
 	#Tests that the return user details works. This confirms that all of the details of the particular user
-	#Is returned.
+	#Is returned. There are two methods, one that returns everything, and one that just returns the password
+	#and username/email. Both are tested here.
 	def test_return_user_details(self):
 
 		with self.db as db:
-			print("Test Return User Details")
 
 			user_details = db.return_user_details("john@password.com")
 			user_details = user_details.pop()
@@ -93,6 +93,21 @@ class test_database_utils(unittest.TestCase):
 			self.assertTrue(user_details['password'] == 'abc123')
 			self.assertTrue(user_details['email'] == 'john@password.com')
 
+			user_details = db.return_user("Johnno")
+			user_details = user_details.pop()
+
+			self.assertTrue(user_details['username'] == 'Johnno')
+			self.assertTrue(user_details['password'] == 'abc123')			
+
+			user_details = db.return_user("john@password.com")
+			user_details = user_details.pop()
+
+			self.assertTrue(user_details['username'] == 'Johnno')
+			self.assertTrue(user_details['password'] == 'abc123')			
+
+
+	#This is designed to test the singleton method, and that only one instance can be created, in this case the
+	#Database
 	def test_singleton(self):
 
 		singleton_database = singleton.Singleton(test_database_utils.HOST, test_database_utils.USER, test_database_utils.PASSWORD, test_database_utils.DATABASE)
@@ -101,18 +116,20 @@ class test_database_utils(unittest.TestCase):
 			singleton_database2 = singleton.Singleton(test_database_utils.HOST, test_database_utils.USER, test_database_utils.PASSWORD, test_database_utils.DATABASE)
 			self.assertTrue("You cannot create more than one connection!" in context.exception)
 
+	#TODO: Need to write tests to return the active/confirmed bookings for the user
+	#Also, need to look for the return booking by date
+
+
 	def test_get_booking_history(self):
-		print("Test get Booking history")
+
 		with self.db as db:
 			self.assertTrue(len(db.get_booking_history("john@password.com")) == 2)
 
 	def test_get_available_local_cars(self):
 
 		with self.db as db:
-			print("Test Get Available Cars")
 
 			self.assertTrue(len(db.get_available_cars(-37.800855,144.977234)) == 2)
-
 
 	def test_get_all_available_case(self):
 		with self.db as db:
