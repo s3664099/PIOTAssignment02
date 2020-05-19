@@ -1,0 +1,28 @@
+DB Tests - write tests for booking returns
+DB_utils - look at merging booking status returns for code reuse
+Try writing tests for flask_api.py
+Write tests for login.py
+Move some of the files into a utils directory
+
+
+All Files - remove unused inputs
+flask_api.py - creating a connection, and calling the utils. Should only be calling the DB from the utils
+			   utils not being called through the singleton pattern
+			   login sends through my connection, should be dbObj
+			   Validate user as above
+			   Hashed password as above
+			   Do the print statements need to be there? Are they for debugging? Shouldn't we be using the logging 
+			   function
+			   Cancel booking - break statement should be avoided
+			   Commented code should be removed
+			   Decimal_Default seems to do the same thing as myconvertor, should my convertor be removed
+
+flask_main.py - also have a lot of unused imports which should be removed
+flask_site.py - some lines are too long
+			  - home method is too long, could be split up into helper methods
+
+login.py	  - The database calls should be made through the db utilities, which can be passed through from
+			  main functions.
+
+master.py	  - numerous unused imports
+

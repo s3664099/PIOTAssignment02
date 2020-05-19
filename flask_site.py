@@ -8,10 +8,7 @@ from login import new_user, logon, verify_register, verify_password
 import os, requests, json
 from datetime import datetime
 
-
-
 site = Blueprint("site", __name__)
-
 
 # Client webpage.
 @site.route("/register",methods=['GET','POST'])
@@ -39,7 +36,7 @@ def register():
 
     return render_template("register.html",title='Register',form=form)
 
-
+#This method runs the log in screen.
 @site.route("/",methods=['GET','POST'])
 def login():
     # Use REST API.
@@ -64,8 +61,7 @@ def login():
             flash(f'Username not found','danger')
     return render_template('login.html', title='Login', form=form)
 
-
-
+#This method runs the home page
 @site.route("/home",methods=['GET','POST'])
 def home():
     url=("http://127.0.0.1:5000/username/"+session['email'])
@@ -120,11 +116,13 @@ def home():
     print("\n\n\n")
     return render_template('home.html',title='Home',user=username,orderhistory=orderhistory, booking=None,availablecars=availablecars,confirmedbookings=confirmedbookings)
 
+#The log out method that controls the website
 @site.route("/logout",methods=['GET','POST'])
 def logout():
     session.clear()
     return redirect(url_for('site.login'))
 
+#The method that controls the booking aspect of the website
 @site.route("/booking",methods=['GET','POST'])
 def booking():
     form=BookingForm()

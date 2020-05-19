@@ -2,7 +2,6 @@ import pymysql
 import datetime
 from pymysql.cursors import DictCursor
 import Database.gcalendar_utils as gcalendar
-from datetimeconverter import convertdatetime
 
 #A class for creating a connection to the database to enable manipulation
 #and retrieval.

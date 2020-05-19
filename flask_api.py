@@ -15,14 +15,13 @@ from flask import current_app as app
 from decimal import Decimal
 from datetimeconverter import convertdatetime,convertdatetimeforinsert
 
-
-
 api = Blueprint("api", __name__)
 
 #db = SQLAlchemy()
 ma = Marshmallow()
 
-# Declaring the model.
+# Declaring the model
+# This should be in a config.json file, and the 
 db_hostname = '35.197.174.1'
 db_username = 'root'
 db_password = 'password'
@@ -40,7 +39,9 @@ cur.execute('SET CHARACTER SET utf8mb4')
 cur.execute('SET character_set_connection=utf8mb4')
 cur.close()
 
+#The DB is being connected to twice, it should only be once, and called through the singleton method
 dbObj=databaseUtils(db_hostname,db_username,db_password,database)
+
 #Endpoint to create a new user
 @api.route("/registeruser", methods = ["POST"])
 def registerUser():
@@ -51,8 +52,11 @@ def registerUser():
     else:
         return jsonify(response)
 
+#Login Endpoint
 @api.route("/login", methods = ["POST"])
 def Login():
+
+    #The connection is being sent through, this should by dbObj
     result=login(request.json['email'],request.json['password'],myConnection)
     if result==2:
         response="success"
@@ -67,8 +71,12 @@ def Login():
 @api.route("/validate",methods=["POST"])
 def validateUserAndBooking():
     response="Not found"
+
+    #Once again, the dbObj should be sent through
     result=login(request.json['email'],request.json['password'],myConnection)
     if result == 2:
+
+        #Confirms the booking
         booking =dbObj.get_confirmed_booking_for_user(request.json['email'],request.json['rego'],request.json['date_time'])
         if "<!DOCTYPE" not in booking:
             print("This is in API for validate, after get_active_booking_for_user is called")
@@ -76,6 +84,8 @@ def validateUserAndBooking():
             print("\n\n\n\n")
             if booking:
                 for row in booking:
+
+                    #If the booking is confirmed then the status is updated
                     result=dbObj.change_booking_status(row['bookingnumber'],"ACTIVE")
                     print("This is in API for validate, after changing booking status is called")
                     print(result)
@@ -85,6 +95,8 @@ def validateUserAndBooking():
                     else:
                         response=result
             else:
+
+                #If no specific booking is found, then all active bookings are searched for.
                 print("Checking for active bookings for user")
                 checkActiveBooking=dbObj.get_active_booking_for_user(request.json['email'],request.json['rego'])
                 print(checkActiveBooking)
@@ -103,6 +115,7 @@ def updateCarStatus():
     result=dbObj.update_availability(request.json['rego'],0)
     return result
 
+#This function is for returning the car. The booking status to taken, and the updated when found.
 @api.route("/returncar",methods=["POST"])
 def returnCar():
     result=dbObj.get_active_booking_for_user(request.json['email'],request.json['rego'])
@@ -114,7 +127,7 @@ def returnCar():
                 return jsonify(updatecar)
     return jsonify("Could not complete return")
 
-
+#This method returns the username based upon a submitted email
 @api.route("/username/<email>",methods=["GET"])
 def getUsername(email):
     rows=dbObj.return_user_details(email)
@@ -125,6 +138,7 @@ def getUsername(email):
         return jsonify(user)
     return jsonify(rows)
 
+#This method returns the booking history for the user
 @api.route("/orderhistory/<email>", methods = ["GET"])
 def getOrderHistory(email):
     rows=dbObj.get_booking_history(email)
@@ -134,6 +148,7 @@ def getOrderHistory(email):
         return jsonify(orderhistory)
     return jsonify(rows)
 
+#This method returns all of the bookings that have been confirmed
 @api.route("/confirmedbookings/<email>", methods = ["GET"])
 def getConfirmedBookings(email):
     rows=dbObj.get_confirmed_bookings(email)
@@ -143,12 +158,15 @@ def getConfirmedBookings(email):
         return jsonify(confirmedbookings)
     return jsonify(rows)
 
+#This method hashes the password
+#Note that the connection is being sent through as opposed to the dbObj
 @api.route("/hashme", methods = ["POST"])
 def HashedPassword():
     result=hashing_password(request.json['email'],request.json['password'],myConnection)
     return jsonify(result)
 
-
+#This method cancels the booking
+#not sure if the break is needed, probably should be avoided
 @api.route("/cancelbooking/email=<emailid>",methods=['POST'])
 def cancelBooking(emailid):
     for i in request.json:
@@ -159,6 +177,7 @@ def cancelBooking(emailid):
 
     return jsonify(result)
 
+#This method retures a list of all of the cars
 @api.route("/cars",methods=['GET'])
 def getCars():
     rows=dbObj.get_all_cars()
@@ -173,6 +192,7 @@ def getCars():
 #write a booking.py to calculate or validate if needed , but check database_utils if code can be reused.
 #insert into booking
 
+#This method is used to search for specific cars
 @api.route("/searchcar/<search>",methods=['GET'])
 def searchCars(search):
     carList=dbObj.return_vehicle_details(search)
@@ -180,7 +200,7 @@ def searchCars(search):
     carList=json.loads(carList)
     return jsonify(carList)
 
-
+#This method is used to book a vehicle
 @api.route("/bookcar", methods = ["POST"])
 def bookcar():
     pickup=convertdatetimeforinsert(request.json['pickup'])
@@ -188,8 +208,7 @@ def bookcar():
     response=dbObj.book_vehicle(request.json['email'],request.json['rego'],pickup,dropoff)
     return jsonify(response)
 
-
-
+#A helper method to convert onjects to floats or strings.
 def decimal_default(obj):
     if isinstance(obj,Decimal):
         return float(obj)
@@ -197,7 +216,7 @@ def decimal_default(obj):
         return obj.__str__()
     raise TypeError
 
-
+#Another convertor
 def myconverter(o):
     if isinstance(o, datetime.datetime):
         return o.__str__()

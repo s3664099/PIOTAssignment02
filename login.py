@@ -45,6 +45,7 @@ def new_user(user_name, first_name, last_name, email, password, db_connection):
 
 def logon(email, user_password, db_connection):
     cur = db_connection.cursor()
+    
     # SQL Query to search for the user and retrieves the password
     try:
         result = cur.execute("SELECT email, password FROM user WHERE email='" + email + "'")

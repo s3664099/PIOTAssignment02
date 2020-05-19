@@ -10,7 +10,6 @@ from config import app
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-
 app.register_blueprint(api)
 app.register_blueprint(site)
 
