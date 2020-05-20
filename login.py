@@ -93,6 +93,7 @@ def verify_register(email,username,db_connection):
 #writing a new function to test API call for hashing the input password
 def hashing_password(email,password,db_connection):
     cur = db_connection.cursor()
+    
     # SQL Query to search for the user and retrieves the password
     try:
         result = cur.execute("SELECT email, password FROM user WHERE email='" + email + "'")
