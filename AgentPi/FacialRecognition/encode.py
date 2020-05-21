@@ -1,3 +1,7 @@
+"""
+.. module:: encode
+    
+"""
 # USAGE
 # With default parameters
 #         python3 02_encode.py
@@ -18,6 +22,10 @@ import os
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
+"""
+Parse arguments
+
+"""
 ap.add_argument("-i", "--dataset", default = "dataset",
     help="path to input directory of faces + images")
 ap.add_argument("-e", "--encodings", default = "encodings.pickle",
@@ -28,6 +36,10 @@ args = vars(ap.parse_args())
 
 # grab the paths to the input images in our dataset
 print("[INFO] quantifying faces...")
+"""
+Input images in the dataset
+
+"""
 imagePaths = list(paths.list_images(args["dataset"]))
 
 # initialize the list of known encodings and known names
@@ -36,6 +48,10 @@ knownNames = []
 
 # loop over the image paths
 for (i, imagePath) in enumerate(imagePaths):
+    """
+    Loop over the image
+    
+    """
     # extract the person name from the image path
     print("[INFO] processing image {}/{}".format(i + 1, len(imagePaths)))
     name = imagePath.split(os.path.sep)[-2]
@@ -54,12 +70,20 @@ for (i, imagePath) in enumerate(imagePaths):
     
     # loop over the encodings
     for encoding in encodings:
+        """
+        Loop over the encodings
+        
+        """
         # add each encoding + name to our set of known names and encodings
         knownEncodings.append(encoding)
         knownNames.append(name)
 
 # dump the facial encodings + names to disk
 print("[INFO] serializing encodings...")
+"""
+Dump the facial encodings
+
+"""
 data = { "encodings": knownEncodings, "names": knownNames }
 
 with open(args["encodings"], "wb") as f:

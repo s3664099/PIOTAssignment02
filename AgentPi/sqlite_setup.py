@@ -1,3 +1,7 @@
+"""
+.. module:: sqlite_setup
+    
+"""
 import sys
 sys.path.append('../')
 
@@ -7,6 +11,10 @@ import login
 DB_NAME = "reception.db"
 
 def setup():
+    """
+    Setup sqlite
+    
+    """
 	conn = sqlite3.connect(DB_NAME)
 	cur = conn.cursor()
 

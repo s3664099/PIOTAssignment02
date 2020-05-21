@@ -1,3 +1,7 @@
+"""
+.. module:: flask_site
+    
+"""
 from flask import Flask, Blueprint, request, jsonify, render_template, session, flash,url_for,redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
@@ -14,6 +18,10 @@ site = Blueprint("site", __name__)
 @site.route("/register",methods=['GET','POST'])
 def register():
     # Use REST API.
+    """
+    Registration Form
+    
+    """
     form=RegistrationForm()
     if form.validate_on_submit():
         # encrypt this form.password.data before hitting the api
@@ -40,6 +48,10 @@ def register():
 @site.route("/",methods=['GET','POST'])
 def login():
     # Use REST API.
+    """
+    Login Form
+    
+    """
     form = LoginForm()    
     if form.validate_on_submit():
         url=("http://127.0.0.1:5000/hashme")
@@ -64,6 +76,10 @@ def login():
 #This method runs the home page
 @site.route("/home",methods=['GET','POST'])
 def home():
+    """
+    Home page of the site
+    
+    """
     url=("http://127.0.0.1:5000/username/"+session['email'])
     response=requests.get(url)
     username=json.loads(response.text)
@@ -119,12 +135,20 @@ def home():
 #The log out method that controls the website
 @site.route("/logout",methods=['GET','POST'])
 def logout():
+    """
+    Log out
+    
+    """
     session.clear()
     return redirect(url_for('site.login'))
 
 #The method that controls the booking aspect of the website
 @site.route("/booking",methods=['GET','POST'])
 def booking():
+    """
+    Booking Form
+    
+    """
     form=BookingForm()
     if request.method=="POST":
         if('carid' in request.form):
@@ -159,4 +183,8 @@ def booking():
 
 @site.route("/about",methods=['GET','POST'])
 def about():
+    """
+    About Us page
+    
+    """
     return render_template("about.html")

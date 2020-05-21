@@ -1,3 +1,7 @@
+"""
+.. module:: recognise
+    
+"""
 # import the necessary packages
 import face_recognition
 import argparse
@@ -5,6 +9,10 @@ import pickle
 import cv2
 
 def recognise(file_ep,img):
+    """
+    Parse the arguments
+    
+    """
 	#construct the argument parser and parse the arguments
 	ap = argparse.ArgumentParser()
 	"""ap.add_argument("-e", "--encodings", required=True,
@@ -17,6 +25,10 @@ def recognise(file_ep,img):
 
 	# load the known faces and embeddings
 	print("[INFO] loading encodings...")
+	"""
+        Load the known faces and embeddings
+        
+        """
 	data = pickle.loads(open(file_ep, "rb").read())
 
 	# load the input image and convert it from BGR to RGB
@@ -27,6 +39,10 @@ def recognise(file_ep,img):
 	# to each face in the input image, then compute the facial embeddings
 	# for each face
 	print("[INFO] recognizing faces...")
+	"""
+        Detect the facial embeddings
+        
+        """
 	boxes = face_recognition.face_locations(rgb,
 		model=args["detection_method"])
 	encodings = face_recognition.face_encodings(rgb, boxes)
@@ -36,6 +52,10 @@ def recognise(file_ep,img):
 
 	# loop over the facial embeddings
 	for encoding in encodings:
+            """
+            Match the face
+            
+            """
 		# attempt to match each face in the input image to our known
 		# encodings
 		matches = face_recognition.compare_faces(data["encodings"],

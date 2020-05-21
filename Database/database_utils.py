@@ -1,3 +1,7 @@
+"""
+.. module:: database_utils
+    
+"""
 import pymysql
 import datetime
 from pymysql.cursors import DictCursor
@@ -6,6 +10,10 @@ import Database.gcalendar_utils as gcalendar
 #A class for creating a connection to the database to enable manipulation
 #and retrieval.
 class databaseUtils:
+    """
+    Database Utils
+    
+    """
 	HOST = ""
 	USER = ""
 	PASSWORD = ""
@@ -17,6 +25,10 @@ class databaseUtils:
 	#Establishes the connection by passing through the required variables
 	#The variables aren't hardcoded to enable testing on a test database
 	def __init__ (self, host, user, password, database):
+            """
+            Variables
+            
+            """
 		databaseUtils.HOST = host
 		databaseUtils.USER = user
 		databaseUtils.PASSWORD = password
@@ -32,21 +44,41 @@ class databaseUtils:
 
 	#The following methods are for closing the database
 	def close_connection(self):
+            """
+            Closing the database
+            
+            """
 
 		self.connection.close()
 
 	def __enter__ (self):
+            """
+            Enter
+            
+            """
 		return self
 
 	def __exit__(self, type, value, traceback):
+            """
+            Exit
+            
+            """
 		self.close_connection()
 
 	#This returns the connection to the database to enable a connection elsewhere
 	def get_connection(self):
+            """
+            Return connection to the database
+            
+            """
 		return self.connection
 
 	#This method is designed to insert a new user into the database
 	def insert_user(self, user_name, first_name, last_name, password, email):
+            """
+            Insert user into the database
+            
+            """
 
 		with self.connection.cursor(DictCursor) as cur:
 			response = "success"
@@ -63,12 +95,20 @@ class databaseUtils:
 	#About the user, and the othe ronly the username/email and password
 	#The third, middle, function actually handles the user requests
 	def return_user(self, user_name):
+            """
+            Return user details
+            
+            """
 
 		query = "SELECT username, password FROM user WHERE"
 
 		return self.get_user(user_name, query)
 
 	def get_user(self, user_name, query):
+            """
+            Get user
+            
+            """
 
 		with self.connection.cursor(DictCursor) as cur:
 			results = cur.execute(query+" email='"+user_name+"'")
@@ -79,6 +119,10 @@ class databaseUtils:
 			return cur.fetchall()
 
 	def return_user_details(self, user_name):
+            """
+            Handles user requests
+            
+            """
 
 		query = "SELECT * FROM user WHERE"
 
@@ -86,6 +130,10 @@ class databaseUtils:
 
 	#Gets a list of the bookings that the user has made
 	def get_booking_history(self, email):
+            """
+            List of booking histories
+            
+            """
 		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT * FROM booking WHERE email='"+email+"'")
 
@@ -95,6 +143,10 @@ class databaseUtils:
 	#Gets confirmed booking for a user for a particular car, active books, bookings within a particular time
 	#TODO: Try to merge them to help with code quality
 	def get_confirmed_booking_for_user(self,email,rego,time):
+            """
+            Confirmed booking for a user
+            
+            """
 
 		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT * FROM booking where email='"+email+"' and status='BOOKED' and rego='"+rego+"' and \
@@ -104,6 +156,10 @@ class databaseUtils:
 
 	#Gets Active booking for a user for a particular car
 	def get_active_booking_for_user(self,email,rego):
+            """
+            Active booking for a user for a particular car
+            
+            """
 
 		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT * FROM booking where email='"+email+"' and status='ACTIVE' and rego='"+rego+"'")
@@ -112,6 +168,10 @@ class databaseUtils:
 			
 	#Gets confirmed bookings for a user
 	def get_confirmed_bookings(self,email):
+            """
+            Gets confirmed bookings for user
+            
+            """
 		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT * FROM booking where email='"+email+"' and status='BOOKED'")
 
@@ -120,6 +180,10 @@ class databaseUtils:
 	#Returns the details of a particular vehicle, the query is structured to search by
 	#specific values for the vehicle
 	def return_vehicle_details(self, search):
+            """
+            Return details of the particular vehicle
+            
+            """
 		car="Not Found"
 		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
@@ -134,6 +198,10 @@ class databaseUtils:
 
 	#This method returns vehicles in a specified loations based on specific parameters
 	def return_vehicle_details_location(self, lng, lat, search):
+            """
+            Return vehichle details in a specified location
+            
+            """
 
 		cars = self.return_vehicle_details(search)
 		cars = self.filter_location(lng, lat, cars)
@@ -142,6 +210,10 @@ class databaseUtils:
 
 	#Takes the details of the users location and returns all nearby cars and returns ones that aren't currently booked
 	def filter_location(self, lng, lat, cars):
+            """
+            Details of users location and return all nearby cars
+            
+            """
 
 		#Variables to be used. The range is arbitrary and can be changed
 		top_long = lng + databaseUtils.area_range
@@ -158,6 +230,10 @@ class databaseUtils:
 
 	#Takes the details of the users location and returns all nearby cars and returns ones that aren't currently booked
 	def get_available_cars(self, lng, lat):
+            """
+            Available car details
+            
+            """
 		with self.connection.cursor(DictCursor) as cur:
 
 			cur.execute("SELECT rego, make, model, locationlat, locationlong FROM car WHERE available = '1'")
@@ -170,6 +246,10 @@ class databaseUtils:
 
 	#Changes the availability status of the vehicle
 	def update_availability(self, rego, available):
+            """
+            Update availability status
+            
+            """
 		with self.connection.cursor(DictCursor) as cur:
 			try:
 				cur.execute("UPDATE car SET available = "+str(available)+" WHERE rego = '"+rego+"' and available!='"+str(available)+"'")
@@ -181,6 +261,10 @@ class databaseUtils:
 
 	#Returns the availability status of the vehicle
 	def get_availability(self, rego):
+            """
+            Return availablity status
+            
+            """
 		with self.connection.cursor(DictCursor) as cur:
 
 			cur.execute("SELECT available FROM car WHERE rego = '"+rego+"'")	
@@ -188,6 +272,10 @@ class databaseUtils:
 			return cur.fetchall()	
 
 	def get_all_cars(self):
+            """
+            Get all cars
+            
+            """
 		with self.connection.cursor(DictCursor) as cur:
 
 			cur.execute("SELECT rego, make, model, colour, locationlat, locationlong FROM car WHERE available ='1'")
@@ -198,6 +286,10 @@ class databaseUtils:
 
 	#Function to book a vehicle and adds booking to the database
 	def book_vehicle(self, name, rego, pickup, dropoff):
+            """
+            Book vehicle
+            
+            """
 		with self.connection.cursor(DictCursor) as cur:
 
 			#gets booking history for vehicle
@@ -254,6 +346,10 @@ class databaseUtils:
 
 	#This method is used to cancel a booking for the vehicle.
 	def cancel_booking(self, name, booking_number):
+            """
+            Cancel booking vehicle
+            
+            """
 
 		with self.connection.cursor(DictCursor) as cur:
 
@@ -299,6 +395,10 @@ class databaseUtils:
 
 	#Returns the booking status of the vehicle. For testing purposes
 	def get_booking_status(self, booking_number):
+            """
+            Booking status
+            
+            """
 
 		with self.connection.cursor(DictCursor) as cur:
 
@@ -308,6 +408,10 @@ class databaseUtils:
 
 	#Updates the booking status of the booking.
 	def change_booking_status(self, booking_number, status):
+            """
+            Update booking status
+            
+            """
 
 		with self.connection.cursor(DictCursor) as cur:
 			try:

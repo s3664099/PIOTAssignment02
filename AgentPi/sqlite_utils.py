@@ -1,22 +1,42 @@
+"""
+.. module:: sqlite_utils
+    
+"""
 import sqlite3
 
 #Source: https://docs.python.org/3/library/sqlite3.html
 class sqlite_utils:
+    """
+    Class for sqlite_utils
+    
+    """
 	DB_NAME = None
 	connection = None
 
 	#Creates a connection to the database
 	def __init__ (self, host):
+            """
+            init
+            
+            """
 		self.DB_NAME = host
 		self.connection = sqlite3.connect(self.DB_NAME)
 
 	def close_connection(self):
+            """
+            Close connection
+            
+            """
 		self.connection.close()
 
 
 	#Function to insert a user into the database.
 	#This function is called if the user is not stored locally
 	def insert_user(self, user_name, password, first_name, last_name, email):
+            """
+            Insert user if not stored locally
+            
+            """
 
 		with self.connection as conn:
 			cur = conn.cursor()
@@ -28,6 +48,10 @@ class sqlite_utils:
 	#Returns details of all users from the database
 	#Primarily used for testing purposes only
 	def get_all_users(self):
+            """
+            Return details of all users
+            
+            """
 
 		with self.connection as conn:
 			cur = conn.cursor()
@@ -38,6 +62,10 @@ class sqlite_utils:
 	#Returns the details of the user from the database
 	#The user can be search for by using either email or username
 	def get_user(self, user_name):
+            """
+            Search user by email or username
+            
+            """
 
 		with self.connection as conn:
 			query = "select password from User"

@@ -1,3 +1,7 @@
+"""
+.. module:: echo_server
+
+"""
 #!/usr/bin/env python3
 # Reference: https://realpython.com/python-sockets/
 # Documentation: https://docs.python.org/3/library/socket.html
@@ -12,6 +16,11 @@ HOST = ""    # Empty string means to listen on all IP's on the machine, also wor
              # Note "0.0.0.0" also works but only with IPv4.
 PORT = 63000 # Port to listen on (non-privileged ports are > 1023).
 ADDRESS = (HOST, PORT)
+
+"""
+Connect socket
+
+"""
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind(ADDRESS)
@@ -31,7 +40,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 break
             socket_utils.sendJson(conn , {"Unlock":"Unlock"})
             waiting = False
-        
+
         print("Disconnecting from client.")
     print("Closing listening socket.")
 print("Done.")

@@ -1,3 +1,7 @@
+"""
+.. module:: masterpi
+
+"""
 #!/usr/bin/env python3
 # Documentation: https://docs.python.org/3/library/socket.html
 from flask import Flask, request, jsonify
@@ -8,12 +12,24 @@ import requests, threading,time
 
 
 class ClientThread(threading.Thread):
+    """
+    Class client thread
+    
+    """
     def __init__(self,clientAddress,clientsocket):
+        """
+        init
+        
+        """
         threading.Thread.__init__(self)
         self.csocket = clientsocket
         self.caddr=clientAddress
         print ("New connection added: ", self.caddr)
     def run(self):
+        """
+        run
+        
+        """
         print ("Connection from : ", self.caddr)
         #self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
         while(True):
@@ -37,7 +53,7 @@ class ClientThread(threading.Thread):
                                 socket_utils.sendJson(self.csocket, {"Lock" : True, "Response" : 'Unable to update car status, please try later'})
                     elif response=="Car Already Unlocked":
                             socket_utils.sendJson(self.csocket, {"Unlock" : True, "Response" : 'Car Already Unlocked'})
-                            
+
                     elif "Booking Not Found" in response:
                             socket_utils.sendJson(self.csocket , { "Lock": True,"Response" : 'Booking not found' })
 
@@ -80,6 +96,10 @@ while True:
 
 
 def main():
+    """
+    Main socket
+    
+    """
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind(ADDRESS)
         s.listen()
@@ -88,9 +108,9 @@ def main():
             newthread = ClientThread(clientAddress, clientsock)
             newthread.start()
 
-                
 
-     
+
+
 
 # Execute program.
 if __name__ == "__main__":

@@ -1,3 +1,7 @@
+"""
+.. module:: flask_api
+    
+"""
 import sys
 #sys.path.append('Database/')
 
@@ -45,6 +49,10 @@ dbObj=databaseUtils(db_hostname,db_username,db_password,database)
 #Endpoint to create a new user
 @api.route("/registeruser", methods = ["POST"])
 def registerUser():
+    """
+    Register / create a new user
+    
+    """
     password=hash_password(request.json['password'])
     response=dbObj.insert_user(request.json['username'],request.json['firstname'],request.json['lastname'],password,request.json['email'])
     if response=='success':
@@ -57,6 +65,10 @@ def registerUser():
 def Login():
 
     #The connection is being sent through, this should by dbObj
+    """
+    User login
+    
+    """
     result=login(request.json['email'],request.json['password'],myConnection)
     if result==2:
         response="success"
@@ -73,6 +85,10 @@ def validateUserAndBooking():
     response="Not found"
 
     #Once again, the dbObj should be sent through
+    """
+    Validates if the user account exists in MP and if the user has a valid booking
+    
+    """
     result=login(request.json['email'],request.json['password'],myConnection)
     if result == 2:
 
@@ -112,12 +128,20 @@ def validateUserAndBooking():
 #Updates the availability of a car to 0 which means unavailable
 @api.route("/updatecarstatus",methods=["POST"])
 def updateCarStatus():
+    """
+    Updates the car availability status
+    
+    """
     result=dbObj.update_availability(request.json['rego'],0)
     return result
 
 #This function is for returning the car. The booking status to taken, and the updated when found.
 @api.route("/returncar",methods=["POST"])
 def returnCar():
+    """
+    Function for returning the car. The booking status to taken, and the updated when found.
+    
+    """
     result=dbObj.get_active_booking_for_user(request.json['email'],request.json['rego'])
     if "<!DOCTYPE" not in result:
         for row in result:
@@ -130,6 +154,10 @@ def returnCar():
 #This method returns the username based upon a submitted email
 @api.route("/username/<email>",methods=["GET"])
 def getUsername(email):
+    """
+    Gets username based upon submitted email
+    
+    """
     rows=dbObj.return_user_details(email)
     if rows:
         for row in rows:
@@ -141,6 +169,10 @@ def getUsername(email):
 #This method returns the booking history for the user
 @api.route("/orderhistory/<email>", methods = ["GET"])
 def getOrderHistory(email):
+    """
+    Booking history for the user
+    
+    """
     rows=dbObj.get_booking_history(email)
     if rows:
         orderhistory=json.dumps(rows,default=decimal_default)
@@ -151,6 +183,10 @@ def getOrderHistory(email):
 #This method returns all of the bookings that have been confirmed
 @api.route("/confirmedbookings/<email>", methods = ["GET"])
 def getConfirmedBookings(email):
+    """
+    Returns all of the booking that have been confirmed
+    
+    """
     rows=dbObj.get_confirmed_bookings(email)
     if rows:
         confirmedbookings=json.dumps(rows,default=decimal_default)
@@ -162,6 +198,10 @@ def getConfirmedBookings(email):
 #Note that the connection is being sent through as opposed to the dbObj
 @api.route("/hashme", methods = ["POST"])
 def HashedPassword():
+    """
+    Hashed Password
+    
+    """
     result=hashing_password(request.json['email'],request.json['password'],myConnection)
     return jsonify(result)
 
@@ -169,6 +209,10 @@ def HashedPassword():
 #not sure if the break is needed, probably should be avoided
 @api.route("/cancelbooking/email=<emailid>",methods=['POST'])
 def cancelBooking(emailid):
+    """
+    Cancel Booking
+    
+    """
     for i in request.json:
         result=dbObj.cancel_booking(emailid,i)
         if result == "Error":
@@ -180,6 +224,10 @@ def cancelBooking(emailid):
 #This method retures a list of all of the cars
 @api.route("/cars",methods=['GET'])
 def getCars():
+    """
+    List of all the cars
+    
+    """
     rows=dbObj.get_all_cars()
     availablecars=json.dumps(rows,default=decimal_default)
     availablecars=json.loads(availablecars)
@@ -195,6 +243,10 @@ def getCars():
 #This method is used to search for specific cars
 @api.route("/searchcar/<search>",methods=['GET'])
 def searchCars(search):
+    """
+    Search for specific cars
+    
+    """
     carList=dbObj.return_vehicle_details(search)
     carList=json.dumps(carList,default=decimal_default)
     carList=json.loads(carList)
@@ -203,6 +255,10 @@ def searchCars(search):
 #This method is used to book a vehicle
 @api.route("/bookcar", methods = ["POST"])
 def bookcar():
+    """
+    Book a car
+    
+    """
     pickup=convertdatetimeforinsert(request.json['pickup'])
     dropoff=convertdatetimeforinsert(request.json['dropoff'])
     response=dbObj.book_vehicle(request.json['email'],request.json['rego'],pickup,dropoff)
@@ -210,6 +266,10 @@ def bookcar():
 
 #A helper method to convert onjects to floats or strings.
 def decimal_default(obj):
+    """
+    Convert objects to floats or strings
+    
+    """
     if isinstance(obj,Decimal):
         return float(obj)
     if isinstance(obj, datetime.datetime):
@@ -218,12 +278,20 @@ def decimal_default(obj):
 
 #Another convertor
 def myconverter(o):
+    """
+    Date and time converter
+    
+    """
     if isinstance(o, datetime.datetime):
         return o.__str__()
 
 # Endpoint to create new person.
 """@api.route("/person", methods = ["POST"])
 def addPerson():
+    """
+    Add new person API
+    
+    """
     name = request.json["name"]
  
     newPerson = Person(Name = name)
@@ -236,6 +304,10 @@ def addPerson():
 # Endpoint to update person.
 @api.route("/person/<id>", methods = ["PUT"])
 def personUpdate(id):
+    """
+    Update person API
+    
+    """
     person = Person.query.get(id)
     name = request.json["name"]
 
@@ -248,6 +320,10 @@ def personUpdate(id):
 # Endpoint to delete person.
 @api.route("/person/<id>", methods = ["DELETE"])
 def personDelete(id):
+    """
+    Delete person API
+    
+    """
     person = Person.query.get(id)
 
     db.session.delete(person)

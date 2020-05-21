@@ -1,3 +1,7 @@
+"""
+.. module:: agentpi
+
+"""
 #!/usr/bin/env python3
 # Documentation: https://docs.python.org/3/library/socket.html
 import sys
@@ -11,7 +15,7 @@ from FacialRecognition.recognise import recognise
 
 with open("config.json", "r") as file:
     data = json.load(file)
-    
+
 HOST = data["masterpi_ip"] # The server's hostname or IP address.
 PORT = 63000               # The port used by the server.
 ADDRESS = (HOST, PORT)
@@ -19,6 +23,10 @@ DB = "../AgentPi/reception.db"
 rego = data["rego"]
 
 def main():
+    """
+    Socket connection
+
+    """
 	unlocked = False
 	operating = True
 
@@ -60,7 +68,7 @@ def main():
 				unlocked = False
 			else:
 				print("Username incorrect, please try again")
-        
+
 		elif(option == "0"):
 			data={"Quit": True}
 			socket_utils.sendJson(client,data)
@@ -74,7 +82,10 @@ def main():
 
 #Menu to enable user to chose which code to use
 def menu(unlocked):
+    """
+    Menu for user
 
+    """
 	valid_input = False
 
 	while valid_input == False:
@@ -109,10 +120,14 @@ def menu(unlocked):
 
 		print()
 
-	return text   
+	return text
 
 #Source: https://stackoverflow.com/questions/35851323/how-to-test-a-function-with-input-call
 def get_input(input_type):
+    """
+    Input call
+
+    """
 
     entry = input(input_type)
 
@@ -120,6 +135,10 @@ def get_input(input_type):
 
 #Function that sends user details to the master pi for validation
 def getUser_remotely(user,password,client):
+    """
+    Send user details to master pi for validation
+
+    """
 	unlocked = False
 	data={"email":user ,"password": password}
 	url=("http://10.0.0.25:5000/hashme")
@@ -148,6 +167,10 @@ def getUser_remotely(user,password,client):
 
 #Fuction for facial recognition
 def facialrecognition(img,client):
+    """
+    Facial recognition
+
+    """
     print("In Facial recognition")
     name=recognise('encodings.pickle',img)
     user=name.split(":")
@@ -156,6 +179,10 @@ def facialrecognition(img,client):
 
 #Function that performs the return car function
 def returnCar(username,client):
+    """
+    Return car
+
+    """
     print("Trying to return car for {}".format(username))
     socket_utils.sendJson(client, {"ForLogin": False,"ForReturnCar":True,"email": username, "rego": rego})
     print("Waiting for Confirmation...")
@@ -171,6 +198,10 @@ def returnCar(username,client):
 
 #Function to run the facial recognition
 def recognise_face(unlocked, client):
+    """
+    Recognise face for facial recognition
+
+    """
 	x=[f for f in glob.glob("*.png")]
 	j=1
 	for i in range(len(x)):

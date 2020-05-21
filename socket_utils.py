@@ -1,8 +1,16 @@
+"""
+.. module:: sockets_utils
+
+"""
 #!/usr/bin/env python3
 # Documentation: https://docs.python.org/3/library/struct.html
 import sys, json, struct
 
 def sendJson(socket, object):
+    """
+    Send json
+    
+    """
     jsonString = json.dumps(object)
     data = jsonString.encode("utf-8")
     jsonLength = struct.pack("!i", len(data))
@@ -18,6 +26,10 @@ def sendJson(socket, object):
         sys.exit(1)
 
 def recvJson(socket):
+    """
+    recvJson
+    
+    """
     try:
         buffer = socket.recv(4)
     except socket.error as e:
