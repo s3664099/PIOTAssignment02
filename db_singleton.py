@@ -1,4 +1,4 @@
-import database_utils as db
+import Database.database_utils as db
 
 # Reference: https://www.tutorialspoint.com/python_design_patterns/python_design_patterns_singleton.htm
 #A singleton wrapper class to prevent more than one DB connection being established

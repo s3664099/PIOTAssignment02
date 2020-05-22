@@ -3,7 +3,6 @@ import hashlib
 import os
 import pymysql
 
-
 # The following code for hashing, salting, and verifying a password was provided by
 # https://www.vitoshacademy.com/hashing-passwords-in-python/
 def hash_password(password):
@@ -45,7 +44,6 @@ def new_user(user_name, first_name, last_name, email, password, db_connection):
 
 def logon(email, user_password, db_connection):
     cur = db_connection.cursor()
-    
     # SQL Query to search for the user and retrieves the password
     try:
         result = cur.execute("SELECT email, password FROM user WHERE email='" + email + "'")
@@ -93,7 +91,6 @@ def verify_register(email,username,db_connection):
 #writing a new function to test API call for hashing the input password
 def hashing_password(email,password,db_connection):
     cur = db_connection.cursor()
-    
     # SQL Query to search for the user and retrieves the password
     try:
         result = cur.execute("SELECT email, password FROM user WHERE email='" + email + "'")
