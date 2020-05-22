@@ -17,7 +17,6 @@ from datetimeconverter import convertdatetime,convertdatetimeforinsert
 
 api = Blueprint("api", __name__)
 
-#db = SQLAlchemy()
 ma = Marshmallow()
 
 # Declaring the model
@@ -73,23 +72,17 @@ def validateUserAndBooking():
     response="Not found"
 
     #Once again, the dbObj should be sent through
-    result=login(request.json['email'],request.json['password'],myConnection)
+    result=login(request.json['email'],request.json['password'],dbObj.myConnection)
     if result == 2:
 
         #Confirms the booking
         booking =dbObj.get_confirmed_booking_for_user(request.json['email'],request.json['rego'],request.json['date_time'])
         if "<!DOCTYPE" not in booking:
-            print("This is in API for validate, after get_active_booking_for_user is called")
-            print(booking)
-            print("\n\n\n\n")
             if booking:
                 for row in booking:
 
                     #If the booking is confirmed then the status is updated
                     result=dbObj.change_booking_status(row['bookingnumber'],"ACTIVE")
-                    print("This is in API for validate, after changing booking status is called")
-                    print(result)
-                    print("\n\n\n\n")
                     if result == "Success":
                         response= "Success"
                     else:
@@ -97,9 +90,7 @@ def validateUserAndBooking():
             else:
 
                 #If no specific booking is found, then all active bookings are searched for.
-                print("Checking for active bookings for user")
                 checkActiveBooking=dbObj.get_active_booking_for_user(request.json['email'],request.json['rego'])
-                print(checkActiveBooking)
                 if checkActiveBooking:
                     response="Car Already Unlocked"
                     return jsonify(response)
@@ -108,6 +99,35 @@ def validateUserAndBooking():
             response="Credentials not found"
     
     return jsonify(response)
+
+#validates if the user account exists in MP and if the user has a valid booking
+@api.route("/validateUser",methods=["POST"])
+def validateUserBooking():
+        #Confirms the booking
+        response="Booking Not Found"
+        booking =dbObj.get_confirmed_booking_for_user(request.json['email'],request.json['rego'],request.json['date_time'])
+        if "<!DOCTYPE" not in booking:
+            if booking:
+                for row in booking:
+
+                    #If the booking is confirmed then the status is updated
+                    result=dbObj.change_booking_status(row['bookingnumber'],"ACTIVE")
+                    if result == "Success":
+                        response= "Success"
+                    else:
+                        response=result
+            else:
+
+                #If no specific booking is found, then all active bookings are searched for.
+                checkActiveBooking=dbObj.get_active_booking_for_user(request.json['email'],request.json['rego'])
+                if checkActiveBooking:
+                    response="Car Already Unlocked"
+                    return jsonify(response)
+                response= "Booking Not Found"
+        else:
+            response="Credentials not found"
+    
+        return jsonify(response)
 
 #Updates the availability of a car to 0 which means unavailable
 @api.route("/updatecarstatus",methods=["POST"])
@@ -208,7 +228,7 @@ def bookcar():
     response=dbObj.book_vehicle(request.json['email'],request.json['rego'],pickup,dropoff)
     return jsonify(response)
 
-#A helper method to convert onjects to floats or strings.
+#A helper method to convert onjects to floats or strings to avoid conflicts with jsonify .
 def decimal_default(obj):
     if isinstance(obj,Decimal):
         return float(obj)
@@ -216,41 +236,4 @@ def decimal_default(obj):
         return obj.__str__()
     raise TypeError
 
-#Another convertor
-def myconverter(o):
-    if isinstance(o, datetime.datetime):
-        return o.__str__()
 
-# Endpoint to create new person.
-"""@api.route("/person", methods = ["POST"])
-def addPerson():
-    name = request.json["name"]
- 
-    newPerson = Person(Name = name)
-
-    db.session.add(newPerson)
-    db.session.commit()
-
-    return personSchema.jsonify(newPerson)
-
-# Endpoint to update person.
-@api.route("/person/<id>", methods = ["PUT"])
-def personUpdate(id):
-    person = Person.query.get(id)
-    name = request.json["name"]
-
-    person.Name = name
-
-    db.session.commit()
-
-    return personSchema.jsonify(person)
-
-# Endpoint to delete person.
-@api.route("/person/<id>", methods = ["DELETE"])
-def personDelete(id):
-    person = Person.query.get(id)
-
-    db.session.delete(person)
-    db.session.commit()
-
-    return personSchema.jsonify(person) """

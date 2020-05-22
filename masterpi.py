@@ -20,29 +20,55 @@ class ClientThread(threading.Thread):
             data= socket_utils.recvJson(self.csocket)
             if("ForLogin" in data):
                 if(data["ForLogin"]==True):
-                    url=("http://127.0.0.1:5000/validate")
-                    response=requests.post(url,json=data)
-                    response=response.text
-                    if response:
-                        response=response.replace('"','')
-                        response=response.replace('\n','')
-                    if "Success" in response:
-                            url=("http://127.0.0.1:5000/updatecarstatus")
-                            car={"rego" :data['rego']}
-                            response=requests.post(url,json=car)
-                            response=response.text
-                            if response=="Success":
-                                socket_utils.sendJson(self.csocket , { "Unlock": True })
-                            else:
-                                socket_utils.sendJson(self.csocket, {"Lock" : True, "Response" : 'Unable to update car status, please try later'})
-                    elif response=="Car Already Unlocked":
-                            socket_utils.sendJson(self.csocket, {"Unlock" : True, "Response" : 'Car Already Unlocked'})
-                            
-                    elif "Booking Not Found" in response:
-                            socket_utils.sendJson(self.csocket , { "Lock": True,"Response" : 'Booking not found' })
+                    if(data["FacialRecognition"]==False):
+                        url=("http://127.0.0.1:5000/validate")
+                        response=requests.post(url,json=data)
+                        response=response.text
+                        if response:
+                            response=response.replace('"','')
+                            response=response.replace('\n','')
+                        if "Success" in response:
+                                url=("http://127.0.0.1:5000/updatecarstatus")
+                                car={"rego" :data['rego']}
+                                response=requests.post(url,json=car)
+                                response=response.text
+                                if response=="Success":
+                                    socket_utils.sendJson(self.csocket , { "Unlock": True })
+                                else:
+                                    socket_utils.sendJson(self.csocket, {"Lock" : True, "Response" : 'Unable to update car status, please try later'})
+                        elif response=="Car Already Unlocked":
+                                socket_utils.sendJson(self.csocket, {"Unlock" : True, "Response" : 'Car Already Unlocked'})
+                                
+                        elif "Booking Not Found" in response:
+                                socket_utils.sendJson(self.csocket , { "Lock": True,"Response" : 'Booking not found' })
 
-                    else:
-                            socket_utils.sendJson(self.csocket , { "Lock": True,"Response" : 'Credentials not found, please check and try again' })
+                        else:
+                                socket_utils.sendJson(self.csocket , { "Lock": True,"Response" : 'Credentials not found, please check and try again' })
+                    elif (data["FacialRecognition"]==True):
+                        url=("http://127.0.0.1:5000/validateUser")
+                        response=requests.post(url,json=data)
+                        response=response.text
+                        if response:
+                            response=response.replace('"','')
+                            response=response.replace('\n','')
+                        if "Success" in response:
+                                url=("http://127.0.0.1:5000/updatecarstatus")
+                                car={"rego" :data['rego']}
+                                response=requests.post(url,json=car)
+                                response=response.text
+                                if response=="Success":
+                                    socket_utils.sendJson(self.csocket , { "Unlock": True })
+                                else:
+                                    socket_utils.sendJson(self.csocket, {"Lock" : True, "Response" : 'Unable to update car status, please try later'})
+                        elif response=="Car Already Unlocked":
+                                socket_utils.sendJson(self.csocket, {"Unlock" : True, "Response" : 'Car Already Unlocked'})
+                                
+                        elif "Booking Not Found" in response:
+                                socket_utils.sendJson(self.csocket , { "Lock": True,"Response" : 'Booking not found' })
+
+                        else:
+                                socket_utils.sendJson(self.csocket , { "Lock": True,"Response" : 'Credentials not found, please check and try again' })
+
 
                 elif (data["ForReturnCar"]==True):
                     url=("http://127.0.0.1:5000/returncar")

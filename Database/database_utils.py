@@ -232,7 +232,7 @@ class databaseUtils:
 
 			cur.execute("SELECT make, model FROM car WHERE rego = '"+rego+"'")
 			car_type = cur.fetchall().pop()
-
+			googleId="None"
 			try:
 				googleId = gcalendar.insert(pickup.isoformat() +"Z", dropoff.isoformat() +"Z", rego, car_type['make'], 
 										car_type['model'], total_cost, name, self.service)

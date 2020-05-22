@@ -49,7 +49,7 @@ def main():
 				print("please try again")
 
 		elif(option == "2"):
-			unlocked = recognise_face(unlocked)
+			unlocked = recognise_face(unlocked,client)
 
 			#facial recognition code here
 		elif(option == "3"):
@@ -128,7 +128,7 @@ def getUser_remotely(user,password,client):
 	password=password.replace("\n",'')
 	password=password.replace('"','')
 	print("Logging in as {}".format(user))
-	socket_utils.sendJson(client,{"ForLogin": True,"ForReturnCar":False, "email":user,"password":password,"rego":rego,"date_time": str(datetime.datetime.now())})
+	socket_utils.sendJson(client,{"FacialRecognition": False,"ForLogin": True,"ForReturnCar":False, "email":user,"password":password,"rego":rego,"date_time": str(datetime.datetime.now())})
 	print("Waiting for Confirmation...")
 	while(True):
 		object = socket_utils.recvJson(client)
@@ -146,12 +146,33 @@ def getUser_remotely(user,password,client):
 			print(object['Response'])
 			return unlocked
 
+def getUserName_remotely(username,client):
+	print("Logging in as {}".format(username))
+	socket_utils.sendJson(client,{"FacialRecognition": True, "ForLogin": True,"ForReturnCar":False, "email":username,"rego":rego,"date_time": str(datetime.datetime.now())})
+	print("Waiting for Confirmation...")
+	while(True):
+		object = socket_utils.recvJson(client)
+		if("Unlock" in object):
+			if("Response" in object):
+				print(object['Response'])
+				return True
+			else:
+				print()
+			print("Master Pi validated user, Unlock code to be sent from here to bluetooth device.")
+			print()
+			unlocked=True
+			return unlocked
+		else:
+			print(object['Response'])
+			return unlocked
+
+
 #Fuction for facial recognition
 def facialrecognition(img,client):
     print("In Facial recognition")
-    name=recognise('encodings.pickle',img)
-    user=name.split(":")
-    unlocked=getUser_remotely(user[0],user[1],client)
+    name=recognise('FacialRecognition/encodings.pickle',img)
+    #user=name.split(":")
+    unlocked=getUserName_remotely(name,client)
     return unlocked
 
 #Function that performs the return car function
@@ -171,7 +192,7 @@ def returnCar(username,client):
 
 #Function to run the facial recognition
 def recognise_face(unlocked, client):
-	x=[f for f in glob.glob("*.png")]
+	x=[f for f in glob.glob("Images/*.png")]
 	j=1
 	for i in range(len(x)):
 		print(j,x[i])
