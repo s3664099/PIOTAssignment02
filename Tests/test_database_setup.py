@@ -74,7 +74,7 @@ def createTables(conn):
 
 	try:
 		cur.execute("CREATE TABLE user (username VARCHAR(20), firstname VARCHAR(20), lastname VARCHAR(20),\
-					password VARCHAR(192), email VARCHAR(28), PRIMARY KEY (email))")
+					password VARCHAR(20), email VARCHAR(28), PRIMARY KEY (email))")
 	except pymysql.Error as e:
 		print("Error 04: {}", e)
 	try:
@@ -141,7 +141,7 @@ def createTables(conn):
 		pickup = pickup + timedelta(hours=-2)
 		dropoff = pickup + timedelta(hours=4)
 		cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, status) VALUES\
-					 ('U75PYV', 'fry@planetExpress.earth', '"+str(pickup)+"','"+str(dropoff)+"',42.00,'ACTIVE')")
+					 ('U75PYV', 'fry@planetExpress.earth', '"+str(pickup)+"','"+str(dropoff)+"',42.00,'BOOKED')")
 
 	except pymysql.Error as e:
 		print("Error 06: {}", e)

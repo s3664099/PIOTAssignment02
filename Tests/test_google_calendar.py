@@ -1,11 +1,7 @@
-import sys
-sys.path.append('../')
-sys.path.append('../Database')
-
 import unittest
 from datetime import datetime
 from datetime import timedelta
-import gcalendar_utils as cal
+import Database.gcalendar_utils as cal
 
 class test_database_utils(unittest.TestCase):
 
