@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 # Reference: https://realpython.com/python-sockets/
 # Documentation: https://docs.python.org/3/library/socket.html
-
-import sys
-sys.path.append("../")
-
 import socket
 import socket_utils
 
