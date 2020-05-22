@@ -1,23 +1,15 @@
-import sys
-#sys.path.append('Database/')
-
-import os
-import pymysql,datetime
-from pymysql.cursors import DictCursor
-from flask import Flask, Blueprint, request, jsonify, render_template,session
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
-from config import app
-from login import verify_password,hash_password,logon,hashing_password,login
-import requests, json
-from Database.database_utils import databaseUtils
-from flask import current_app as app
+import json
 from decimal import Decimal
-from datetimeconverter import convertdatetime,convertdatetimeforinsert
+
+import datetime
+import pymysql
+from flask import Blueprint, request, jsonify
+
+from Database.database_utils import databaseUtils
+from datetimeconverter import convertdatetimeforinsert
+from login import hash_password, hashing_password, login
 
 api = Blueprint("api", __name__)
-
-ma = Marshmallow()
 
 # Declaring the model
 # This should be in a config.json file, and the 
