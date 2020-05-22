@@ -28,7 +28,7 @@ class databaseUtils:
     			db = databaseUtils.DATABASE, charset='utf8', cursorclass=pymysql.cursors.DictCursor)
 		self.connection = myConnection
 
-		#self.service = gcalendar.connect_calendar()
+		self.service = gcalendar.connect_calendar()
 
 	#The following methods are for closing the database
 	def close_connection(self):
