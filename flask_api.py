@@ -64,7 +64,7 @@ def validateUserAndBooking():
     response="Not found"
 
     #Once again, the dbObj should be sent through
-    result=login(request.json['email'],request.json['password'],dbObj.myConnection)
+    result=login(request.json['email'],request.json['password'],myConnection)
     if result == 2:
 
         #Confirms the booking

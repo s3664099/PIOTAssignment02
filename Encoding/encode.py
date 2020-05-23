@@ -10,25 +10,17 @@
 
 # import the necessary packages
 from imutils import paths
+from Storage import upload_to_storage
 import face_recognition
 import argparse
 import pickle
 import cv2
 import os
 
-# construct the argument parser and parse the arguments
-ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--dataset", default = "dataset",
-    help="path to input directory of faces + images")
-ap.add_argument("-e", "--encodings", default = "encodings.pickle",
-    help="path to serialized db of facial encodings")
-ap.add_argument("-d", "--detection-method", type = str, default = "hog",
-    help="face detection model to use: either `hog` or `cnn`")
-args = vars(ap.parse_args())
 
 # grab the paths to the input images in our dataset
 print("[INFO] quantifying faces...")
-imagePaths = list(paths.list_images(args["dataset"]))
+imagePaths = list(paths.list_images("dataset"))
 
 # initialize the list of known encodings and known names
 knownEncodings = []
@@ -47,7 +39,7 @@ for (i, imagePath) in enumerate(imagePaths):
 
     # detect the (x, y)-coordinates of the bounding boxes
     # corresponding to each face in the input image
-    boxes = face_recognition.face_locations(rgb, model = args["detection_method"])
+    boxes = face_recognition.face_locations(rgb, model = "hog")
 
     # compute the facial embedding for the face
     encodings = face_recognition.face_encodings(rgb, boxes)
@@ -62,5 +54,7 @@ for (i, imagePath) in enumerate(imagePaths):
 print("[INFO] serializing encodings...")
 data = { "encodings": knownEncodings, "names": knownNames }
 
-with open(args["encodings"], "wb") as f:
+with open("encodings.pickle", "wb") as f:
     f.write(pickle.dumps(data))
+
+upload_to_storage(os.path.abspath("encodings.pickle"))
