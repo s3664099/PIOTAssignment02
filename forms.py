@@ -1,13 +1,25 @@
+"""
+.. module:: forms
+
+"""
 import re
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateTimeField, DateField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 
 def my_length_check(form, field):
+    """
+    Length check for validation
+
+    """
     if len(field.data) > 20:
         raise ValidationError('Field must be less than 20 characters')
 
 def my_password_check(form, field):
+    """
+    Password check for validation
+
+    """
     if len(field.data) < 8:
         raise ValidationError('Password must be at least 8 characters')
     if re.search('[0-9]', field.data) is None:
@@ -17,6 +29,10 @@ def my_password_check(form, field):
 
 
 class RegistrationForm(FlaskForm):
+    """
+    Registration flask form
+
+    """
     username = StringField('Username',
                            validators=[DataRequired(), Length(min=6, max=20),my_length_check])
     firstname = StringField('First Name',
@@ -31,6 +47,10 @@ class RegistrationForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
+    """
+    Login flask form
+
+    """
     email = StringField('Email',
                         validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -38,6 +58,10 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 class BookingForm(FlaskForm):
+    """
+    Booking flask form
+
+    """
     email = StringField('Email',validators=[DataRequired()])
     rego = StringField('Car',validators=[DataRequired()])
     pickup = DateField('PickUp Date', format='%Y-%m-%d %H:%M:%S',validators=[DataRequired()])

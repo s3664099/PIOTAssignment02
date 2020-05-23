@@ -1,3 +1,7 @@
+"""
+.. module:: gcalendar_utils
+
+"""
 # pip3 install google-api-python-client google-auth-httplib2 google-auth-oauthlib oauth2client httplib2
 # python3 add_event.py --noauth_local_webserver
 
@@ -19,6 +23,10 @@ SCOPES = ["https://www.googleapis.com/auth/calendar"]
 #Function to connect to the user's calendar so that the event
 #may be stored
 def connect_calendar():
+    """
+    Connect to the calendar
+
+    """
 
     # If modifying these scopes, delete the file token.json.
     store = file.Storage("token.json")
@@ -36,6 +44,7 @@ def get_events(service, noEvents):
     """
     Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user"s calendar.
+    
     """
 
     # Call the Calendar API.
@@ -50,6 +59,10 @@ def get_events(service, noEvents):
 
 #Function to print events. Used for debugging and testing purposes
 def print_events(events):
+    """
+    Print events out
+
+    """
 
     results = ""
 
@@ -62,6 +75,10 @@ def print_events(events):
     return results
 
 def insert(pickUp, dropOff, rego, make, model, cost, email, service):
+    """
+    Insert event
+
+    """
 
     event = {
         "summary": "Vehicle Booking "+rego,
@@ -92,6 +109,10 @@ def insert(pickUp, dropOff, rego, make, model, cost, email, service):
     return event["id"]
     
 def remove_event(id, service):
+    """
+    Remove/Delete event
+
+    """
     service.events().delete(calendarId='primary', eventId=id).execute()
 
 if __name__ == "__main__":

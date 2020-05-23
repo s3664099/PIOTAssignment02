@@ -1,8 +1,15 @@
+"""
+.. module:: Storage
+
+"""
 from google.cloud import storage
 
 
 def upload_to_storage(source_file_name):
-    """Uploads a file to the bucket."""
+    """
+    Uploads a file to the bucket.
+    
+    """
     bucket_name = "car-hire"
     destination_blob_name = "encodings.pickle"
 

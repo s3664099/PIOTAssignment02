@@ -1,3 +1,7 @@
+"""
+.. module:: login
+
+"""
 import binascii
 import hashlib
 import os
@@ -6,7 +10,10 @@ import pymysql
 # The following code for hashing, salting, and verifying a password was provided by
 # https://www.vitoshacademy.com/hashing-passwords-in-python/
 def hash_password(password):
+    """
+    Hash password
 
+    """
     #The password is hashed, and salted, and the salt is added to the hash
     salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
     pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'),
@@ -17,7 +24,10 @@ def hash_password(password):
     return (salt + pwdhash).decode('ascii')
 
 def verify_password(stored_password, provided_password):
+    """
+    Verify password
 
+    """
     #The stored, and entered passwords are provided.
     #The provided password is hashed, and salted with the salt from the stored password
     salt = stored_password[:64]
@@ -33,6 +43,10 @@ def verify_password(stored_password, provided_password):
 
 
 def new_user(user_name, first_name, last_name, email, password, db_connection):
+    """
+    New user insertion
+
+    """
     cur = db_connection.cursor()
     password = hash_password(password)
     # SQL to insert new user into the database
@@ -43,6 +57,10 @@ def new_user(user_name, first_name, last_name, email, password, db_connection):
 
 
 def logon(email, user_password, db_connection):
+    """
+    User logging on
+
+    """
     cur = db_connection.cursor()
     # SQL Query to search for the user and retrieves the password
     try:
@@ -73,6 +91,10 @@ def logon(email, user_password, db_connection):
         return 1
 
 def verify_register(email,username,db_connection):
+    """
+    Verify registration
+
+    """
     cur=db_connection.cursor()
     try:
         result=cur.execute("SELECT email from user where email='"+email+"' or username='"+username+"'")
@@ -90,6 +112,10 @@ def verify_register(email,username,db_connection):
 
 #writing a new function to test API call for hashing the input password
 def hashing_password(email,password,db_connection):
+    """
+    Hashing the password
+
+    """
     cur = db_connection.cursor()
     # SQL Query to search for the user and retrieves the password
     try:
@@ -113,11 +139,19 @@ def hashing_password(email,password,db_connection):
 
 #new Function to verify hashed password input against the password stored in the database
 def verify_password_new(stored_password,provided_password):
+    """
+    Verification of the new password
+
+    """
     stored_password = stored_password[64:]
     return stored_password == provided_password
 
 #modified function to login when encrypted password is passed
 def login(email, user_password, db_connection):
+    """
+    User login
+
+    """
     cur = db_connection.cursor()
     # SQL Query to search for the user and retrieves the password
     try:

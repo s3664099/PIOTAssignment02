@@ -1,3 +1,7 @@
+"""
+.. module:: echo_server
+
+"""
 #!/usr/bin/env python3
 # Reference: https://realpython.com/python-sockets/
 # Documentation: https://docs.python.org/3/library/socket.html

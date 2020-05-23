@@ -1,3 +1,7 @@
+"""
+.. module:: encode
+
+"""
 # USAGE
 # With default parameters
 #         python3 02_encode.py
