@@ -11,8 +11,6 @@
 
 #This is required for python3 to create and manipulate mySql databases
 import pymysql
-import sys
-sys.path.append('../')
 
 hostname = '35.197.174.1'
 username = 'root'
@@ -20,7 +18,7 @@ password = 'password'
 database_used = 'car_app_db'
 import datetime
 from datetime import timedelta
-import database_utils as database
+import Database.database_utils as database
 
 db = database.databaseUtils(hostname, username, password, database_used)
 

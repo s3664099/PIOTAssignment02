@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # Documentation: https://docs.python.org/3/library/struct.html
 import sys, json, struct
 

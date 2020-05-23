@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # Documentation: https://docs.python.org/3/library/socket.html
-from flask import Flask, request, jsonify
-import socket, json, sys
-sys.path.append("..")
+import socket
+import sys
+
+import requests
+import threading
+
 import socket_utils
-import requests, threading,time
 
 
 class ClientThread(threading.Thread):

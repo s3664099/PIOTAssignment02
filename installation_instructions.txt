@@ -1,0 +1,5 @@
+1. Ensure Python3.3 or later is installed.
+2. Navigate to main project folder in Terminal/Cmd. - (alternatively open project in VScode and use Terminal there)
+3. Enter "pip install -r requirements.txt"
+   - Note this may take some to install all required packages
+4. Enter "python3 flask_main.py" to run.

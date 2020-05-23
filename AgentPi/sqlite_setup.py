@@ -1,6 +1,3 @@
-import sys
-sys.path.append('../')
-
 import sqlite3
 import login
 

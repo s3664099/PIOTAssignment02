@@ -1,15 +1,12 @@
 import re
-
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateTimeField, DateField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 
-#Checks wheither the length of the entry is too long
 def my_length_check(form, field):
-    if len(field.data) > 50:
+    if len(field.data) > 20:
         raise ValidationError('Field must be less than 20 characters')
 
-#Checks to see whether the password is secure enough
 def my_password_check(form, field):
     if len(field.data) < 8:
         raise ValidationError('Password must be at least 8 characters')
@@ -21,28 +18,28 @@ def my_password_check(form, field):
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username',
-                           validators = [DataRequired(), Length(min = 6, max = 20),my_length_check])
+                           validators=[DataRequired(), Length(min=6, max=20),my_length_check])
     firstname = StringField('First Name',
-                            validators = [DataRequired(),my_length_check])
+                            validators=[DataRequired(),my_length_check])
     lastname = StringField('Last Name')
     email = StringField('Email',
-                        validators = [DataRequired(), Email()])
-    password = PasswordField('Password', validators =[ DataRequired(), my_password_check])
+                        validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired(), my_password_check], description="Minimum 8 Characters, 1 Capital, 1 number")
     confirm_password = PasswordField('Confirm Password',
-                                     validators = [DataRequired(), EqualTo('password')])
+                                     validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Sign Up')
 
 
 class LoginForm(FlaskForm):
     email = StringField('Email',
-                        validators = [DataRequired(), Email()])
-    password = PasswordField('Password', validators = [DataRequired()])
+                        validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
 
 class BookingForm(FlaskForm):
-    email = StringField('Email',validators = [DataRequired()])
-    rego = StringField('Car',validators = [DataRequired()])
-    pickup = DateField('PickUp Date', format = '%Y-%m-%d %H:%M:%S', validators = [DataRequired()])
-    dropoff = DateField('Drop Off Date', format = '%Y-%m-%d %H:%M:%S', validators = [DataRequired()])
+    email = StringField('Email',validators=[DataRequired()])
+    rego = StringField('Car',validators=[DataRequired()])
+    pickup = DateField('PickUp Date', format='%Y-%m-%d %H:%M:%S',validators=[DataRequired()])
+    dropoff = DateField('Drop Off Date', format='%Y-%m-%d %H:%M:%S',validators=[DataRequired()])
     submit = SubmitField('bookedcar')

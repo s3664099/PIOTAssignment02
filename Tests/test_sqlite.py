@@ -1,10 +1,6 @@
-import sys
-sys.path.append('../')
-sys.path.append('../AgentPi')
-
 import unittest
-import sqlite_utils as sqlite
-import test_sqlite_setup as setup
+import AgentPi.sqlite_utils as sqlite
+import Tests.test_sqlite_setup as setup
 
 host = "test.db"
 

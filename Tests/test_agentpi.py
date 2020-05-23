@@ -1,10 +1,6 @@
-import sys
-sys.path.append('../')
-sys.path.append('../AgentPi')
-
 import unittest
-import agentpi as agent
-import mock
+import AgentPi.agentpi as agent
+import unittest.mock as mock
 import socket
 
 class test_agent_pi_utils(unittest.TestCase):

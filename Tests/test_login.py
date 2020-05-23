@@ -1,12 +1,6 @@
-import sys
-sys.path.append('../')
-sys.path.append('../Database')
-
 import unittest
 import pymysql
 import login as login
-
-
 
 class test_utils(unittest.TestCase):
 
