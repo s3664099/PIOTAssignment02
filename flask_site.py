@@ -16,7 +16,6 @@ def register():
     # Use REST API.
     form=RegistrationForm()
     if form.validate_on_submit():
-        # encrypt this form.password.data before hitting the api
         result=json.dumps(request.form)
         result=json.loads(result)
         url=("http://127.0.0.1:5000/registeruser")
@@ -32,7 +31,6 @@ def register():
             flash(f'Username or Email already in use')
             return redirect(url_for('site.register'))
     return render_template("register.html",title="Register", form=form)
-    #Needs to be completed 
 
     return render_template("register.html",title='Register',form=form)
 
