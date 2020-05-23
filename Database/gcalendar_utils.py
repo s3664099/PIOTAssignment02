@@ -21,12 +21,12 @@ SCOPES = ["https://www.googleapis.com/auth/calendar"]
 def connect_calendar():
 
     # If modifying these scopes, delete the file token.json.
-    store = file.Storage("../token.json")
+    store = file.Storage("token.json")
     creds = store.get()
 
     if(not creds or creds.invalid):
 
-        flow = client.flow_from_clientsecrets("../credentials.json", SCOPES)
+        flow = client.flow_from_clientsecrets("credentials.json", SCOPES)
         creds = tools.run_flow(flow, store)       
 
     return build("calendar", "v3", http=creds.authorize(Http()))
