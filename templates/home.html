@@ -31,7 +31,7 @@
     {% endif %}
     {% endwith %}
 <div class="container mt-3">
-  <h2>Welcome to RMIT Carpooling {{ email }}</h2>
+  <h2>Welcome to RMIT Carpooling {{ user }}</h2>
   <br>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" id="myTab">
@@ -64,7 +64,7 @@
                 {% if searchcars %}
             <div class='col-md-8' id='foundcars'>
               <form method="POST" action="{{url_for('site.booking')}}">
-              <table class='table table-striped'>
+              <table class='table table-hover'>
                 <thead>
                 <tr>
                 <th>Rego</th>
@@ -98,7 +98,7 @@
 
           <div class='col-md-8'>
             {%if orderhistory%}
-            <table class='table table-striped'>
+            <table class='table table-hover'>
                 <thead>
                 <tr>
                 <th>Order Number</th>
@@ -222,7 +222,7 @@
             </div>
         <div class='col-md-8'>
           {% if availablecars %}
-            <table class='table table-striped'>
+            <table class='table table-hover'>
             <thead>
             <tr>
             <th>Rego</th>
@@ -256,7 +256,7 @@
           <div class='col-md-8'>
             {%if confirmedbookings%}
             <form action="" method="POST">
-            <table class='table table-striped'>
+            <table class='table table-hover'>
                 <thead>
                 <tr>
                 <th>Order Number</th>
