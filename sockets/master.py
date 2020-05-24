@@ -1,3 +1,7 @@
+"""
+.. module:: master
+
+"""
 #!/usr/bin/env python3
 # Documentation: https://docs.python.org/3/library/socket.html
 import socket
@@ -9,6 +13,10 @@ PORT = 63000 # Port to listen on (non-privileged ports are > 1023).
 ADDRESS = (HOST, PORT)
 
 def main():
+    """
+    Connection to reception pi
+
+    """
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind(ADDRESS)
         s.listen()
@@ -27,6 +35,10 @@ def main():
                 socket_utils.sendJson(conn, { "logout": True })
 
 def menu(user):
+    """
+    Display menu for user
+
+    """
     while(True):
         print("Welcome {}".format(user["username"]))
         print("1. Display user details")

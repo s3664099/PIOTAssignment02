@@ -1,3 +1,7 @@
+"""
+.. module:: flask_site
+
+"""
 from datetime import datetime
 from google.cloud import storage
 import json,os,requests, shutil
@@ -13,7 +17,10 @@ ALLOWED_EXTENSIONS = {'png'}
 
 
 def download_blob():
-        """Downloads a blob from the bucket."""
+        """
+        Downloads a blob from the bucket.
+        
+        """
         bucket_name = "car-hire"
         source_blob_name = "encodings.pickle"
         destination_file_name = "Encoding/encodings.pickle"
@@ -27,12 +34,20 @@ def download_blob():
 
 
 def allowed_file(filename):
+    """
+    Allowed files
+
+    """
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Client webpage.
 @site.route("/register",methods=['GET','POST'])
 def register():
+    """
+    Registration form from forms.py
+
+    """
     # Use REST API.
     form=RegistrationForm()
     if form.validate_on_submit():
@@ -81,6 +96,10 @@ def register():
 
 @site.route("/",methods=['GET','POST'])
 def login():
+    """
+    Login form from forms.py
+
+    """
     # Use REST API.
     form = LoginForm()    
     if form.validate_on_submit():
@@ -107,6 +126,10 @@ def login():
 
 @site.route("/home",methods=['GET','POST'])
 def home():
+    """
+    Home page
+
+    """
     url=("http://127.0.0.1:5000/username/"+session['email'])
     response=requests.get(url)
     username=json.loads(response.text)
@@ -161,11 +184,19 @@ def home():
 
 @site.route("/logout",methods=['GET','POST'])
 def logout():
+    """
+    Log out of webpage
+
+    """
     session.clear()
     return redirect(url_for('site.login'))
 
 @site.route("/booking",methods=['GET','POST'])
 def booking():
+    """
+    Booking form from forms.py
+
+    """
     form=BookingForm()
     if request.method=="POST":
         if('carid' in request.form):
@@ -200,4 +231,8 @@ def booking():
 
 @site.route("/about",methods=['GET','POST'])
 def about():
+    """
+    About page
+
+    """
     return render_template("about.html")

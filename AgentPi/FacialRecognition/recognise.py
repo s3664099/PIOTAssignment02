@@ -1,3 +1,7 @@
+"""
+.. module:: recognise
+
+"""
 # import the necessary packages
 import face_recognition
 import argparse
@@ -5,6 +9,10 @@ import pickle
 import cv2
 
 def recognise(file_ep,img):
+	"""
+	Recognization for facial recognition
+
+	"""
 	# load the known faces and embeddings
 	print("[INFO] loading encodings...")
 	data = pickle.loads(open(file_ep, "rb").read())

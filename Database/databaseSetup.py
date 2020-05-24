@@ -1,3 +1,7 @@
+"""
+.. module:: databaseSetup
+
+"""
 #Python DataBase Setup
 #=====================
 #
@@ -24,6 +28,10 @@ db = database.databaseUtils(hostname, username, password, database_used)
 
 ##This function clears the database
 def clearDatabases(conn):
+	"""
+	Clears the database
+
+	"""
 	cur = conn.cursor()
 
 	#Foreign Key checks are turned off to allow the tables
@@ -54,6 +62,10 @@ def clearDatabases(conn):
 
 #This function creates the tables associated with the database
 def createTables(conn):
+	"""
+	Create tables in the database
+
+	"""
 	cur = conn.cursor()
 
 	try:
@@ -156,6 +168,10 @@ def createTables(conn):
 	conn.commit()
 
 def sql_queries(conn):
+	"""
+	Queries
+
+	"""
 
 	cur = conn.cursor()
 	"""
