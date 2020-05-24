@@ -5,7 +5,7 @@
 #!/usr/bin/env python3
 # Documentation: https://docs.python.org/3/library/socket.html
 import socket
-import socket_utils
+import soc_socket_utils
 
 HOST = ""    # Empty string means to listen on all IP's on the machine, also works with IPv6.
              # Note "0.0.0.0" also works but only with IPv4.
