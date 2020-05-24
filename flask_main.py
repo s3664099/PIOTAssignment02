@@ -1,3 +1,7 @@
+"""
+.. module:: flask_main
+
+"""
 # python3 flask_main.py
 import os
 from config import app

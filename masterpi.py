@@ -1,3 +1,7 @@
+"""
+.. module:: masterpi
+
+"""
 #!/usr/bin/env python3
 # Documentation: https://docs.python.org/3/library/socket.html
 import socket
@@ -10,12 +14,24 @@ import socket_utils
 
 
 class ClientThread(threading.Thread):
+    """
+    Client threading
+
+    """
     def __init__(self,clientAddress,clientsocket):
+        """
+        Add connection
+
+        """
         threading.Thread.__init__(self)
         self.csocket = clientsocket
         self.caddr=clientAddress
         print ("New connection added: ", self.caddr)
     def run(self):
+        """
+        Receive connection from server
+
+        """
         print ("Connection from : ", self.caddr)
         #self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
         while(True):
@@ -108,6 +124,10 @@ while True:
 
 
 def main():
+    """
+    Start connection
+
+    """
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind(ADDRESS)
         s.listen()

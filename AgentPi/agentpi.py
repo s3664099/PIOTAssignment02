@@ -1,24 +1,32 @@
+"""
+.. module:: agentpi
+
+"""
 #!/usr/bin/env python3
 # Documentation: https://docs.python.org/3/library/socket.html
 import sys
 import socket ,requests,json,socket_utils
-import sqlite_utils as sqlite
-import login,glob
+from google.cloud import storage
+import glob
 import datetime
 from getpass import getpass
 from FacialRecognition.recognise import recognise
 
 
 with open("config.json", "r") as file:
+	
     data = json.load(file)
     
 HOST = data["masterpi_ip"] # The server's hostname or IP address.
 PORT = 63000               # The port used by the server.
 ADDRESS = (HOST, PORT)
-DB = "../AgentPi/reception.db"
 rego = data["rego"]
 
 def main():
+	"""
+	Connection to server
+
+	"""
 	unlocked = False
 	operating = True
 
@@ -37,7 +45,10 @@ def main():
 		sys.exit(1)
 
 	while(operating == True):
+		"""
+		Options menu
 
+		"""
 		option = menu(unlocked)
 
 		if option == "1":
@@ -72,9 +83,29 @@ def main():
 			print("Invalid input, try again.")
 			print()
 
+#Downloads the encodings.pickle file from Cloud Storage for Facial Recognition
+def download_blob():
+        """
+		Downloads a blob from the bucket.
+		
+		"""
+        bucket_name = "car-hire"
+        source_blob_name = "encodings.pickle"
+        destination_file_name = "FacialRecognition/encodings.pickle"
+
+        storage_client = storage.Client() 
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(source_blob_name)
+        blob.download_to_filename(destination_file_name)
+        print(
+                "Blob {} downloaded to {}.".format(source_blob_name, destination_file_name))
+
 #Menu to enable user to chose which code to use
 def menu(unlocked):
-
+	"""
+	Menu for user to login through via console or facial recognition
+	
+	"""
 	valid_input = False
 
 	while valid_input == False:
@@ -113,16 +144,24 @@ def menu(unlocked):
 
 #Source: https://stackoverflow.com/questions/35851323/how-to-test-a-function-with-input-call
 def get_input(input_type):
+	"""
+	Get input call
 
+	"""
     entry = input(input_type)
 
     return entry
 
 #Function that sends user details to the master pi for validation
 def getUser_remotely(user,password,client):
+	"""
+	Send user details to the master pi
+
+	"""
 	unlocked = False
 	data={"email":user ,"password": password}
-	url=("http://10.0.0.25:5000/hashme")
+	#Change the URL based on the location at which the API is hosted
+	url=("http://127.0.0.1:5000/hashme")
 	password=requests.post(url, json=data)
 	password=password.text
 	password=password.replace("\n",'')
@@ -147,6 +186,11 @@ def getUser_remotely(user,password,client):
 			return unlocked
 
 def getUserName_remotely(username,client):
+	"""
+	Get username remotely
+
+	"""
+	unlocked=False
 	print("Logging in as {}".format(username))
 	socket_utils.sendJson(client,{"FacialRecognition": True, "ForLogin": True,"ForReturnCar":False, "email":username,"rego":rego,"date_time": str(datetime.datetime.now())})
 	print("Waiting for Confirmation...")
@@ -169,14 +213,23 @@ def getUserName_remotely(username,client):
 
 #Fuction for facial recognition
 def facialrecognition(img,client):
-    print("In Facial recognition")
-    name=recognise('FacialRecognition/encodings.pickle',img)
+	"""
+	Facial recognition function
+
+	"""
+	print("In Facial recognition")
+	download_blob()
+	name=recognise('FacialRecognition/encodings.pickle',img)
     #user=name.split(":")
-    unlocked=getUserName_remotely(name,client)
-    return unlocked
+	unlocked=getUserName_remotely(name,client)
+	return unlocked
 
 #Function that performs the return car function
 def returnCar(username,client):
+	"""
+	Return car function
+
+	"""
     print("Trying to return car for {}".format(username))
     socket_utils.sendJson(client, {"ForLogin": False,"ForReturnCar":True,"email": username, "rego": rego})
     print("Waiting for Confirmation...")
@@ -192,20 +245,24 @@ def returnCar(username,client):
 
 #Function to run the facial recognition
 def recognise_face(unlocked, client):
+	"""
+	Facial recognition to run facial recognization
+
+	"""
 	x=[f for f in glob.glob("Images/*.png")]
 	j=1
 	for i in range(len(x)):
 		print(j,x[i])
 		j=j+1
-		options=input("Select photo from uploaded photos")
-		index=int(options)
-		img=x[index-1]
-		unlocked=facialrecognition(img,client)
-		if unlocked==True:
-			print("Bluetooth sent")
-			return unlocked
-		else:
-			print("Unable to verify in master database, please try again")
+	options=input("Select photo from uploaded photos")
+	index=int(options)
+	img=x[index-1]
+	unlocked=facialrecognition(img,client)
+	if unlocked==True:
+	    print("Bluetooth sent")
+	    return unlocked
+	else:
+	    print("Unable to verify in master database, please try again")
 
 
 # Execute program.

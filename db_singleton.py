@@ -1,3 +1,7 @@
+"""
+.. module:: db_singleton
+
+"""
 import Database.database_utils as db
 
 # Reference: https://www.tutorialspoint.com/python_design_patterns/python_design_patterns_singleton.htm
@@ -8,6 +12,10 @@ class Singleton:
     #Returns a copy of the Database class
     @staticmethod
     def get_instance():
+        """
+        Get instance
+
+        """
         if(Singleton.__instance == None):
             Singleton()
         return Singleton.__instance
@@ -15,6 +23,10 @@ class Singleton:
     #Creates a copy of the class but throws an exception if more than one is
     #created
     def __init__(self, host, user, password, database):
+        """
+        Copy of the class but throws exception
+
+        """
         if(Singleton.__instance != None):
             raise Exception("You cannot create more than one connection!")
         else:
