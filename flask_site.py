@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 from flask import send_from_directory
 from flask import Blueprint, request, render_template, session, flash, url_for, redirect
 from forms import RegistrationForm, LoginForm, BookingForm
-from Encoding.recognise import recognise
+from Encoding.encode_recognise import recognise
 from config import app
 
 site = Blueprint("site", __name__)
@@ -221,9 +221,12 @@ def booking():
                 if response.__contains__("Vehicle Booked"):
                     flash(f'Booking Successful', 'success')
                     return redirect(url_for('site.home'))
+                elif response.__contains__("Vehicle Already Booked"):
+                    flash(f'Vehicle Is Unavailble for the requested time slot, please try another suitable time slot')
+                    return redirect(url_for('site.home'))
                 else:
                     flash(f'Booking cannot be made, please try again later or with a different car/dates\nWe apologise for inconvenience caused','danger')
-                    return response
+                    return redirect(url_for('site.home'))
         elif ('goback' in request.form):
             return redirect(url_for('site.home'))
 
