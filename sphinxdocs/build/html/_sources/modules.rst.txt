@@ -73,6 +73,9 @@ gcalendar\_utils module
    :undoc-members:
    :show-inheritance:
 
+Encoding
+========
+
 encode\_recognise module
 ------------------------
 
@@ -85,6 +88,14 @@ encode module
 -------------
 
 .. automodule:: encode
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Storage module
+--------------
+
+.. automodule:: Storage
    :members:
    :undoc-members:
    :show-inheritance:
