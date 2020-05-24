@@ -14,7 +14,6 @@ def recognise(file_ep,img):
 
 	"""
 	# load the known faces and embeddings
-	print("[INFO] loading encodings...")
 	data = pickle.loads(open(file_ep, "rb").read())
 
 	# load the input image and convert it from BGR to RGB
@@ -24,7 +23,6 @@ def recognise(file_ep,img):
 	# detect the (x, y)-coordinates of the bounding boxes corresponding
 	# to each face in the input image, then compute the facial embeddings
 	# for each face
-	print("[INFO] recognizing faces...")
 	boxes = face_recognition.face_locations(rgb,
 		model="cnn")
 	encodings = face_recognition.face_encodings(rgb, boxes)

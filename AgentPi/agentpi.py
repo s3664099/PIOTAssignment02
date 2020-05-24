@@ -74,7 +74,7 @@ def main():
         
 		elif(option == "0"):
 			data={"Quit": True}
-			socket_utils.sendJson(client,data)
+			agent_socket_utils.sendJson(client,data)
 			print("Goodbye.")
 			print()
 			operating = False
@@ -97,8 +97,6 @@ def download_blob():
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(source_blob_name)
         blob.download_to_filename(destination_file_name)
-        print(
-                "Blob {} downloaded to {}.".format(source_blob_name, destination_file_name))
 
 #Menu to enable user to chose which code to use
 def menu(unlocked):
@@ -167,10 +165,10 @@ def getUser_remotely(user,password,client):
 	password=password.replace("\n",'')
 	password=password.replace('"','')
 	print("Logging in as {}".format(user))
-	socket_utils.sendJson(client,{"FacialRecognition": False,"ForLogin": True,"ForReturnCar":False, "email":user,"password":password,"rego":rego,"date_time": str(datetime.datetime.now())})
+	agent_socket_utils.sendJson(client,{"FacialRecognition": False,"ForLogin": True,"ForReturnCar":False, "email":user,"password":password,"rego":rego,"date_time": str(datetime.datetime.now())})
 	print("Waiting for Confirmation...")
 	while(True):
-		object = socket_utils.recvJson(client)
+		object = agent_socket_utils.recvJson(client)
 		if("Unlock" in object):
 			if("Response" in object):
 				print(object['Response'])
@@ -192,10 +190,10 @@ def getUserName_remotely(username,client):
 	"""
 	unlocked=False
 	print("Logging in as {}".format(username))
-	socket_utils.sendJson(client,{"FacialRecognition": True, "ForLogin": True,"ForReturnCar":False, "email":username,"rego":rego,"date_time": str(datetime.datetime.now())})
+	agent_socket_utils.sendJson(client,{"FacialRecognition": True, "ForLogin": True,"ForReturnCar":False, "email":username,"rego":rego,"date_time": str(datetime.datetime.now())})
 	print("Waiting for Confirmation...")
 	while(True):
-		object = socket_utils.recvJson(client)
+		object = agent_socket_utils.recvJson(client)
 		if("Unlock" in object):
 			if("Response" in object):
 				print(object['Response'])
@@ -231,10 +229,10 @@ def returnCar(username,client):
 
 	"""
     print("Trying to return car for {}".format(username))
-    socket_utils.sendJson(client, {"ForLogin": False,"ForReturnCar":True,"email": username, "rego": rego})
+    agent_socket_utils.sendJson(client, {"ForLogin": False,"ForReturnCar":True,"email": username, "rego": rego})
     print("Waiting for Confirmation...")
     while(True):
-        object = socket_utils.recvJson(client)
+        object = agent_socket_utils.recvJson(client)
         if(object['Response']=="Success"):
             print("Car Returned successfully, thank you for using our services")
             print()
@@ -263,7 +261,7 @@ def recognise_face(unlocked, client):
 	    return unlocked
 	else:
 	    print("Unable to verify in master database, please try again")
-
+		return False
 
 # Execute program.
 if __name__ == "__main__":

@@ -134,8 +134,8 @@ def hashing_password(email,password,db_connection):
                                   password.encode('utf-8'),
                                   salt.encode('ascii'),
                                   100000)
-    encryptedPassword = binascii.hexlify(encryptedPassword).decode('ascii')
-    return encryptedPassword
+    encryptedPass = binascii.hexlify(encryptedPassword).decode('ascii')
+    return encryptedPass
 
 #new Function to verify hashed password input against the password stored in the database
 def verify_password_new(stored_password,provided_password):

@@ -29,8 +29,6 @@ def download_blob():
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(source_blob_name)
         blob.download_to_filename(destination_file_name)
-        print(
-                "Blob {} downloaded to {}.".format(source_blob_name, destination_file_name))
 
 
 def allowed_file(filename):
@@ -78,8 +76,8 @@ def register():
                     response=requests.post(url,json=result)
                     response=response.text
                     if response:
-                        response=response.strip("\"")
-                        response=response.strip("\"")
+                        response=response.replace('"','')
+                        response=response.replace('\n','')
                     if response.__contains__("success"):
                         dir=os.path.join("Encoding/dataset/",request.form['email'])
                         os.mkdir(dir)
@@ -163,9 +161,6 @@ def home():
                     if response:
                         response=response.replace('"',"")
                         response=response.replace("\n","")
-                    print("This is the cancellation response")
-                    print(response)
-                    print("\n\n\n")
                     if response.__contains__("Booking successfully cancelled"):
                         flash(f'Booking Cancelled', 'success')
                         url=("http://127.0.0.1:5000/confirmedbookings/"+session['email']) #API call to fetch confirmed bookings of the logged in customer to be able to display on cancel page
@@ -179,7 +174,6 @@ def home():
 
         else:
             return render_template('home.html',title='Home',user=username,orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None,confirmedbookings=confirmedbookings)
-    print("\n\n\n")
     return render_template('home.html',title='Home',user=username,orderhistory=orderhistory, booking=None,availablecars=availablecars,confirmedbookings=confirmedbookings)
 
 @site.route("/logout",methods=['GET','POST'])
@@ -216,13 +210,13 @@ def booking():
                 response=requests.post(url, json=result)
                 response=response.text
                 if response:
-                    response=response.strip("\"")
-                    response=response.strip("\"")
+                    response=response.replace('"','')
+                    response=response.replace('\n','')
                 if response.__contains__("Vehicle Booked"):
                     flash(f'Booking Successful', 'success')
                     return redirect(url_for('site.home'))
-                elif response.__contains__("Vehicle Already Booked"):
-                    flash(f'Vehicle Is Unavailble for the requested time slot, please try another suitable time slot')
+                elif response.__contains__("Vehicl already"):
+                    flash(f'Vehicle Is Unavailble for the requested time slot, please try another suitable time slot','danger')
                     return redirect(url_for('site.home'))
                 else:
                     flash(f'Booking cannot be made, please try again later or with a different car/dates\nWe apologise for inconvenience caused','danger')
