@@ -58,7 +58,45 @@ class test_database_utils(unittest.TestCase):
 			self.assertTrue(db.insert_user("JoniBoi", "Pope", "John Paul II", "pope", "thepope@stpeters.vt") == "success")
 			self.assertTrue(count+2 == self.countPeople())
 
+	def test_insert_employee(self):
 
+		with self.db as db:
+
+			print("Test insert employee")
+
+			self.assertTrue(db.create_employee('Hubert','Farnsworth','password','0444000111','MANAGER') == 'success')
+			self.assertTrue(db.create_employee('Hubert','Farnsworth','password','0444000111','MANAGER') == 'Email already used')
+			self.assertTrue(db.create_employee('Taronga','Leehla','password','0444000111','STARSHIP CAPTAIN') == 'invalid role')
+
+	def test_get_employee(self):
+
+		with self.db as db:
+
+			db.create_employee('Hubert','Farnsworth','password','0444000111','MANAGER')
+
+			employee = db.return_employee('H.F@carshare.com')
+			employee = employee.pop()
+
+			self.assertTrue(employee['username'] == 'HubertFarnsworth')
+			self.assertTrue(employee['role'] == 'MANAGER')
+			self.assertTrue(employee['email'] == 'H.F@carshare.com')
+
+	def test_get_employee_type(self):
+
+		with self.db as db:
+
+			db.create_employee('Hubert','Farnsworth','password','0444000111','MANAGER')
+			db.create_employee('Hermes','Conrad','password','0444000111','ADMIN')
+			db.create_employee('Scruffy','Janitor','password','0444000111','MECHANIC')
+			db.create_employee('Taronga','Leelha','password','0444000111','MECHANIC')
+			db.create_employee('Zap','Brannigan','password','0444000111','ADMIN')
+			db.create_employee('Richard','Nixon','password','0444000111','MANAGER')
+			db.create_employee('Spiro','Agnew','password','0444000111','MANAGER')
+
+			self.assertTrue(len(db.return_employee_type('MANAGER'))==3)
+			self.assertTrue(len(db.return_employee_type('ADMIN'))==2)
+			self.assertTrue(len(db.return_employee_type('MECHANIC'))==2)
+			self.assertTrue(len(db.return_all_employees())==7)
 		
 if __name__ == "__main__":
     unittest.main()

@@ -419,6 +419,58 @@ class databaseUtils:
 			self.connection.commit()
 			return "Success"
 
+	#This method is designed to create an employee.
+	def create_employee(self, first_name, last_name, password, phone_number, role):
+
+		if role != 'MANAGER':
+			if role != 'ADMIN':
+				if role != 'MECHANIC':
+					return 'invalid role'
+
+		with self.connection.cursor(DictCursor) as cur:
+			response = "success"
+			email = "{}.{}@carshare.com".format(first_name[0], last_name[0])
+			user_name = "{}{}".format(first_name,last_name)
+
+			try:
+				cur.execute("INSERT INTO user VALUES \
+					('{}','{}','{}','{}','{}','{}')".format(user_name, first_name, last_name, password, email, role))
+				cur.execute("INSERT INTO user_role VALUES ('{}','{}','{}',0,'{}')".format(email, user_name,email, role))
+				self.connection.commit()
+			except:
+				response = "Email already used"
+			self.connection.commit()
+			return response
+
+	#Methods to return employees
+	def return_employee(self, email):
+
+		with self.connection.cursor(DictCursor) as cur:
+
+			cur.execute("SELECT * FROM user WHERE email = '{}'".format(email))
+
+			return cur.fetchall()
+
+	def return_employee_type(self, role):
+
+		with self.connection.cursor(DictCursor) as cur:
+
+			cur.execute("SELECT * FROM user WHERE role = '{}'".format(role))
+
+			return cur.fetchall()
+
+	def return_all_employees(self):
+
+		with self.connection.cursor(DictCursor) as cur:		
+
+			cur.execute("SELECT * FROM user WHERE role = 'MECHANIC' or role = 'ADMIN' or role = 'MANAGER'")
+
+			return cur.fetchall()
+			
+
+
+
+
 	#Create Service Request
 
 	#Get Service Request
@@ -427,15 +479,7 @@ class databaseUtils:
 
 	#Service Complete
 
-	#Add Employee
-
 	#Activate Employee
-
-	#Get Employee
-
-	#Get All Employees
-
-	#Get All Employee Type
 
 	#Add Engineer
 
