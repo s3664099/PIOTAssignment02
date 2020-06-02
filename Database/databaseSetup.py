@@ -22,7 +22,7 @@ password = 'password'
 database_used = 'car_app_db'
 import datetime
 from datetime import timedelta
-import Database.database_utils as database
+import database_utils as database
 
 db = database.databaseUtils(hostname, username, password, database_used)
 
@@ -167,6 +167,45 @@ def createTables(conn):
 
 	conn.commit()
 
+def update_database(conn):
+
+	cur = conn.cursor()
+
+	"""
+	try:
+		cur.execute("ALTER TABLE user ADD role VARCHAR(20)")
+	except pymysql.Error as e:
+		print("Error 01: {}".format(e))
+
+	try:
+		cur.execute("CREATE TABLE user_role (email VARCHAR(28), username VARCHAR(20), phone_number VARCHAR(20), is_active BOOLEAN,\
+					role VARCHAR(20), PRIMARY KEY (email), FOREIGN KEY (email) REFERENCES user(email))")
+	except pymysql.Error as e:
+		print("Error 02: {}".format(e))
+	
+
+	try:
+		cur.execute("CREATE TABLE engineer (email VARCHAR(28), username VARCHAR(20), mac_address VARCHAR(20),\
+					PRIMARY KEY (email), FOREIGN KEY (email) REFERENCES user(email))")
+	except pymysql.Error as e:
+		print("Error 03: {}".format(e))
+
+	"""
+
+	try:
+		cur.execute("DROP TABLE car_service")
+	except pymysql.Error as e:
+		print("Error 04: {}".format(e))
+
+	try:
+		cur.execute("CREATE TABLE car_service (request_no INT NOT NULL AUTO_INCREMENT, rego VARCHAR(10), email VARCHAR(28), needs_service BOOLEAN, engineer_assigned BOOLEAN,\
+					 post_code INT(4), PRIMARY KEY (request_no), FOREIGN KEY (rego) REFERENCES car(rego),\
+					FOREIGN KEY (email) REFERENCES user(email))")
+	except pymysql.Error as e:
+		print("Error 04: {}".format(e))
+
+	conn.commit()	
+
 def sql_queries(conn):
 	"""
 	Queries
@@ -174,6 +213,15 @@ def sql_queries(conn):
 	"""
 
 	cur = conn.cursor()
+
+	cur.execute("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'car_service'")
+
+	for x in cur.fetchall():
+		print(x)
+
+
+
+
 	"""
 	cur.execute("SELECT locationLong, locationLat, rego FROM car")
 
@@ -181,16 +229,18 @@ def sql_queries(conn):
 		cur.execute("UPDATE car SET locationLong = '"+str(x["locationLat"])+"', locationLat= '"+str(x["locationLong"])+"' WHERE rego = '"+x["rego"]+"'")
 
 	conn.commit()
-	"""
+
 	cur.execute("SELECT locationLong, locationLat FROM car")
 
 	for x in cur.fetchall():
 		print("Longatude: {} latitude: {}",x["locationLong"],x["locationLat"])
+	"""		
 
 
 conn = db.get_connection()
 #clearDatabases(conn)
 #createTables(conn)
+#update_database(conn)
 sql_queries(conn)
 
 

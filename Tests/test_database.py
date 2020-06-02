@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0,'..')
+
 import unittest
 import db_singleton as singleton
 import Database.database_utils as database
@@ -230,15 +233,6 @@ class test_database_utils(unittest.TestCase):
 			self.assertTrue(db.get_availability('XYZ987').pop()['available']==0)
 			db.update_availability("XYZ987",1)
 			self.assertTrue(db.get_availability('XYZ987').pop()['available']==1)
-
-	def test_get_booking_by_date(self):
-		print("Test get booking by date")
-		with self.db as db:
-
-			date = str(datetime.datetime.now())
-
-			self.assertTrue(len(db.return_booking_by_date("U75PYV", date))==1)
-			self.assertTrue(db.return_booking_by_date("U75PYV", date).pop()['email']=='fry@planetExpress.earth')
 		
 if __name__ == "__main__":
     unittest.main()

@@ -47,7 +47,19 @@ def clearDatabases(conn):
 	try:
 		cur.execute("DROP TABLE booking")
 	except pymysql.Error as e:
-		print("Error 01: {}", e)		
+		print("Error 01: {}", e)
+	try:
+		cur.execute("DROP TABLE user_role")
+	except pymysql.Error as e:
+		print("Error 01: {}", e)
+	try:
+		cur.execute("DROP TABLE engineer")
+	except pymysql.Error as e:
+		print("Error 01: {}", e)	
+	try:
+		cur.execute("DROP TABLE car_service")
+	except pymysql.Error as e:
+		print("Error 01: {}", e)	
 
 #This function creates the tables associated with the database
 def createTables(conn):
@@ -74,7 +86,7 @@ def createTables(conn):
 
 	try:
 		cur.execute("CREATE TABLE user (username VARCHAR(20), firstname VARCHAR(20), lastname VARCHAR(20),\
-					password VARCHAR(20), email VARCHAR(28), PRIMARY KEY (email))")
+					password VARCHAR(20), email VARCHAR(28), role VARCHAR(20), PRIMARY KEY (email))")
 	except pymysql.Error as e:
 		print("Error 04: {}", e)
 	try:
@@ -84,6 +96,26 @@ def createTables(conn):
 					FOREIGN KEY (email) REFERENCES user(email))")
 	except pymysql.Error as e:
 		print("Error 05: {}", e)
+
+	try:
+		cur.execute("CREATE TABLE user_role (email VARCHAR(28), username VARCHAR(20), phone_number VARCHAR(20), is_active BOOLEAN,\
+					role VARCHAR(20), PRIMARY KEY (email), FOREIGN KEY (email) REFERENCES user(email))")
+	except pymysql.Error as e:
+		print("Error 06: {}".format(e))
+	
+
+	try:
+		cur.execute("CREATE TABLE engineer (email VARCHAR(28), username VARCHAR(20), mac_address VARCHAR(20),\
+					PRIMARY KEY (email), FOREIGN KEY (email) REFERENCES user(email))")
+	except pymysql.Error as e:
+		print("Error 07: {}".format(e))
+
+	try:
+		cur.execute("CREATE TABLE car_service (request_no INT NOT NULL AUTO_INCREMENT, rego VARCHAR(10), email VARCHAR(28), needs_service BOOLEAN, engineer_assigned BOOLEAN,\
+					 post_code INT(4), PRIMARY KEY (request_no), FOREIGN KEY (rego) REFERENCES car(rego),\
+					FOREIGN KEY (email) REFERENCES user(email))")
+	except pymysql.Error as e:
+		print("Error 08: {}".format(e))
 
 	#The database is populated
 	try:
@@ -115,8 +147,8 @@ def createTables(conn):
 		cur.execute("INSERT INTO makemodel VALUES ('Holden', 'Astra', 'Hatchback')")
 		cur.execute("INSERT INTO makemodel VALUES ('Holden', 'Barina', 'Small')")
 
-		cur.execute("INSERT INTO user VALUES ('Johnno', 'John','Delaney','abc123','john@password.com') ")
-		cur.execute("INSERT INTO user VALUES ('Fry', 'Philip','Fry','Leelha','fry@planetExpress.earth') ")
+		cur.execute("INSERT INTO user VALUES ('Johnno', 'John','Delaney','abc123','john@password.com','CUSTOMER') ")
+		cur.execute("INSERT INTO user VALUES ('Fry', 'Philip','Fry','Leelha','fry@planetExpress.earth','CUSTOMER') ")
 
 		cur.execute("INSERT INTO car VALUES ('XYZ987', 'Holden', 'Commodore',-37.799972,144.977393,'green',1)")
 		cur.execute("INSERT INTO car VALUES ('ABC123', 'Holden', 'Commodore',-37.800633,144.979356,'blue',1)")
@@ -144,7 +176,7 @@ def createTables(conn):
 					 ('U75PYV', 'fry@planetExpress.earth', '"+str(pickup)+"','"+str(dropoff)+"',42.00,'BOOKED')")
 
 	except pymysql.Error as e:
-		print("Error 06: {}", e)
+		print("Error 09: {}", e)
 
 	conn.commit()	
 

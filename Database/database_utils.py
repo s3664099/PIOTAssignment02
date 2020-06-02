@@ -5,7 +5,7 @@
 import pymysql
 import datetime
 from pymysql.cursors import DictCursor
-import Database.gcalendar_utils as gcalendar
+#import Database.gcalendar_utils as gcalendar
 
 #A class for creating a connection to the database to enable manipulation
 #and retrieval.
@@ -36,7 +36,7 @@ class databaseUtils:
     			db = databaseUtils.DATABASE, charset='utf8', cursorclass=pymysql.cursors.DictCursor)
 		self.connection = myConnection
 
-		self.service = gcalendar.connect_calendar()
+		#self.service = gcalendar.connect_calendar()
 
 	#The following methods are for closing the database
 	def close_connection(self):
@@ -79,7 +79,7 @@ class databaseUtils:
 			response = "success"
 			try:
 				cur.execute("INSERT INTO user VALUES \
-					('"+user_name+"','"+first_name+"','"+last_name+"','"+password+"','"+email+"')")
+					('{}','{}','{}','{}','{}','CUSTOMER')".format(user_name, first_name, last_name, password, email))
 				self.connection.commit()
 			except:
 				response = "Email already used"
@@ -106,10 +106,10 @@ class databaseUtils:
 		"""
 
 		with self.connection.cursor(DictCursor) as cur:
-			results = cur.execute(query+" email='"+user_name+"'")
+			results = cur.execute("{} email='{}'".format(query,user_name))
 			
 			if results == 0:
-				cur.execute(query+" username='"+user_name+"'")
+				cur.execute("{} username='{}'".format(query,user_name))
 
 			return cur.fetchall()
 
@@ -130,7 +130,7 @@ class databaseUtils:
 
 		"""
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT * FROM booking WHERE email='"+email+"'")
+			cur.execute("SELECT * FROM booking WHERE email='{}'".format(email))
 
 			return cur.fetchall()
 
@@ -144,8 +144,8 @@ class databaseUtils:
 		"""
 
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT * FROM booking where email='"+email+"' and status='BOOKED' and rego='"+rego+"' and \
-						(pickuptime <='"+time+"' and dropofftime>='"+time+"')")
+			cur.execute("SELECT * FROM booking where email='{}' and status='BOOKED' and rego='{}' and \
+						(pickuptime <='{}' and dropofftime>='{}')".format(email, rego, time, time))
 
 			return cur.fetchall()
 
@@ -157,7 +157,7 @@ class databaseUtils:
 		"""
 
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT * FROM booking where email='"+email+"' and status='ACTIVE' and rego='"+rego+"'")
+			cur.execute("SELECT * FROM booking where email='{}' and status='ACTIVE' and rego='{}'".format(email, rego))
 
 			return cur.fetchall()
 			
@@ -168,7 +168,7 @@ class databaseUtils:
 
 		"""
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT * FROM booking where email='"+email+"' and status='BOOKED'")
+			cur.execute("SELECT * FROM booking where email='{}' and status='BOOKED'".format(email))
 
 			return cur.fetchall()
 
@@ -183,8 +183,8 @@ class databaseUtils:
 		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
 				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
-				AND m.bodytype = b.bodytype AND c.available = 1 AND (c.rego='"+search+"' OR c.make='"+search+"' OR c.model='"+search+"' \
-				OR c.colour='"+search+"' OR b.bodytype='"+search+"' OR  seats='"+search+"') ")
+				AND m.bodytype = b.bodytype AND c.available = 1 AND (c.rego='{}' OR c.make='{}' OR c.model='{}' \
+				OR c.colour='{}' OR b.bodytype='{}' OR  seats='{}') ".format(search, search, search, search, search, search))
 
 			cars = cur.fetchall()
 			if cars:
@@ -247,7 +247,8 @@ class databaseUtils:
 		"""
 		with self.connection.cursor(DictCursor) as cur:
 			try:
-				cur.execute("UPDATE car SET available = "+str(available)+" WHERE rego = '"+rego+"' and available!='"+str(available)+"'")
+				cur.execute("UPDATE car SET available = {} WHERE rego = '{}' and available!='\
+					{}'".format(available, rego, available))
 			except pymysql.Error as e:
 					print("Caught error %d: %s" % (e.args[0], e.args[1]))
 					return "Error"
@@ -262,7 +263,7 @@ class databaseUtils:
 		""" 
 		with self.connection.cursor(DictCursor) as cur:
 
-			cur.execute("SELECT available FROM car WHERE rego = '"+rego+"'")	
+			cur.execute("SELECT available FROM car WHERE rego = '{}'".format(rego))	
 
 			return cur.fetchall()	
 
@@ -288,7 +289,7 @@ class databaseUtils:
 		with self.connection.cursor(DictCursor) as cur:
 
 			#gets booking history for vehicle
-			cur.execute("SELECT pickuptime, dropofftime, status FROM booking WHERE rego = '"+rego+"'")
+			cur.execute("SELECT pickuptime, dropofftime, status FROM booking WHERE rego = '{}'".format(rego))
 
 			#Iterates through booking history
 			for bookings in cur.fetchall():
@@ -303,7 +304,7 @@ class databaseUtils:
 
 			#The hourly price for that particular car is retrieved form the database
 			cur.execute("SELECT hourlyPrice FROM bodytype JOIN makemodel on makemodel.bodytype = bodytype.bodytype\
-						JOIN car ON car.model = makemodel.model WHERE rego = '"+rego+"'")
+						JOIN car ON car.model = makemodel.model WHERE rego = '{}'".format(rego))
 
 			#Source: https://stackoverflow.com/questions/1345827/how-do-i-find-the-time-difference-between-two-datetime-objects-in-python
 			#Calculates the total cost of the booking
@@ -317,7 +318,7 @@ class databaseUtils:
 			total_cost = price*(booking_time+1)
 			total_cost = "{:.2f}".format(total_cost)
 
-			cur.execute("SELECT make, model FROM car WHERE rego = '"+rego+"'")
+			cur.execute("SELECT make, model FROM car WHERE rego = '{}'".format(rego))
 			car_type = cur.fetchall().pop()
 			googleId="None"
 			try:
@@ -329,7 +330,8 @@ class databaseUtils:
 			#The booking is added to the database and the results returned to the user
 			try:
 				cur.execute("INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, status, googleEventId) \
-						VALUES ('"+rego+"', '"+name+"', '"+str(pickup)+"','"+str(dropoff)+"',"+total_cost+", 'BOOKED','"+googleId+"')")
+						VALUES ('{}', '{}', '{}','{}',{}, 'BOOKED','{}')\
+						".format(rego, name, pickup, dropoff, total_cost, googleId))
 			except pymysql.Error as e:
 				print("Caught error %d: %s" % (e.args[0], e.args[1]))
 				return "Error"
@@ -337,7 +339,7 @@ class databaseUtils:
 			cur.execute("SELECT LAST_INSERT_ID()")
 			insert_id = cur.fetchall().pop()
 
-			return "Vehicle Booked, your booking number is "+str(insert_id['LAST_INSERT_ID()'])+" and the price is $"+total_cost
+			return "Vehicle Booked, your booking number is {} and the price is ${}".format(insert_id['LAST_INSERT_ID()'], total_cost)
 
 	#This method is used to cancel a booking for the vehicle.
 	def cancel_booking(self, name, booking_number):
@@ -350,7 +352,7 @@ class databaseUtils:
 
 			#gets the booking based on the booking number
 			row_count = cur.execute("SELECT email, pickuptime, dropofftime, status, googleEventId FROM booking WHERE \
-									bookingnumber = '"+str(booking_number)+"'")
+									bookingnumber = '{}'".format(booking_number))
 
 			#Checks to see if the booking exists
 			if row_count == 0:
@@ -380,7 +382,7 @@ class databaseUtils:
 				try:
 
 					#If they do, the booking is cancelled and the entry cleared
-					cur.execute("UPDATE booking SET status = 'CANCELLED' WHERE bookingnumber = '"+str(booking_number)+"'")
+					cur.execute("UPDATE booking SET status = 'CANCELLED' WHERE bookingnumber = '{}'".format(booking_number))
 				except pymysql.Error as e:
 					print("Caught error %d: %s" % (e.args[0], e.args[1]))
 					return "Error"
@@ -397,7 +399,7 @@ class databaseUtils:
 
 		with self.connection.cursor(DictCursor) as cur:
 
-			cur.execute("SELECT status FROM booking WHERE bookingnumber = '"+str(booking_number)+"'")
+			cur.execute("SELECT status FROM booking WHERE bookingnumber = '{}'".format(booking_number))
 
 			return cur.fetchall()
 
@@ -410,12 +412,35 @@ class databaseUtils:
 
 		with self.connection.cursor(DictCursor) as cur:
 			try:
-				cur.execute("UPDATE booking SET status = '"+status+"' WHERE bookingnumber = '"+str(booking_number)+"'")
+				cur.execute("UPDATE booking SET status = '{}' WHERE bookingnumber = '{}'".format(status, booking_number))
 			except pymysql.Error as e:
 					print("Caught error %d: %s" % (e.args[0], e.args[1]))
 					return "Error"
 			self.connection.commit()
 			return "Success"
+
+	#Create Service Request
+
+	#Get Service Request
+
+	#Assign Engineer
+
+	#Service Complete
+
+	#Add Employee
+
+	#Activate Employee
+
+	#Get Employee
+
+	#Get All Employees
+
+	#Get All Employee Type
+
+	#Add Engineer
+
+	#Get MAC Address
+
 
 
 				
