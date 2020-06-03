@@ -91,6 +91,16 @@ def register():
 
     return render_template("register.html",title='Register',form=form)
 
+@site.route("/admin",methods=['GET','POST'])
+def admin():
+    if request.method=='POST':
+        if ('find' in request.form):
+            url=("http://127.0.0.1:5000/bookinghistory/"+request.form['search'])
+            response=requests.get(url)
+            bookinghistory=json.loads(response.text)
+            if bookinghistory:
+                return render_template("admin.html",title='Admin', rentalhistory=bookinghistory)
+    return render_template("admin.html",title='Admin')
 
 @site.route("/",methods=['GET','POST'])
 def login():
@@ -98,26 +108,43 @@ def login():
     Login form from forms.py
 
     """
+    print("I am here")
+    print(request.form)
+    form = LoginForm()
     # Use REST API.
-    form = LoginForm()    
-    if form.validate_on_submit():
-        url=("http://127.0.0.1:5000/hashme")
-        password=requests.post(url, json=request.form)
-        password=password.text
-        password=password.replace("\n",'')
-        password=password.replace('"','')
-        data={"email":request.form["email"],"password": password}
-        url=("http://127.0.0.1:5000/login")
-        response=requests.post(url,json=data)
-        response=response.text
-        if response.__contains__("success"):    
-                session['email']=form.email.data
-                print("Session set")
-                return redirect(url_for('site.home'))
-        elif response.__contains__("password incorrect"):
-                flash(f'Password is incorrect','danger')
-        else:
-            flash(f'Username not found','danger')
+    if request.method=="POST":
+        print("After initializing form, inside POST")
+        if form.validate_on_submit():
+            url=("http://127.0.0.1:5000/role/"+request.form['role']+"/"+request.form['email'])
+            role=requests.get(url)
+            role=role.text
+            role=role.replace("\n",'')
+            role=role.replace('"','')
+            if role == 'Error':
+                flash(f'The selected role is not applicable to the provided email, please validate email and role','danger')
+                return render_template('login.html',title='Login',form=form)
+            else:
+                session['role']=request.form['role']
+            url=("http://127.0.0.1:5000/hashme")
+            password=requests.post(url, json=request.form)
+            password=password.text
+            password=password.replace("\n",'')
+            password=password.replace('"','')
+            data={"email":request.form["email"],"password": password}
+            url=("http://127.0.0.1:5000/login")
+            response=requests.post(url,json=data)
+            response=response.text
+            if response.__contains__("success"):    
+                    session['email']=form.email.data
+                    print("Session set")
+                    if(session['role']=='Admin'):
+                        return redirect(url_for('site.admin'))
+                    else:
+                        return redirect(url_for('site.home'))
+            elif response.__contains__("password incorrect"):
+                    flash(f'Password is incorrect','danger')
+            else:
+                flash(f'Username not found','danger')
     return render_template('login.html', title='Login', form=form)
 
 
