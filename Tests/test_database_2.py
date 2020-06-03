@@ -89,8 +89,8 @@ class test_database_utils(unittest.TestCase):
 
 			db.create_employee('Hubert','Farnsworth','password','0444000111','MANAGER')
 			db.create_employee('Hermes','Conrad','password','0444000111','ADMIN')
-			db.create_employee('Scruffy','Janitor','password','0444000111','MECHANIC')
-			db.create_employee('Taronga','Leelha','password','0444000111','MECHANIC')
+			db.create_employee('Scruffy','Janitor','password','0444000111','ENGINEER')
+			db.create_employee('Taronga','Leelha','password','0444000111','ENGINEER')
 			db.create_employee('Zap','Brannigan','password','0444000111','ADMIN')
 			db.create_employee('Richard','Nixon','password','0444000111','MANAGER')
 			db.create_employee('Spiro','Agnew','password','0444000111','MANAGER')
@@ -136,6 +136,67 @@ class test_database_utils(unittest.TestCase):
 
 			self.assertTrue(len(db.get_all_mac_addresses()) == 4)
 			self.assertTrue(db.get_all_mac_addresses().pop()['mac_address']== 'EF:6E:FE:22:2b:36')
+
+	def test_service_request(self):
+
+		with self.db as db:
+
+			db.create_employee('Hermes','Conrad','password','0444000111','ADMIN')
+
+			self.assertTrue(db.create_service_request('U75PYV', 3000, 'H.C@carshare.com') == 'car booked for service. The service number is 1')
+			self.assertTrue(db.create_service_request('PPPQQQ', 3000, 'H.C@carshare.com') == 'Unable to book vehicle for service, no such vehicle exists')
+			self.assertTrue(db.create_service_request('U75PYV', 3000, 'P.Q@email.com') == 'Invalid email. Unable to book vehicle for service')
+			self.assertTrue(db.create_service_request('U75PYV', 3000, 'H.C@carshare.com') == 'A service request has already been booked for vehicle U75PYV')
+
+	def test_get_service_request(self):
+
+		with self.db as db:
+
+			db.create_employee('Hermes','Conrad','password','0444000111','ADMIN')
+			db.create_service_request('U75PYV', 3000, 'H.C@carshare.com')
+			db.create_service_request('AH786B', 3000, 'H.C@carshare.com')
+			db.create_service_request('LMP675', 3000, 'H.C@carshare.com')
+
+			self.assertTrue(db.get_service_request(1).pop()['rego'] == 'U75PYV')
+			self.assertTrue(db.get_service_request(4) == 'No service request found with id 4')
+			self.assertTrue(len(db.get_all_service_requests()) == 3)
+			self.assertTrue(len(db.get_all_unassigned_service_requests()) == 3)
+			self.assertTrue(len(db.get_all_active_service_requests()) == 3)
+
+	def test_assign_engineer(self):
+
+		with self.db as db:
+
+			db.create_employee('Hermes','Conrad','password','0444000111','ADMIN')
+			db.add_engineer('S.J@carshare.com','ScruffyJanitor','EE:6E:FE:22:2b:36')			
+			db.create_service_request('U75PYV', 3000, 'H.C@carshare.com')
+			db.create_service_request('AH786B', 3000, 'H.C@carshare.com')
+			db.create_service_request('LMP675', 3000, 'H.C@carshare.com')
+
+			self.assertTrue(len(db.get_all_unassigned_service_requests()) == 3)
+			self.assertTrue(db.assign_engineer('S.J@carshare.com',1) == "Engineer successfully assigned")
+			self.assertTrue(db.assign_engineer('S.J@carshare.com',1) == "engineer already assigned to this service request")
+			self.assertTrue(db.assign_engineer('S.J@carshare.com',5) == "No service request found with id 5")
+			self.assertTrue(db.assign_engineer('P.P@carshare.com',2) == "No engineer found with email P.P@carshare.com") 
+			self.assertTrue(len(db.get_all_unassigned_service_requests()) == 2)
+
+	def test_service_complete(self):
+
+		with self.db as db:
+
+			db.create_employee('Hermes','Conrad','password','0444000111','ADMIN')
+			db.add_engineer('S.J@carshare.com','ScruffyJanitor','EE:6E:FE:22:2b:36')			
+			db.create_service_request('U75PYV', 3000, 'H.C@carshare.com')
+			db.create_service_request('AH786B', 3000, 'H.C@carshare.com')
+			db.create_service_request('LMP675', 3000, 'H.C@carshare.com')
+			db.assign_engineer('S.J@carshare.com',1)
+
+			self.assertTrue(len(db.get_all_active_service_requests()) == 3)
+			self.assertTrue(db.service_complete(1) == "Service completed")						
+			self.assertTrue(len(db.get_all_active_service_requests()) == 2)
+
+
+
 
 
 		
