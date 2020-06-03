@@ -467,6 +467,65 @@ class databaseUtils:
 
 			return cur.fetchall()
 			
+	#Activate Employee
+	def activate_employee(self, email):
+
+
+		with self.connection.cursor(DictCursor) as cur:
+
+			response = "success"
+
+			if cur.execute("SELECT * FROM user_role WHERE email = '{}'".format(email)):
+				cur.execute("UPDATE user_role SET is_active = 1 WHERE email = '{}'".format(email))
+				self.connection.commit()
+			else:
+				response = "user not found"							
+
+			return response
+
+	def add_engineer(self, email, username, mac_address):
+
+		with self.connection.cursor(DictCursor) as cur:
+
+			cur.execute("INSERT INTO engineer VALUES ('{}','{}','{}')".format(email, username, mac_address))
+
+			self.connection.commit()
+
+	def get_engineer(self, email):
+
+		with self.connection.cursor(DictCursor) as cur:
+
+			results = cur.execute("SELECT * FROM engineer WHERE email = '{}'".format(email))
+
+			if results:
+				return cur.fetchall()
+			else:
+				return "No engineer found with that email"
+
+	def get_mac_address(self, email):
+
+		with self.connection.cursor(DictCursor) as cur:	
+
+			results = cur.execute("SELECT mac_address FROM engineer WHERE email = '{}'".format(email))
+
+			if results:
+
+				return cur.fetchall()
+
+			else:
+
+				return "No engineer found with that email"
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -478,12 +537,6 @@ class databaseUtils:
 	#Assign Engineer
 
 	#Service Complete
-
-	#Activate Employee
-
-	#Add Engineer
-
-	#Get MAC Address
 
 
 

@@ -83,6 +83,8 @@ class test_database_utils(unittest.TestCase):
 
 	def test_get_employee_type(self):
 
+		print("Test get employee type")
+
 		with self.db as db:
 
 			db.create_employee('Hubert','Farnsworth','password','0444000111','MANAGER')
@@ -97,6 +99,34 @@ class test_database_utils(unittest.TestCase):
 			self.assertTrue(len(db.return_employee_type('ADMIN'))==2)
 			self.assertTrue(len(db.return_employee_type('MECHANIC'))==2)
 			self.assertTrue(len(db.return_all_employees())==7)
+
+	def test_activate_employee(self):
+
+		print("Test activate employee")
+
+		with self.db as db:
+
+			db.create_employee('Hubert','Farnsworth','password','0444000111','MANAGER')
+
+			self.assertTrue(db.activate_employee("H.F@carshare.com") == "success")
+
+			self.assertTrue(db.activate_employee("P.Q@carshare.com") == "user not found")
+
+	def test_add_engineer(self):
+
+		print("Test Engineer")
+
+		with self.db as db:
+
+			db.add_engineer('S.J@carshare.com','ScruffyJanitor','EE:6E:FE:22:2b:36')
+
+			self.assertTrue(db.get_engineer('S.J@carshare.com').pop()['username'] == 'ScruffyJanitor')
+			self.assertTrue(db.get_mac_address('S.J@carshare.com').pop()['mac_address'] == 'EE:6E:FE:22:2b:36')
+			self.assertTrue(db.get_engineer('C.B@carshare.com') == "No engineer found with that email")
+			self.assertTrue(db.get_mac_address('C.B@carshare.com') == "No engineer found with that email")
+
+
+
 		
 if __name__ == "__main__":
     unittest.main()
