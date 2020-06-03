@@ -125,6 +125,17 @@ class test_database_utils(unittest.TestCase):
 			self.assertTrue(db.get_engineer('C.B@carshare.com') == "No engineer found with that email")
 			self.assertTrue(db.get_mac_address('C.B@carshare.com') == "No engineer found with that email")
 
+	def test_get_all_mac_addresses(self):
+
+		with self.db as db:
+
+			db.add_engineer('S.I@carshare.com','ScruffyJanitor','EE:6E:FF:22:2b:36')
+			db.add_engineer('S.J@carshare.com','ScruffyJanitor','EE:6E:FE:22:2b:36')
+			db.add_engineer('T.J@carshare.com','ScruffyJanitor','EF:6E:FE:22:2b:36')
+			db.add_engineer('Q.J@carshare.com','ScruffyJanitor','EE:6E:FE:23:2b:36')
+
+			self.assertTrue(len(db.get_all_mac_addresses()) == 4)
+			self.assertTrue(db.get_all_mac_addresses().pop()['mac_address']== 'EF:6E:FE:22:2b:36')
 
 
 		
