@@ -86,7 +86,7 @@ def createTables(conn):
 
 	try:
 		cur.execute("CREATE TABLE user (username VARCHAR(20), firstname VARCHAR(20), lastname VARCHAR(20),\
-					password VARCHAR(20), email VARCHAR(28), role VARCHAR(20), PRIMARY KEY (email))")
+					password VARCHAR(20), email VARCHAR(28), PRIMARY KEY (email))")
 	except pymysql.Error as e:
 		print("Error 04: {}", e)
 	try:
@@ -98,14 +98,14 @@ def createTables(conn):
 		print("Error 05: {}", e)
 
 	try:
-		cur.execute("CREATE TABLE user_role (email VARCHAR(28), username VARCHAR(20), phone_number VARCHAR(20), is_active BOOLEAN,\
+		cur.execute("CREATE TABLE user_role (email VARCHAR(28), phone_number VARCHAR(20), is_active BOOLEAN,\
 					role VARCHAR(20), PRIMARY KEY (email), FOREIGN KEY (email) REFERENCES user(email))")
 	except pymysql.Error as e:
 		print("Error 06: {}".format(e))
 	
 
 	try:
-		cur.execute("CREATE TABLE engineer (email VARCHAR(28), username VARCHAR(20), mac_address VARCHAR(20),\
+		cur.execute("CREATE TABLE engineer (email VARCHAR(28), mac_address VARCHAR(20),\
 					PRIMARY KEY (email), FOREIGN KEY (email) REFERENCES user(email))")
 	except pymysql.Error as e:
 		print("Error 07: {}".format(e))
@@ -147,8 +147,8 @@ def createTables(conn):
 		cur.execute("INSERT INTO makemodel VALUES ('Holden', 'Astra', 'Hatchback')")
 		cur.execute("INSERT INTO makemodel VALUES ('Holden', 'Barina', 'Small')")
 
-		cur.execute("INSERT INTO user VALUES ('Johnno', 'John','Delaney','abc123','john@password.com','CUSTOMER') ")
-		cur.execute("INSERT INTO user VALUES ('Fry', 'Philip','Fry','Leelha','fry@planetExpress.earth','CUSTOMER') ")
+		cur.execute("INSERT INTO user VALUES ('Johnno', 'John','Delaney','abc123','john@password.com') ")
+		cur.execute("INSERT INTO user VALUES ('Fry', 'Philip','Fry','Leelha','fry@planetExpress.earth') ")
 
 		cur.execute("INSERT INTO car VALUES ('XYZ987', 'Holden', 'Commodore',-37.799972,144.977393,'green',1)")
 		cur.execute("INSERT INTO car VALUES ('ABC123', 'Holden', 'Commodore',-37.800633,144.979356,'blue',1)")

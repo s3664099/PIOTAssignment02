@@ -51,6 +51,7 @@ class test_database_utils(unittest.TestCase):
 		with self.db as db:
 			print("Test Insert")
 			count = self.countPeople()
+
 			self.assertTrue(db.insert_user("Ralphie", "Ralpho", "Emmerson", "poetry", "ralph@deadpoet.com") == "success")
 			self.assertTrue(count+1 == self.countPeople())
 			self.assertTrue(db.insert_user("Ralphie", "Ralpho", "Emmerson", "poetry", "ralph@deadpoet.com") == "Email already used")
@@ -77,7 +78,6 @@ class test_database_utils(unittest.TestCase):
 			employee = db.return_employee('H.F@carshare.com')
 			employee = employee.pop()
 
-			self.assertTrue(employee['username'] == 'HubertFarnsworth')
 			self.assertTrue(employee['role'] == 'MANAGER')
 			self.assertTrue(employee['email'] == 'H.F@carshare.com')
 
@@ -97,7 +97,7 @@ class test_database_utils(unittest.TestCase):
 
 			self.assertTrue(len(db.return_employee_type('MANAGER'))==3)
 			self.assertTrue(len(db.return_employee_type('ADMIN'))==2)
-			self.assertTrue(len(db.return_employee_type('MECHANIC'))==2)
+			self.assertTrue(len(db.return_employee_type('ENGINEER'))==2)
 			self.assertTrue(len(db.return_all_employees())==7)
 
 	def test_activate_employee(self):
@@ -111,16 +111,14 @@ class test_database_utils(unittest.TestCase):
 			self.assertTrue(db.activate_employee("H.F@carshare.com") == "success")
 
 			self.assertTrue(db.activate_employee("P.Q@carshare.com") == "user not found")
-
 	def test_add_engineer(self):
 
 		print("Test Engineer")
 
 		with self.db as db:
 
-			db.add_engineer('S.J@carshare.com','ScruffyJanitor','EE:6E:FE:22:2b:36')
+			db.add_engineer('S.J@carshare.com','EE:6E:FE:22:2b:36')
 
-			self.assertTrue(db.get_engineer('S.J@carshare.com').pop()['username'] == 'ScruffyJanitor')
 			self.assertTrue(db.get_mac_address('S.J@carshare.com').pop()['mac_address'] == 'EE:6E:FE:22:2b:36')
 			self.assertTrue(db.get_engineer('C.B@carshare.com') == "No engineer found with that email")
 			self.assertTrue(db.get_mac_address('C.B@carshare.com') == "No engineer found with that email")
@@ -129,10 +127,10 @@ class test_database_utils(unittest.TestCase):
 
 		with self.db as db:
 
-			db.add_engineer('S.I@carshare.com','ScruffyJanitor','EE:6E:FF:22:2b:36')
-			db.add_engineer('S.J@carshare.com','ScruffyJanitor','EE:6E:FE:22:2b:36')
-			db.add_engineer('T.J@carshare.com','ScruffyJanitor','EF:6E:FE:22:2b:36')
-			db.add_engineer('Q.J@carshare.com','ScruffyJanitor','EE:6E:FE:23:2b:36')
+			db.add_engineer('S.I@carshare.com','EE:6E:FF:22:2b:36')
+			db.add_engineer('S.J@carshare.com','EE:6E:FE:22:2b:36')
+			db.add_engineer('T.J@carshare.com','EF:6E:FE:22:2b:36')
+			db.add_engineer('Q.J@carshare.com','EE:6E:FE:23:2b:36')
 
 			self.assertTrue(len(db.get_all_mac_addresses()) == 4)
 			self.assertTrue(db.get_all_mac_addresses().pop()['mac_address']== 'EF:6E:FE:22:2b:36')
@@ -168,7 +166,7 @@ class test_database_utils(unittest.TestCase):
 		with self.db as db:
 
 			db.create_employee('Hermes','Conrad','password','0444000111','ADMIN')
-			db.add_engineer('S.J@carshare.com','ScruffyJanitor','EE:6E:FE:22:2b:36')			
+			db.add_engineer('S.J@carshare.com','EE:6E:FE:22:2b:36')			
 			db.create_service_request('U75PYV', 3000, 'H.C@carshare.com')
 			db.create_service_request('AH786B', 3000, 'H.C@carshare.com')
 			db.create_service_request('LMP675', 3000, 'H.C@carshare.com')
@@ -185,7 +183,7 @@ class test_database_utils(unittest.TestCase):
 		with self.db as db:
 
 			db.create_employee('Hermes','Conrad','password','0444000111','ADMIN')
-			db.add_engineer('S.J@carshare.com','ScruffyJanitor','EE:6E:FE:22:2b:36')			
+			db.add_engineer('S.J@carshare.com','EE:6E:FE:22:2b:36')			
 			db.create_service_request('U75PYV', 3000, 'H.C@carshare.com')
 			db.create_service_request('AH786B', 3000, 'H.C@carshare.com')
 			db.create_service_request('LMP675', 3000, 'H.C@carshare.com')
@@ -194,11 +192,6 @@ class test_database_utils(unittest.TestCase):
 			self.assertTrue(len(db.get_all_active_service_requests()) == 3)
 			self.assertTrue(db.service_complete(1) == "Service completed")						
 			self.assertTrue(len(db.get_all_active_service_requests()) == 2)
-
-
-
-
-
 		
 if __name__ == "__main__":
     unittest.main()
