@@ -463,7 +463,7 @@ class databaseUtils:
 
 		with self.connection.cursor(DictCursor) as cur:		
 
-			cur.execute("SELECT * FROM user WHERE role = 'MECHANIC' or role = 'ADMIN' or role = 'MANAGER'")
+			cur.execute("SELECT * FROM user WHERE role = 'ENGINEER' or role = 'ADMIN' or role = 'MANAGER'")
 
 			return cur.fetchall()
 			
@@ -516,40 +516,119 @@ class databaseUtils:
 
 				return "No engineer found with that email"
 
+	def get_all_mac_addresses(self):
 
+		with self.connection.cursor(DictCursor) as cur:
 
+			cur.execute("SELECT mac_address FROM engineer")
 
-
-
-
-
-
-
-
-
-
-
+			return cur.fetchall()
 
 	#Create Service Request
+	def create_service_request(self, rego, post_code, email):
 
-	#Get Service Request
+		with self.connection.cursor(DictCursor) as cur:
 
-	#Assign Engineer
+			result = "car booked for service"	
 
-	#Service Complete
+			try:
+				if cur.execute("SELECT * FROM car WHERE rego = '{}'".format(rego)):
+
+					if cur.execute("SELECT * FROM user_role WHERE email = '{}'".format(email)):
+
+						if cur.execute("SELECT * FROM car_service WHERE rego = '{}' AND needs_service = 1".format(rego)):
+
+							return 'A service request has already been booked for vehicle {}'.format(rego)
+
+						else:
+
+							cur.execute("INSERT INTO car_service (rego, email, needs_service, engineer_assigned, post_code) VALUES \
+										('{}','{}',1,0,'{}')".format(rego, email, post_code))
+							cur.execute("UPDATE car SET available = 0 WHERE rego = '{}'".format(rego))
+
+							self.connection.commit()
+
+							cur.execute("SELECT LAST_INSERT_ID()")
+							service_id = cur.fetchall().pop()
+
+							result += '. The service number is {}'.format(service_id['LAST_INSERT_ID()'])
+					else:
+						return "Invalid email. Unable to book vehicle for service"
+				else:
+					return "Unable to book vehicle for service, no such vehicle exists"
+
+			except pymysql.Error as e:
+				print(e)
+
+			return result
 
 
+	def get_service_request(self, service_id):
 
-				
+		with self.connection.cursor(DictCursor) as cur:
 
+			if cur.execute("SELECT * FROM car_service WHERE request_no = '{}'".format(service_id)):
+				return cur.fetchall()
+			else:
+				return "No service request found with id {}".format(service_id)
 
-				
+	def get_all_service_requests(self):
 
+		with self.connection.cursor(DictCursor) as cur:
 
+			cur.execute("SELECT * FROM car_service")
 
+			return cur.fetchall()
 
+	def get_all_active_service_requests(self):
 
+		with self.connection.cursor(DictCursor) as cur:
 
+			cur.execute("SELECT * FROM car_service WHERE needs_service = 1")
 
+			return cur.fetchall()
 
+	def get_all_unassigned_service_requests(self):
+
+		with self.connection.cursor(DictCursor) as cur:
+
+			cur.execute("SELECT * FROM car_service WHERE engineer_assigned = 0")
+
+			return cur.fetchall()
+
+	def assign_engineer(self, email, service_id):
+
+		with self.connection.cursor(DictCursor) as cur:
+
+			try:
+
+				service_request = self.get_service_request(service_id)
+
+				if service_request == "No service request found with id {}".format(service_id):
+					return service_request
+				else:
+					service_request = service_request.pop()
+					if service_request["engineer_assigned"] == 1:
+						return "engineer already assigned to this service request"
+					elif service_request["needs_service"] == 0:
+						return "This service request is not active"
+					elif self.get_engineer(email) != "No engineer found with that email":
+						cur.execute("UPDATE car_service SET engineer_assigned = 1, email = '{}' WHERE request_no = '{}'".format(email, service_id))
+						return "Engineer successfully assigned"
+					else:
+						return "No engineer found with email {}".format(email)
+			except pymysql.Error as e:
+				print(e)
+
+				return "Unable to assign engineer"
+
+	def service_complete(self, service_id):
+
+		with self.connection.cursor(DictCursor) as cur:
+
+			try:
+				cur.execute("UPDATE car_service SET needs_service = 0 WHERE request_no = '{}'".format(service_id))
+				return "Service completed"
+			except:
+				return "Unable to update service"
 

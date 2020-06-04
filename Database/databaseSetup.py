@@ -198,9 +198,9 @@ def update_database(conn):
 		print("Error 04: {}".format(e))
 
 	try:
-		cur.execute("CREATE TABLE car_service (request_no INT NOT NULL AUTO_INCREMENT, rego VARCHAR(10), email VARCHAR(28), needs_service BOOLEAN, engineer_assigned BOOLEAN,\
-					 post_code INT(4), PRIMARY KEY (request_no), FOREIGN KEY (rego) REFERENCES car(rego),\
-					FOREIGN KEY (email) REFERENCES user(email))")
+		cur.execute("CREATE TABLE car_service (request_no INT NOT NULL AUTO_INCREMENT, rego VARCHAR(10), email VARCHAR(28), \
+					needs_service BOOLEAN, engineer_assigned BOOLEAN, post_code INT(4), PRIMARY KEY (request_no), \
+					FOREIGN KEY (rego) REFERENCES car(rego), FOREIGN KEY (email) REFERENCES user(email))")
 	except pymysql.Error as e:
 		print("Error 04: {}".format(e))
 
