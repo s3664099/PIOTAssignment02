@@ -105,7 +105,7 @@ def createTables(conn):
 	
 
 	try:
-		cur.execute("CREATE TABLE engineer (email VARCHAR(28), mac_address VARCHAR(20),\
+		cur.execute("CREATE TABLE engineer (email VARCHAR(28), mac_address VARCHAR(20), pb_token VARCHAR(40),\
 					PRIMARY KEY (email), FOREIGN KEY (email) REFERENCES user(email))")
 	except pymysql.Error as e:
 		print("Error 07: {}".format(e))

@@ -2,11 +2,8 @@ import sys
 sys.path.insert(0,'..')
 
 import unittest
-import db_singleton as singleton
 import Database.database_utils as database
-import datetime
 import Tests.test_database_setup as tdb
-from datetime import timedelta
 
 class test_database_utils(unittest.TestCase):
 
@@ -111,13 +108,14 @@ class test_database_utils(unittest.TestCase):
 			self.assertTrue(db.activate_employee("H.F@carshare.com") == "success")
 
 			self.assertTrue(db.activate_employee("P.Q@carshare.com") == "user not found")
+
 	def test_add_engineer(self):
 
 		print("Test Engineer")
 
 		with self.db as db:
 
-			db.add_engineer('S.J@carshare.com','EE:6E:FE:22:2b:36')
+			db.add_engineer('S.J@carshare.com','EE:6E:FE:22:2b:36','token')
 
 			self.assertTrue(db.get_mac_address('S.J@carshare.com').pop()['mac_address'] == 'EE:6E:FE:22:2b:36')
 			self.assertTrue(db.get_engineer('C.B@carshare.com') == "No engineer found with that email")
@@ -127,13 +125,23 @@ class test_database_utils(unittest.TestCase):
 
 		with self.db as db:
 
-			db.add_engineer('S.I@carshare.com','EE:6E:FF:22:2b:36')
-			db.add_engineer('S.J@carshare.com','EE:6E:FE:22:2b:36')
-			db.add_engineer('T.J@carshare.com','EF:6E:FE:22:2b:36')
-			db.add_engineer('Q.J@carshare.com','EE:6E:FE:23:2b:36')
+			db.add_engineer('S.I@carshare.com','EE:6E:FF:22:2b:36','token')
+			db.add_engineer('S.J@carshare.com','EE:6E:FE:22:2b:36','token')
+			db.add_engineer('T.J@carshare.com','EF:6E:FE:22:2b:36','token')
+			db.add_engineer('Q.J@carshare.com','EE:6E:FE:23:2b:36','token')
 
 			self.assertTrue(len(db.get_all_mac_addresses()) == 4)
 			self.assertTrue(db.get_all_mac_addresses().pop()['mac_address']== 'EF:6E:FE:22:2b:36')
+
+	def test_get_token(self):
+
+		with self.db as db:
+
+			db.add_engineer('S.I@carshare.com','EE:6E:FF:22:2b:36','token')
+
+			self.assertTrue(db.get_token('S.I@carshare.com').pop()['pb_token']== 'token')
+			self.assertTrue(db.get_token('PP@carshare.com') == 'No engineer found with that email')			
+
 
 	def test_service_request(self):
 
@@ -182,7 +190,7 @@ class test_database_utils(unittest.TestCase):
 	def add_engineer(self, db):
 
 		db.create_employee('Hermes','Conrad','password','0444000111','ADMIN')
-		db.add_engineer('S.J@carshare.com','EE:6E:FE:22:2b:36')	
+		db.add_engineer('S.J@carshare.com','EE:6E:FE:22:2b:36','token')	
 
 	def assign_engineer(self, db):
 
