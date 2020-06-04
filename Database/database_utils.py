@@ -79,7 +79,7 @@ class databaseUtils:
 			response = "success"
 			try:
 				cur.execute("INSERT INTO user VALUES \
-					('{}','{}','{}','{}','{}','CUSTOMER')".format(user_name, first_name, last_name, password, email))
+					('{}','{}','{}','{}','{}')".format(user_name, first_name, last_name, password, email))
 				self.connection.commit()
 			except:
 				response = "Email already used"
@@ -424,7 +424,7 @@ class databaseUtils:
 
 		if role != 'MANAGER':
 			if role != 'ADMIN':
-				if role != 'MECHANIC':
+				if role != 'ENGINEER':
 					return 'invalid role'
 
 		with self.connection.cursor(DictCursor) as cur:
@@ -434,8 +434,8 @@ class databaseUtils:
 
 			try:
 				cur.execute("INSERT INTO user VALUES \
-					('{}','{}','{}','{}','{}','{}')".format(user_name, first_name, last_name, password, email, role))
-				cur.execute("INSERT INTO user_role VALUES ('{}','{}','{}',0,'{}')".format(email, user_name,email, role))
+					('{}','{}','{}','{}','{}')".format(user_name, first_name, last_name, password, email))
+				cur.execute("INSERT INTO user_role VALUES ('{}','{}',0,'{}')".format(email, phone_number, role))
 				self.connection.commit()
 			except:
 				response = "Email already used"
@@ -447,7 +447,7 @@ class databaseUtils:
 
 		with self.connection.cursor(DictCursor) as cur:
 
-			cur.execute("SELECT * FROM user WHERE email = '{}'".format(email))
+			cur.execute("SELECT * FROM user, user_role WHERE user.email = user_role.email and user.email = '{}'".format(email))
 
 			return cur.fetchall()
 
@@ -455,7 +455,7 @@ class databaseUtils:
 
 		with self.connection.cursor(DictCursor) as cur:
 
-			cur.execute("SELECT * FROM user WHERE role = '{}'".format(role))
+			cur.execute("SELECT * FROM user, user_role WHERE user.email = user_role.email and user_role.role = '{}'".format(role))
 
 			return cur.fetchall()
 
@@ -463,7 +463,8 @@ class databaseUtils:
 
 		with self.connection.cursor(DictCursor) as cur:		
 
-			cur.execute("SELECT * FROM user WHERE role = 'ENGINEER' or role = 'ADMIN' or role = 'MANAGER'")
+			cur.execute("SELECT * FROM user, user_role WHERE user.email = user_role.email and (user_role.role = 'ENGINEER' or \
+				user_role.role = \'ADMIN' or user_role.role = 'MANAGER')")
 
 			return cur.fetchall()
 			
@@ -483,11 +484,11 @@ class databaseUtils:
 
 			return response
 
-	def add_engineer(self, email, username, mac_address):
+	def add_engineer(self, email, mac_address):
 
 		with self.connection.cursor(DictCursor) as cur:
 
-			cur.execute("INSERT INTO engineer VALUES ('{}','{}','{}')".format(email, username, mac_address))
+			cur.execute("INSERT INTO engineer VALUES ('{}','{}')".format(email, mac_address))
 
 			self.connection.commit()
 
@@ -627,8 +628,20 @@ class databaseUtils:
 		with self.connection.cursor(DictCursor) as cur:
 
 			try:
-				cur.execute("UPDATE car_service SET needs_service = 0 WHERE request_no = '{}'".format(service_id))
-				return "Service completed"
+				service_request = self.get_service_request(service_id)
+
+				if service_request == "No service request found with id {}".format(service_id):
+					return service_request
+				else:
+					service_request = service_request.pop()
+
+					if service_request["engineer_assigned"] == 0:
+						return "No engineer assigned to this service request"
+					elif service_request["needs_service"] == 0:
+						return "Service request not active"
+					else:
+						cur.execute("UPDATE car_service SET needs_service = 0 WHERE request_no = '{}'".format(service_id))
+						return "Service completed"
 			except:
 				return "Unable to update service"
 

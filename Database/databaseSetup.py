@@ -171,26 +171,29 @@ def update_database(conn):
 
 	cur = conn.cursor()
 
-	"""
 	try:
-		cur.execute("ALTER TABLE user ADD role VARCHAR(20)")
+		cur.execute("DROP TABLE user_role")
 	except pymysql.Error as e:
-		print("Error 01: {}".format(e))
+		print("Error 04: {}".format(e))
 
 	try:
-		cur.execute("CREATE TABLE user_role (email VARCHAR(28), username VARCHAR(20), phone_number VARCHAR(20), is_active BOOLEAN,\
+		cur.execute("DROP TABLE engineer")
+	except pymysql.Error as e:
+		print("Error 04: {}".format(e))		
+
+	try:
+		cur.execute("CREATE TABLE user_role (email VARCHAR(28), phone_number VARCHAR(20), is_active BOOLEAN,\
 					role VARCHAR(20), PRIMARY KEY (email), FOREIGN KEY (email) REFERENCES user(email))")
 	except pymysql.Error as e:
 		print("Error 02: {}".format(e))
 	
 
 	try:
-		cur.execute("CREATE TABLE engineer (email VARCHAR(28), username VARCHAR(20), mac_address VARCHAR(20),\
+		cur.execute("CREATE TABLE engineer (email VARCHAR(28), mac_address VARCHAR(20),\
 					PRIMARY KEY (email), FOREIGN KEY (email) REFERENCES user(email))")
 	except pymysql.Error as e:
 		print("Error 03: {}".format(e))
 
-	"""
 
 	try:
 		cur.execute("DROP TABLE car_service")
@@ -214,12 +217,10 @@ def sql_queries(conn):
 
 	cur = conn.cursor()
 
-	cur.execute("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'car_service'")
+	cur.execute("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'user_role'")
 
 	for x in cur.fetchall():
 		print(x)
-
-
 
 
 	"""
