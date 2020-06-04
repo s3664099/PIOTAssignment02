@@ -146,9 +146,8 @@ def get_input(input_type):
 	Get input call
 
 	"""
-    entry = input(input_type)
-
-    return entry
+	entry = input(input_type)
+	return entry
 
 #Function that sends user details to the master pi for validation
 def getUser_remotely(user,password,client):
@@ -228,18 +227,18 @@ def returnCar(username,client):
 	Return car function
 
 	"""
-    print("Trying to return car for {}".format(username))
-    agent_socket_utils.sendJson(client, {"ForLogin": False,"ForReturnCar":True,"email": username, "rego": rego})
-    print("Waiting for Confirmation...")
-    while(True):
-        object = agent_socket_utils.recvJson(client)
-        if(object['Response']=="Success"):
-            print("Car Returned successfully, thank you for using our services")
-            print()
-            return True
-        else:
-            print(object['Response'])
-            return False
+	print("Trying to return car for {}".format(username))
+	agent_socket_utils.sendJson(client, {"ForLogin": False,"ForReturnCar":True,"email": username, "rego": rego})
+	print("Waiting for Confirmation...")
+	while(True):
+		object = agent_socket_utils.recvJson(client)
+		if(object['Response']=="Success"):
+			print("Car Returned successfully, thank you for using our services")
+			print()
+			return True
+		else:
+			print(object['Response'])
+			return False
 
 #Function to run the facial recognition
 def recognise_face(unlocked, client):
@@ -260,7 +259,7 @@ def recognise_face(unlocked, client):
 	    print("Bluetooth sent")
 	    return unlocked
 	else:
-	    print("Unable to verify in master database, please try again")
+		print("Unable to verify in master database, please try again")
 		return False
 
 # Execute program.

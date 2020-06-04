@@ -6,6 +6,7 @@ import re
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, DateTimeField, DateField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms.fields.core import SelectField
 
 def my_length_check(form, field):
     """
@@ -54,7 +55,7 @@ class LoginForm(FlaskForm):
     email = StringField('Email',
                         validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
-    remember = BooleanField('Remember Me')
+    role = SelectField('Role', choices = [('Admin'),('Manager'),('Engineer')], validators = [DataRequired()])
     submit = SubmitField('Login')
 
 class BookingForm(FlaskForm):

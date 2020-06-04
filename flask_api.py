@@ -276,6 +276,27 @@ def bookcar():
     response=dbObj.book_vehicle(request.json['email'],request.json['rego'],pickup,dropoff)
     return jsonify(response)
 
+#APIs for phase 2
+
+@api.route("/role/<role>/<email>",methods=['GET'])
+def getUserRole(role,email):
+    result='Error'
+    rows=dbObj.get_user_role(role,email)
+    if rows:
+        result='Success'
+        return jsonify(result)
+    return jsonify(result)
+    
+
+@api.route("/bookinghistory/<rego>", methods=['GET'])
+def bookinghistory(rego):
+    rows=dbObj.get_car_booking_history(rego)
+    if rows:
+        bookinghistory=json.dumps(rows,default=decimal_default)
+        bookinghistory=json.loads(bookinghistory)
+        return jsonify(bookinghistory)
+    return jsonify(rows)
+
 #A helper method to convert onjects to floats or strings to avoid conflicts with jsonify .
 def decimal_default(obj):
     """

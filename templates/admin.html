@@ -1,0 +1,135 @@
+<!-- html file to display user home page created by Bhavi Mehta 21/04/2020 -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Car Rental App</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <style>
+    #map {
+    height: 400px;
+    width: 100%;
+    }
+</style>
+</head>
+<body>
+<div class="content-section">
+ {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+
+    {% endif %}
+    {% endwith %}
+<div class="container mt-3">
+  <h2>Admin Dashboard {{ user }}</h2>
+  <br>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" id="myTab">
+    <li class="nav-link"><a data-toggle="tab" href="#home"></a>Home</li>
+    <li><a class="nav-link" data-toggle="tab" href="#history">Car Rental History</a></li>
+    <li><a class="nav-link" data-toggle="tab" href="#search">Search Details</a></li>
+    <li><a class="nav-link" data-toggle="tab" href="#modifyusers">Modify Users</a></li>
+    <li><a class="nav-link" data-toggle="tab" href="#modifycars">Modify Cars</a></li>
+    <li><a class="nav-link" data-toggle="tab" href="#report">Report Car Issue</a></li>
+    <!--<li><a class="nav-link" data-toggle="tab" href="#manage">Manage My Booking</a></li>-->
+</ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div id="home" class="tab-pane fade in active"><br>
+      <div class="col-sm-4">
+        <h2>Admin Services</h2>
+        <img src='https://galusaustralis.com/wp-content/uploads/2020/03/Carpooling-1170x610.jpg' style='width: 500px; position: absolute; top : 100px; bottom : 250px; left : 150px; right : 150px;'></img>
+        <p>You will be able to navigate the menu options to view and make changes to cars and/or users of the application</p>
+      </div>
+</div>
+<div id="history" class="tab-pane fade"><br>
+  <div class='col-md-8'>
+    <form action="" method="POST">
+      <input type="text" placeholder="Search" name="search">
+      <button type="submit" class="btn btn-outline-success" name="find">Find</button>
+      <button type="submit" class="btn btn-outline-danger" name="clear">Clear</button>
+    </form>
+    {%if rentalhistory%}
+    <table class='table table-hover'>
+        <thead>
+        <tr>
+        <th>Order Number</th>
+        <th>Car Details</th>
+        <th>Pickup Time</th>
+        <th>Dropoff Time</th>
+        <th>Cost</th>
+        <th>Status</th>
+        <th>User Email</th>
+        </tr></thead>
+        <tbody>
+        {% for row in rentalhistory %}
+        <tr>
+          <td>{{row.bookingnumber}}</td>
+          <td>{{row.rego}}</td>
+          <td>{{row.pickuptime}}</td>
+          <td>{{row.dropofftime}}</td>
+          <td>{{row.totalcost}}</td>
+          <td>{{row.status}}</td>
+          <td>{{row.email}}</td>
+      </tr>
+        {% endfor %}
+        {%else%}
+        <h5>It's empty in here! We are waiting to work with you, hire a car from us today!</h5>
+        {%endif%}
+    </tbody>
+    </table>
+
+  </div>
+</div>
+<div id="search" class="tab-pane fade in active"><br>
+  <div class="col-sm-4">
+    <h2>Admin Services</h2>
+    </div>
+</div>
+<div id="modifyusers" class="tab-pane fade in active"><br>
+  <div class="col-sm-4">
+    <h2>Admin Services</h2>
+    </div>
+</div>
+<div id="modifycars" class="tab-pane fade in active"><br>
+  <div class="col-sm-4">
+    <h2>Admin Services</h2>
+    </div>
+</div>
+<div id="report" class="tab-pane fade in active"><br>
+  <div class="col-sm-4">
+    <h2>Admin Services</h2>
+    </div>
+</div>
+<div class="border-top" style="position: fixed; bottom: 10px; left:5px">
+  <small class="text-muted">
+     <a class="ml-2" href="{{ url_for('site.logout') }}">Logout</a>
+  </small>
+</div>
+<script>
+//$(document).ready(function(){
+  //$(".nav-tabs a").click(function(){
+    //$(this).tab('show');
+  //});
+//});
+$(document).ready(function(){
+    $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+        localStorage.setItem('activeTab', $(e.target).attr('href'));
+    });
+    var activeTab = localStorage.getItem('activeTab');
+    if(activeTab){
+        $('#myTab a[href="' + activeTab + '"]').tab('show');
+    }
+});
+</script>
