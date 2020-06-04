@@ -210,6 +210,7 @@ def update_database(conn):
 	conn.commit()	
 
 def sql_queries(conn):
+
 	"""
 	Queries
 

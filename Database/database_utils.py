@@ -484,11 +484,11 @@ class databaseUtils:
 
 			return response
 
-	def add_engineer(self, email, mac_address):
+	def add_engineer(self, email, mac_address, token):
 
 		with self.connection.cursor(DictCursor) as cur:
 
-			cur.execute("INSERT INTO engineer VALUES ('{}','{}')".format(email, mac_address))
+			cur.execute("INSERT INTO engineer VALUES ('{}','{}','{}')".format(email, mac_address,token))
 
 			self.connection.commit()
 
@@ -516,6 +516,21 @@ class databaseUtils:
 			else:
 
 				return "No engineer found with that email"
+
+	def get_token(self, email):
+
+		with self.connection.cursor(DictCursor) as cur:	
+
+			results = cur.execute("SELECT pb_token FROM engineer WHERE email = '{}'".format(email))
+
+			if results:
+
+				return cur.fetchall()
+
+			else:
+
+				return "No engineer found with that email"		
+
 
 	def get_all_mac_addresses(self):
 
