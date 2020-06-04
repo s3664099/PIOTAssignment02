@@ -139,7 +139,7 @@ class test_database_utils(unittest.TestCase):
 
 		with self.db as db:
 
-			db.create_employee('Hermes','Conrad','password','0444000111','ADMIN')
+			self.add_engineer(db)
 
 			self.assertTrue(db.create_service_request('U75PYV', 3000, 'H.C@carshare.com') == 'car booked for service. The service number is 1')
 			self.assertTrue(db.create_service_request('PPPQQQ', 3000, 'H.C@carshare.com') == 'Unable to book vehicle for service, no such vehicle exists')
@@ -150,7 +150,8 @@ class test_database_utils(unittest.TestCase):
 
 		with self.db as db:
 
-			db.create_employee('Hermes','Conrad','password','0444000111','ADMIN')
+			self.add_engineer(db)
+
 			db.create_service_request('U75PYV', 3000, 'H.C@carshare.com')
 			db.create_service_request('AH786B', 3000, 'H.C@carshare.com')
 			db.create_service_request('LMP675', 3000, 'H.C@carshare.com')
@@ -165,8 +166,8 @@ class test_database_utils(unittest.TestCase):
 
 		with self.db as db:
 
-			db.create_employee('Hermes','Conrad','password','0444000111','ADMIN')
-			db.add_engineer('S.J@carshare.com','EE:6E:FE:22:2b:36')			
+			self.add_engineer(db)
+			
 			db.create_service_request('U75PYV', 3000, 'H.C@carshare.com')
 			db.create_service_request('AH786B', 3000, 'H.C@carshare.com')
 			db.create_service_request('LMP675', 3000, 'H.C@carshare.com')
@@ -178,12 +179,25 @@ class test_database_utils(unittest.TestCase):
 			self.assertTrue(db.assign_engineer('P.P@carshare.com',2) == "No engineer found with email P.P@carshare.com") 
 			self.assertTrue(len(db.get_all_unassigned_service_requests()) == 2)
 
+	def add_engineer(self, db):
+
+		db.create_employee('Hermes','Conrad','password','0444000111','ADMIN')
+		db.add_engineer('S.J@carshare.com','EE:6E:FE:22:2b:36')	
+
+	def assign_engineer(self, db):
+
+		db.create_service_request('U75PYV', 3000, 'H.C@carshare.com')
+		db.create_service_request('AH786B', 3000, 'H.C@carshare.com')
+		db.create_service_request('LMP675', 3000, 'H.C@carshare.com')
+		db.assign_engineer('S.J@carshare.com',1)
+
 	def test_service_complete(self):
 
 		with self.db as db:
 
-			db.create_employee('Hermes','Conrad','password','0444000111','ADMIN')
-			db.add_engineer('S.J@carshare.com','EE:6E:FE:22:2b:36')			
+			self.add_engineer(db)
+			self.assign_engineer(db)
+		
 			db.create_service_request('U75PYV', 3000, 'H.C@carshare.com')
 			db.create_service_request('AH786B', 3000, 'H.C@carshare.com')
 			db.create_service_request('LMP675', 3000, 'H.C@carshare.com')
@@ -192,6 +206,10 @@ class test_database_utils(unittest.TestCase):
 			self.assertTrue(len(db.get_all_active_service_requests()) == 3)
 			self.assertTrue(db.service_complete(1) == "Service completed")						
 			self.assertTrue(len(db.get_all_active_service_requests()) == 2)
+			self.assertTrue(db.service_complete(4) == "No service request found with id 4")
+			self.assertTrue(db.service_complete(2) == "No engineer assigned to this service request")
+			self.assertTrue(db.service_complete(1) == "Service request not active")
+
 		
 if __name__ == "__main__":
     unittest.main()
