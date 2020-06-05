@@ -2,64 +2,35 @@ import sys
 sys.path.insert(0,'..')
 
 import unittest
-import Database.database_utils as database
-import Tests.test_database_setup as tdb
-import bluetooth.pushbullet as pb
+import unlock_car as uc
 
 class test_database_utils(unittest.TestCase):
 
-	#The details of the database to be accessed
-	HOST = "localhost"
-	USER = "root"
-	PASSWORD = "root"
-	DATABASE = "People"
-	PB_KEY = ''
-	file = "key.txt"
+	def test_bluetooth(self):
 
-	#This sets up the test, namely by connecting to the database, clearing the table to be tested
-	#And then populating the table
-	#SetupClass is being used due to the need to connect to an external database
-	def setUp(self):
+		address = [{"mac_address": "60:14:B3:C1:5B:22",
+			"name": "Professor Farnsworth"}]
 
-		key = open(self.file,'r')
-		self.PB_KEY = key.readline()
-		key.close()
+		self.assertTrue(uc.scan_devices(address) == "Greetings Professor Farnsworth. The car is unlocked")
 
-		self.db = database.databaseUtils(test_database_utils.HOST, test_database_utils.USER, test_database_utils.PASSWORD, test_database_utils.DATABASE)
-		self.conn = self.db.get_connection()
+	def test_db(self):
+		con = uc.create_db()
 
-		tdb.clearDatabases(self.conn)
-		tdb.createTables(self.conn)
+		self.assertTrue(uc.insert_engineer(con, "Professor Farnsworth","60:14:B3:C1:5B:22") == "Engineer details inserted")
 
-	#This function removes is called at the end of the test and closes the connection 
-	def tearDown(self):
-		try:
-			self.db.close_connection()
-		except:
-			pass
-		finally:
-			self.db = None
+		engineers = uc.get_engineer(con)
+		engineer = engineers.pop()
 
-	def test_pushbullet(self):
+		self.assertTrue(engineer['name'] == "Professor Farnsworth")
+		self.assertTrue(engineer['mac_address'] == "60:14:B3:C1:5B:22")
 
-		self.assertTrue(pb.send_notification("Hello There","How's it going dude?",self.PB_KEY) == "Notification sent")
+	def test_db_bluetooth(self):
 
-	def test_pushbullet_message(self):
-		with self.db as db:
+		con = uc.create_db()
+		uc.insert_engineer(con, "Professor Farnsworth","60:14:B3:C1:5B:22")
+		self.assertTrue(uc.scan_devices(uc.get_engineer(con)) == "Greetings Professor Farnsworth. The car is unlocked")
 
-			db.add_engineer('S.I@carshare.com','EE:6E:FF:22:2b:36',self.PB_KEY)
-
-			key = db.get_token('S.I@carshare.com').pop()
-
-			car = db.return_vehicle_details('XYZ987').pop()
-
-			title = "Service Required"
-			message = "Vehicle Rego: {}, {}, {}, {}".format(car['rego'],car['colour'], car['make'], car['model'])
-
-			self.assertTrue(pb.send_notification(title,message,key['pb_token']) == "Notification sent")
-			
-
-
+		uc.close_db(con)
 
 
 if __name__ == "__main__":
