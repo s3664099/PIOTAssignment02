@@ -48,8 +48,14 @@ def registerUser():
     response=dbObj.insert_user(request.json['username'],request.json['firstname'],request.json['lastname'],password,request.json['email'])
     if response=='success':
         return jsonify(response)
-    else:
-        return jsonify(response)
+
+@api.route("/registeremployee", methods=['POST'])
+def registerEmplyee():
+    password=hash_password(request.json['password'])
+    print("In API")
+    print(request.json['role'])
+    response=dbObj.create_employee(request.json['username'],request.json['firstname'],request.json['lastname'],password,request.json['email'],request.json['role'])
+    return jsonify(response)
 
 #Login Endpoint
 @api.route("/login", methods = ["POST"])
