@@ -420,25 +420,29 @@ class databaseUtils:
 			return "Success"
 
 	#This method is designed to create an employee.
-	def create_employee(self, first_name, last_name, password, phone_number, role):
-
-		if role != 'MANAGER':
+	def create_employee(self, user_name, first_name, last_name, password, email, role):
+		#Commenting the role validation as this is not a user input. Default values are passed for the user to select on the form during registeration
+		"""if role != 'MANAGER':
 			if role != 'ADMIN':
 				if role != 'ENGINEER':
 					return 'invalid role'
-
+		"""
 		with self.connection.cursor(DictCursor) as cur:
 			response = "success"
-			email = "{}.{}@carshare.com".format(first_name[0], last_name[0])
+			#Registeration form accepts user's email and user name as this will be needed for appropriate pushbullet messaging
+			"""email = "{}.{}@carshare.com".format(first_name[0], last_name[0])
 			user_name = "{}{}".format(first_name,last_name)
-
+			"""
 			try:
 				cur.execute("INSERT INTO user VALUES \
 					('{}','{}','{}','{}','{}')".format(user_name, first_name, last_name, password, email))
-				cur.execute("INSERT INTO user_role VALUES ('{}','{}',0,'{}')".format(email, phone_number, role))
+				cur.execute("INSERT INTO user_role VALUES ('{}','{}',0,'{}')".format(email, 1, role))
 				self.connection.commit()
-			except:
-				response = "Email already used"
+			#for sql try and catch blocks, please throw the sql exception as it is required for debugging issues and better code maintanence
+			except pymysql.Error as e:
+				print(e)
+				response='Email already used'
+
 			self.connection.commit()
 			return response
 
