@@ -292,6 +292,11 @@ def getUserRole(role,email):
         result='Success'
         return jsonify(result)
     return jsonify(result)
+
+@api.route("/finduserdetails/<search>",methods=['GET'])
+def getUserDetails(search):
+    rows=dbObj.get_user_search(search)
+    return jsonify(rows)
     
 
 @api.route("/bookinghistory/<rego>", methods=['GET'])

@@ -54,7 +54,22 @@ def admin():
             response=requests.get(url)
             bookinghistory=json.loads(response.text)
             if bookinghistory:
-                return render_template("admin.html",title='Admin', rentalhistory=bookinghistory)
+                return render_template("admin.html",title='Admin', rentalhistory=bookinghistory,foundcars=None,userfound=None)
+        elif ('cardetails' in request.form):
+            url=("http://127.0.0.1:5000/searchcar/"+request.form['carsearch'])
+            response=requests.get(url)
+            foundcars=json.loads(response.text)
+            if foundcars:
+                return render_template("admin.html",title='Admin',rentalhistory=None,foundcars=foundcars,userfound=None)
+        elif('userdetails' in request.form):
+            url=("http://127.0.0.1:5000/finduserdetails/"+request.form['usersearch'])
+            response=requests.get(url)
+            userfound=json.loads(response.text)
+            if userfound!='Not Found':
+                return render_template("admin.html",title='Admin',rentalhistory=None,foundcars=None,userfound=userfound)
+            else:
+                flash(f'User Not found, please try with another keyword','danger')
+                return render_template("admin.html",title='Admin',rentalhistory=None,foundcars=None,userfound=None)
     return render_template("admin.html",title='Admin')
 
 @site.route("/",methods=['GET','POST'])
@@ -63,8 +78,6 @@ def login():
     Login form from forms.py
 
     """
-    print("I am here")
-    print(request.form)
     form = LoginForm()
     # Use REST API.
     if request.method=="POST":

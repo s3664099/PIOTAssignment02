@@ -675,4 +675,15 @@ class databaseUtils:
 				cur.execute("SELECT * FROM booking where rego ='"+rego+"'")
 
 				return cur.fetchall()
+	
+	def get_user_search(self,search):
+		user="Not Found"
+		with self.connection.cursor(DictCursor) as cur:
+			cur.execute("SELECT username, firstname, lastname, role, user.email from user, user_role where\
+				username='{}' OR firstname='{}' OR lastname='{}' OR user.email='{}' \
+					OR role='{}' ".format(search, search, search,search, search))
 
+			users = cur.fetchall()
+			if users:
+				return users
+			return user

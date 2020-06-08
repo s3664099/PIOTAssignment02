@@ -93,9 +93,71 @@
   </div>
 </div>
 <div id="search" class="tab-pane fade in active"><br>
-  <div class="col-sm-4">
-    <h2>Admin Services</h2>
+  <div class="col-sm-8">
+    <form action="" method="POST">
+      <input type="text" placeholder="Search For User" name="usersearch">
+      <button type="submit" class="btn btn-outline-success" name="userdetails">Find</button>
+      <button type="submit" class="btn btn-outline-danger" name="clearusersearch">Clear</button>
+    </form>
+    {% if userfound %}
+    <table class='table table-hover'>
+      <thead>
+      <tr>
+      <th>Username</th>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Email</th>
+      <th>Role</th>
+      </tr></thead>
+      <tbody>
+      {% for row in userfound %}
+      <tr>
+        <td>{{row.username}}</td>
+        <td>{{row.firstname}}</td>
+        <td>{{row.lastname}}</td>
+        <td>{{row.email}}</td>
+        <td>{{row.role}}</td>
+    </tr>
+      {% endfor %}
+      {%endif%}
+  </tbody>
+  </table>
     </div>
+    <br>
+    <div class="col-sm-8">
+      <form action="" method="POST">
+        <input type="text" placeholder="Search For Car" name="carsearch">
+        <button type="submit" class="btn btn-outline-success" name="cardetails">Find</button>
+        <button type="submit" class="btn btn-outline-danger" name="clearcarsearch">Clear</button>
+      </form>
+      </div>
+      {% if foundcars %}
+      <table class='table table-hover'>
+        <thead>
+        <tr>
+        <th>Rego</th>
+        <th>Make</th>
+        <th>Model</th>
+        <th>Latitude</th>
+        <th>Longitude</th>
+        <th>Color</th>
+        </tr>
+        </thead>
+        <tbody>
+          {% for row in foundcars %}
+          <tr>
+            <td><input type="radio" value="{{row.rego}}" name='carid'> {{row.rego}}</td>
+            <td>{{row.make}}</td>
+            <td>{{row.model}}</td>
+            <td>{{row.locationlat}}</td>
+          <td>{{row.locationlong}}</td>
+          <td>{{row.colour}}</td>
+        </tr>
+          {% endfor %}
+          </tbody>
+    </table>
+      {%endif%}
+  </div>
 </div>
 <div id="modifyusers" class="tab-pane fade in active"><br>
   <div class="col-sm-4">
