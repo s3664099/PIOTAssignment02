@@ -664,3 +664,15 @@ class databaseUtils:
 			except:
 				return "Unable to update service"
 
+		
+	def get_user_role(self,role,email):
+			with self.connection.cursor(DictCursor) as cur:
+				cur.execute("SELECT * FROM user_role where email ='"+email+"' and role='"+role+"'")
+				return cur.fetchall()
+				
+	def get_car_booking_history(self,rego):
+			with self.connection.cursor(DictCursor) as cur:
+				cur.execute("SELECT * FROM booking where rego ='"+rego+"'")
+
+				return cur.fetchall()
+

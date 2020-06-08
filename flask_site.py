@@ -75,7 +75,7 @@ def login():
             role=role.text
             role=role.replace("\n",'')
             role=role.replace('"','')
-            if role == 'Error':
+            if role != 'Success':
                 flash(f'The selected role is not applicable to the provided email, please validate email and role','danger')
                 return render_template('login.html',title='Login',form=form)
             else:
