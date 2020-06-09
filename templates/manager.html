@@ -17,7 +17,22 @@
 </style>
 </head>
 <body>
-<div class="content-section">
+    <div class="container mt-3">
+        <h2>Manager Dashboard {{ user }}</h2>
+        <br>
+    <ul class="nav nav-tabs" id="myTab">
+        <li><a class="nav-link"  data-toggle="tab" href="#home">Home</a></li>
+        <li><a class="nav-link" data-toggle="tab" href="#Total">Bookings</a></li>
+        <li><a class="nav-link" data-toggle="tab" href="#MostBookedCar">Cars Booked</a></li>
+        <li><a class="nav-link" data-toggle="tab" href="#Profits">Cost</a></li>
+  </ul>    
+  <div class="tab-content">
+    <div id="home" class="tab-pane fade in active"><br>
+        <div class="col-sm-4">
+          <h2>About Us</h2>
+          <img src='https://galusaustralis.com/wp-content/uploads/2020/03/Carpooling-1170x610.jpg' style='width: 500px; top : 100px; bottom : 250px; left : 150px; right : 150px;'></img>
+          <p>You can navigate the application to see different reports based on company and employee performance</p>
+        </div>
  {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         {% for category, message in messages %}
@@ -28,28 +43,39 @@
 
     {% endif %}
     {% endwith %}
-
-<div class="container mt-3">
-    <h2>Manager Dashboard {{ user }}</h2>
-
-    <h3>Total Confirmed and Cancelled Booking in a Month</h3>
+    </div>
+<div id="Total" class="tab-pane fade">
+    <legend>Total Confirmed and Cancelled Booking in a Month</legened>
     <br>
     <iframe width="600" height="450" src="https://datastudio.google.com/embed/reporting/c9f8cecd-8631-43a0-8d7d-ed90ec967443/page/wQZTB" frameborder="0" style="border:0" allowfullscreen></iframe>
-    <br>
-    <br>
-    <h3>Percentage of Frequent Booked Car in a Month</h3>
+
+</div>
+<div id="MostBookedCar" class="tab-pane fade">
+    <legend>Percentage of Frequent Booked Car in a Month</legend>
     <br>
     <iframe width="600" height="450" src="https://datastudio.google.com/embed/reporting/deeeb19e-565c-431a-9a2c-ee6f39456345/page/yOYTB" frameborder="0" style="border:0" allowfullscreen></iframe>
-    <br>
-    <br>
-    <h3>Day by Day Profit</h3>
+</div>
+<div id="Profits" class="tab-pane fade">
+    <legend>Daily Profit</legend>
     <br>
     <iframe width="600" height="450" src="https://datastudio.google.com/embed/reporting/01378d57-e12c-4ce4-800a-eaf159456049/page/UKaTB" frameborder="0" style="border:0" allowfullscreen></iframe>
-
+</div>
+</div>
     <div class="border-top" style="position: fixed; bottom: 10px; left:5px">
         <small class="text-muted">
            <a class="ml-2" href="{{ url_for('site.logout') }}">Logout</a>
         </small>
       </div>
+      <script>
+        $(document).ready(function(){
+            $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+                localStorage.setItem('activeTab', $(e.target).attr('href'));
+            });
+            var activeTab = localStorage.getItem('activeTab');
+            if(activeTab){
+                $('#myTab a[href="' + activeTab + '"]').tab('show');
+            }
+        });
+        </script>
 </body>
 </html>
