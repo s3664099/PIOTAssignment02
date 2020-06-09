@@ -186,7 +186,10 @@ def admin():
 
 @site.route("/manager",methods=['GET','POST'])
 def manager():
-    return render_template("manager.html",title="Manager")
+    url=("http://127.0.0.1:5000/username/"+session['email'])
+    response=requests.get(url)
+    username=json.loads(response.text)
+    return render_template("manager.html",user=username,title="Manager")
 
 @site.route("/logout",methods=['GET','POST'])
 def logout():
