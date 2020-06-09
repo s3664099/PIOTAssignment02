@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Car Rental App</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <style>
+    form { 
+        margin: 0 auto; 
+        width:350px;
+        }
+</style>
+</head>
+<body>
+<div class="content-section">
+ {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+
+    {% endif %}
+    {% endwith %}
+
+<div class="container mt-3">
+    <h2>Manager Dashboard {{ user }}</h2>
+
+    <h3>Total Confirmed and Cancelled Booking in a Month</h3>
+    <br>
+    <iframe width="600" height="450" src="https://datastudio.google.com/embed/reporting/c9f8cecd-8631-43a0-8d7d-ed90ec967443/page/wQZTB" frameborder="0" style="border:0" allowfullscreen></iframe>
+    <br>
+    <br>
+    <h3>Percentage of Frequent Booked Car in a Month</h3>
+    <br>
+    <iframe width="600" height="450" src="https://datastudio.google.com/embed/reporting/deeeb19e-565c-431a-9a2c-ee6f39456345/page/yOYTB" frameborder="0" style="border:0" allowfullscreen></iframe>
+    <br>
+    <br>
+    <h3>Day by Day Profit</h3>
+    <br>
+    <iframe width="600" height="450" src="https://datastudio.google.com/embed/reporting/01378d57-e12c-4ce4-800a-eaf159456049/page/UKaTB" frameborder="0" style="border:0" allowfullscreen></iframe>
+
+
+</body>
+</html>
