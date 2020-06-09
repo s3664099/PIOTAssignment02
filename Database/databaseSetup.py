@@ -182,7 +182,7 @@ def update_database(conn):
 		print("Error 04: {}".format(e))		
 
 	try:
-		cur.execute("CREATE TABLE user_role (email VARCHAR(28), phone_number VARCHAR(20), is_active BOOLEAN,\
+		cur.execute("CREATE TABLE user_role (email VARCHAR(28), is_active BOOLEAN,\
 					role VARCHAR(20), PRIMARY KEY (email), FOREIGN KEY (email) REFERENCES user(email))")
 	except pymysql.Error as e:
 		print("Error 02: {}".format(e))

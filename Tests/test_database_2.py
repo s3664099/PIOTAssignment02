@@ -62,15 +62,15 @@ class test_database_utils(unittest.TestCase):
 
 			print("Test insert employee")
 
-			self.assertTrue(db.create_employee('Hubert','Farnsworth','password','0444000111','MANAGER') == 'success')
-			self.assertTrue(db.create_employee('Hubert','Farnsworth','password','0444000111','MANAGER') == 'Email already used')
-			self.assertTrue(db.create_employee('Taronga','Leehla','password','0444000111','STARSHIP CAPTAIN') == 'invalid role')
+			self.assertTrue(db.create_employee('Hubert','Farnsworth','password','MANAGER') == 'success')
+			self.assertTrue(db.create_employee('Hubert','Farnsworth','password','MANAGER') == 'Email already used')
+			self.assertTrue(db.create_employee('Taronga','Leehla','password','STARSHIP CAPTAIN') == 'invalid role')
 
 	def test_get_employee(self):
 
 		with self.db as db:
 
-			db.create_employee('Hubert','Farnsworth','password','0444000111','MANAGER')
+			db.create_employee('Hubert','Farnsworth','password','MANAGER')
 
 			employee = db.return_employee('H.F@carshare.com')
 			employee = employee.pop()
@@ -84,13 +84,13 @@ class test_database_utils(unittest.TestCase):
 
 		with self.db as db:
 
-			db.create_employee('Hubert','Farnsworth','password','0444000111','MANAGER')
-			db.create_employee('Hermes','Conrad','password','0444000111','ADMIN')
-			db.create_employee('Scruffy','Janitor','password','0444000111','ENGINEER')
-			db.create_employee('Taronga','Leelha','password','0444000111','ENGINEER')
-			db.create_employee('Zap','Brannigan','password','0444000111','ADMIN')
-			db.create_employee('Richard','Nixon','password','0444000111','MANAGER')
-			db.create_employee('Spiro','Agnew','password','0444000111','MANAGER')
+			db.create_employee('Hubert','Farnsworth','password','MANAGER')
+			db.create_employee('Hermes','Conrad','password','ADMIN')
+			db.create_employee('Scruffy','Janitor','password','ENGINEER')
+			db.create_employee('Taronga','Leelha','password','ENGINEER')
+			db.create_employee('Zap','Brannigan','password','ADMIN')
+			db.create_employee('Richard','Nixon','password','MANAGER')
+			db.create_employee('Spiro','Agnew','password','MANAGER')
 
 			self.assertTrue(len(db.return_employee_type('MANAGER'))==3)
 			self.assertTrue(len(db.return_employee_type('ADMIN'))==2)
@@ -103,7 +103,7 @@ class test_database_utils(unittest.TestCase):
 
 		with self.db as db:
 
-			db.create_employee('Hubert','Farnsworth','password','0444000111','MANAGER')
+			db.create_employee('Hubert','Farnsworth','password','MANAGER')
 
 			self.assertTrue(db.activate_employee("H.F@carshare.com") == "success")
 
@@ -118,7 +118,7 @@ class test_database_utils(unittest.TestCase):
 			db.add_engineer('S.J@carshare.com','EE:6E:FE:22:2b:36','token')
 
 			self.assertTrue(db.get_mac_address('S.J@carshare.com').pop()['mac_address'] == 'EE:6E:FE:22:2b:36')
-			self.assertTrue(db.get_engineer('C.B@carshare.com') == "No engineer found with that email")
+			self.assertTrue(db.get_engineer_address('C.B@carshare.com') == "No engineer found with that email")
 			self.assertTrue(db.get_mac_address('C.B@carshare.com') == "No engineer found with that email")
 
 	def test_get_all_mac_addresses(self):
@@ -189,7 +189,7 @@ class test_database_utils(unittest.TestCase):
 
 	def add_engineer(self, db):
 
-		db.create_employee('Hermes','Conrad','password','0444000111','ADMIN')
+		db.create_employee('Hermes','Conrad','password','ADMIN')
 		db.add_engineer('S.J@carshare.com','EE:6E:FE:22:2b:36','token')	
 
 	def assign_engineer(self, db):

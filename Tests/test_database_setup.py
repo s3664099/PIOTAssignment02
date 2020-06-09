@@ -98,7 +98,7 @@ def createTables(conn):
 		print("Error 05: {}", e)
 
 	try:
-		cur.execute("CREATE TABLE user_role (email VARCHAR(28), phone_number VARCHAR(20), is_active BOOLEAN,\
+		cur.execute("CREATE TABLE user_role (email VARCHAR(28), is_active BOOLEAN,\
 					role VARCHAR(20), PRIMARY KEY (email), FOREIGN KEY (email) REFERENCES user(email))")
 	except pymysql.Error as e:
 		print("Error 06: {}".format(e))

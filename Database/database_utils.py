@@ -436,7 +436,9 @@ class databaseUtils:
 			try:
 				cur.execute("INSERT INTO user VALUES \
 					('{}','{}','{}','{}','{}')".format(user_name, first_name, last_name, password, email))
+
 				cur.execute("INSERT INTO user_role VALUES ('{}','{}',0,'{}')".format(email, 1, role))
+
 				self.connection.commit()
 			#for sql try and catch blocks, please throw the sql exception as it is required for debugging issues and better code maintanence
 			except pymysql.Error as e:
@@ -496,7 +498,7 @@ class databaseUtils:
 
 			self.connection.commit()
 
-	def get_engineer(self, email):
+	def get_engineer_address(self, email):
 
 		with self.connection.cursor(DictCursor) as cur:
 
@@ -506,6 +508,19 @@ class databaseUtils:
 				return cur.fetchall()
 			else:
 				return "No engineer found with that email"
+
+	def get_engineer_details(self, email):
+
+		with self.connection.cursor(DictCursor) as cur:
+
+			results = cur.execute("SELECT u.firstname, u.lastname, u.email FROM user u, user_role r WHERE u.email = r.email AND \
+				r.role = 'ENGINEER'")
+
+			if results:
+				return cur.fetchall()
+			else:
+				return "No engineer found with that email"
+
 
 	def get_mac_address(self, email):
 
@@ -632,7 +647,7 @@ class databaseUtils:
 						return "engineer already assigned to this service request"
 					elif service_request["needs_service"] == 0:
 						return "This service request is not active"
-					elif self.get_engineer(email) != "No engineer found with that email":
+					elif self.get_engineer_address(email) != "No engineer found with that email":
 						cur.execute("UPDATE car_service SET engineer_assigned = 1, email = '{}' WHERE request_no = '{}'".format(email, service_id))
 						return "Engineer successfully assigned"
 					else:
