@@ -308,6 +308,31 @@ def bookinghistory(rego):
         return jsonify(bookinghistory)
     return jsonify(rows)
 
+@api.route("/users", methods=['GET'])
+def getUsers():
+    result='No Users'
+    rows=dbObj.get_all_users()
+    if rows:
+        return jsonify(rows)
+    return jsonify(result)
+@api.route("/modifyuserdetails",methods=['POST'])
+def modifyuserdetails():
+    rows=dbObj.update_userdetails(request.json['firstname'],request.json['lastname'],request.json['role'],request.json['status'],request.json['email'])
+    return jsonify(rows)
+@api.route("/findcardetails/<rego>",methods=['GET'])
+def getCarDetails(rego):
+    rows=dbObj.get_car_details(rego)
+    if rows:
+        result=json.dumps(rows,default=decimal_default)
+        result=json.loads(result)
+        return jsonify(result)
+    else:
+        return jsonify("Error")
+@api.route("/modifycardetails",methods=['POST'])
+def modifycardetails():
+    rows=dbObj.update_cardetails(request.json['colour'],request.json['make'],request.json['model'],request.json['locationLat'],request.json['locationLong'],request.json['rego'])
+    return jsonify(rows)
+
 #A helper method to convert onjects to floats or strings to avoid conflicts with jsonify .
 def decimal_default(obj):
     """

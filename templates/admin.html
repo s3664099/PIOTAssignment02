@@ -35,7 +35,7 @@
   <br>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" id="myTab">
-    <li class="nav-link"><a data-toggle="tab" href="#home"></a>Home</li>
+    <li><a class="nav-link"  data-toggle="tab" href="#home">Home</a></li>
     <li><a class="nav-link" data-toggle="tab" href="#history">Car Rental History</a></li>
     <li><a class="nav-link" data-toggle="tab" href="#search">Search Details</a></li>
     <li><a class="nav-link" data-toggle="tab" href="#modifyusers">Modify Users</a></li>
@@ -44,22 +44,24 @@
     <!--<li><a class="nav-link" data-toggle="tab" href="#manage">Manage My Booking</a></li>-->
 </ul>
 
-  <!-- Tab panes -->
-  <div class="tab-content">
-    <div id="home" class="tab-pane fade in active"><br>
-      <div class="col-sm-4">
-        <h2>Admin Services</h2>
-        <img src='https://galusaustralis.com/wp-content/uploads/2020/03/Carpooling-1170x610.jpg' style='width: 500px; position: absolute; top : 100px; bottom : 250px; left : 150px; right : 150px;'></img>
-        <p>You will be able to navigate the menu options to view and make changes to cars and/or users of the application</p>
-      </div>
-</div>
+ <!-- Tab panes -->
+ <div class="tab-content">
+  <div id="home" class="tab-pane fade in active"><br>
+          <div class="col-sm-4">
+            <h2>About Us</h2>
+            <img src='https://galusaustralis.com/wp-content/uploads/2020/03/Carpooling-1170x610.jpg' style='width: 500px; position: absolute; top : 100px; bottom : 250px; left : 150px; right : 150px;'></img>
+            <p>You will be able to navigate the menu options to view and make changes to cars and/or users of the application</p>
+          </div>
+  </div>
 <div id="history" class="tab-pane fade"><br>
   <div class='col-md-8'>
+    
     <form action="" method="POST">
-      <input type="text" placeholder="Search" name="search">
+      <input type="text" placeholder="Search Car" name="search">
       <button type="submit" class="btn btn-outline-success" name="find">Find</button>
       <button type="submit" class="btn btn-outline-danger" name="clear">Clear</button>
     </form>
+  </div>
     {%if rentalhistory%}
     <table class='table table-hover'>
         <thead>
@@ -84,15 +86,11 @@
           <td>{{row.email}}</td>
       </tr>
         {% endfor %}
-        {%else%}
-        <h5>It's empty in here! We are waiting to work with you, hire a car from us today!</h5>
         {%endif%}
     </tbody>
     </table>
-
-  </div>
 </div>
-<div id="search" class="tab-pane fade in active"><br>
+<div id="search" class="tab-pane fade"><br>
   <div class="col-sm-8">
     <form action="" method="POST">
       <input type="text" placeholder="Search For User" name="usersearch">
@@ -159,17 +157,70 @@
       {%endif%}
   </div>
 
-<div id="modifyusers" class="tab-pane fade in active"><br>
-  <div class="col-sm-4">
-    <h2>Admin Services</h2>
+<div id="modifyusers" class="tab-pane fade"><br>
+    {% if users %}
+    <form method="POST"  action="{{url_for('site.modifyuser')}}">
+    <table class='table table-hover'>
+      <thead>
+      <tr>
+      <th>Username</th>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Email</th>
+      <th>Role</th>
+      <th>Active Status</th>
+      </tr></thead>
+      <tbody>
+      {% for row in users %}
+      <tr>
+        <td> <input type="radio" value="{{row.email}}" name='emailtomodify'>{{row.email}}</td>
+        <td>{{row.firstname}}</td>
+        <td>{{row.lastname}}</td>
+        <td>{{row.username}}</td>
+        <td>{{row.role}}</td>
+        <td>{{row.is_active}}</td>
+    </tr>
+      {% endfor %}
+      {%endif%}
+  </tbody>
+  </table>
+  <button type="submit" value="usermodify" class="btn btn-outline-success">Modify</button>
+</form>
+</div>
+<div id="modifycars" class="tab-pane fade"><br>
+  <div class="col-sm-10">
+    {% if cars %}
+    <form method="POST"  action="{{url_for('site.modifycar')}}">
+    <table class='table table-hover'>
+      <thead>
+      <tr>
+      <th>Rego</th>
+      <th>Color</th>
+      <th>Make</th>
+      <th>Model</th>
+      <th>Location Latitude</th>
+      <th>Location Longitude</th>
+      </tr></thead>
+      <tbody>
+      {% for row in cars %}
+      <tr>
+        <td> <input type="radio" value="{{row.rego}}" name='cartomodify'>{{row.rego}}</td>
+        <td>{{row.colour}}</td>
+        <td>{{row.make}}</td>
+        <td>{{row.model}}</td>
+        <td>{{row.locationlat}}</td>
+        <td>{{row.locationlong}}</td>
+    </tr>
+      {% endfor %}
+      {%endif%}
+  </tbody>
+  </table>
+  <button type="submit" value="usermodify" class="btn btn-outline-success">Modify</button>
+</form>
+
     </div>
 </div>
-<div id="modifycars" class="tab-pane fade in active"><br>
-  <div class="col-sm-4">
-    <h2>Admin Services</h2>
-    </div>
-</div>
-<div id="report" class="tab-pane fade in active"><br>
+<div id="report" class="tab-pane fade"><br>
   <div class="col-sm-4">
     <h2>Admin Services</h2>
     </div>
@@ -180,11 +231,6 @@
   </small>
 </div>
 <script>
-//$(document).ready(function(){
-  //$(".nav-tabs a").click(function(){
-    //$(this).tab('show');
-  //});
-//});
 $(document).ready(function(){
     $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
         localStorage.setItem('activeTab', $(e.target).attr('href'));
@@ -195,3 +241,4 @@ $(document).ready(function(){
     }
 });
 </script>
+</div>

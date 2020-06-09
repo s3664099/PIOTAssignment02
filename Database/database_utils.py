@@ -422,22 +422,28 @@ class databaseUtils:
 	#This method is designed to create an employee.
 	def create_employee(self, user_name, first_name, last_name, password, email, role):
 		#Commenting the role validation as this is not a user input. Default values are passed for the user to select on the form during registeration
-		"""if role != 'MANAGER':
-			if role != 'ADMIN':
-				if role != 'ENGINEER':
+		if role != 'Manager':
+			if role != 'Admin':
+				if role != 'Engineer':
 					return 'invalid role'
-		"""
 		with self.connection.cursor(DictCursor) as cur:
-			response = "success"
 			#Registeration form accepts user's email and user name as this will be needed for appropriate pushbullet messaging
 			"""email = "{}.{}@carshare.com".format(first_name[0], last_name[0])
 			user_name = "{}{}".format(first_name,last_name)
 			"""
+			#Adding active status so manager and eningeer profiles can be activated only by admin through modify user functionality
+			if role == 'Admin':
+				is_active=1
+			else:
+				is_active=0
+			
 			try:
 				cur.execute("INSERT INTO user VALUES \
-					('{}','{}','{}','{}','{}')".format(user_name, first_name, last_name, password, email))
-				cur.execute("INSERT INTO user_role VALUES ('{}','{}',0,'{}')".format(email, 1, role))
+					('{}','{}','{}','{}','{}')".format(user_name, first_name, last_name, password, email))	
+
+				cur.execute("INSERT INTO user_role VALUES ('{}','{}','{}')".format(email,is_active,role))
 				self.connection.commit()
+				response = "success"
 			#for sql try and catch blocks, please throw the sql exception as it is required for debugging issues and better code maintanence
 			except pymysql.Error as e:
 				print(e)
@@ -679,7 +685,7 @@ class databaseUtils:
 	def get_user_search(self,search):
 		user="Not Found"
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT username, firstname, lastname, role, user.email from user, user_role where\
+			cur.execute("SELECT username, firstname, lastname, role, user.email, is_active from user, user_role where\
 				username='{}' OR firstname='{}' OR lastname='{}' OR user.email='{}' \
 					OR role='{}' ".format(search, search, search,search, search))
 
@@ -687,3 +693,46 @@ class databaseUtils:
 			if users:
 				return users
 			return user
+	def get_all_users(self):
+		with self.connection.cursor(DictCursor) as cur:
+			cur.execute("SELECT user.firstname,user.lastname,user.email,user.username, user_role.role, user_role.is_active FROM user, user_role WHERE user.email=user_role.email")
+
+			allusers=cur.fetchall()
+			
+			return allusers
+	def update_userdetails(self,firstname,lastname,role,active_status,email):
+		with self.connection.cursor(DictCursor) as cur:
+			try:
+				print("I am about to update user")
+				cur.execute("UPDATE user SET firstname = '{}', lastname = '{}' WHERE email = '{}' \
+					".format(firstname, lastname, email))
+				try:
+					cur.execute("UPDATE user_role SET role = '{}', is_active = '{}' WHERE email = '{}' \
+					".format(role, active_status, email))
+				except pymysql.Error as e:
+					print("Caught error %d: %s" % (e.args[0], e.args[1]))
+					return "Error"
+			except pymysql.Error as e:
+					print("Caught error %d: %s" % (e.args[0], e.args[1]))
+					return "Error"
+					
+			self.connection.commit()
+			return "Success"
+
+	def get_car_details(self,rego):
+		with self.connection.cursor(DictCursor) as cur:
+			cur.execute("SELECT * from car where rego='{}'".format(rego))
+
+			return cur.fetchall()
+	
+	def update_cardetails(self,colour,make,model,locationLat,locationLong,rego):
+		with self.connection.cursor(DictCursor) as cur:
+			try:
+				print("I am here")
+				cur.execute("UPDATE car SET colour='{}' , make='{}', model='{}',\
+				  locationlat={} , locationlong={} WHERE rego='{}'".format(colour,make,model,float(locationLat),float(locationLong),rego))
+				self.connection.commit()
+				return "Success"
+			except pymysql.Error as e:
+				print("Caught error %d: %s" % (e.args[0], e.args[1]))
+				return "Error" 
