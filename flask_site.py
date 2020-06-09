@@ -46,43 +46,6 @@ def register():
 
     return render_template("register.html",title='Register',form=form)
 
-@site.route("/admin",methods=['GET','POST'])
-def admin():
-    url=("http://127.0.0.1:5000/username/"+session['email'])
-    response=requests.get(url)
-    username=json.loads(response.text)
-    url=("http://127.0.0.1:5000/users")
-    response=requests.get(url)
-    users=json.loads(response.text)
-    url=("http://127.0.0.1:5000/cars")
-    response=requests.get(url)
-    cars=json.loads(response.text)
-    if request.method=='POST':
-        if ('find' in request.form):
-            if(request.form['search'] == ''):
-                flash(f'Please Enter Car Rego To Search','danger')
-                return render_template("admin.html",title='Admin',cars=cars,users=users,user=username, rentalhistory=None,foundcars=None,userfound=None)
-            url=("http://127.0.0.1:5000/bookinghistory/"+request.form['search'])
-            response=requests.get(url)
-            bookinghistory=json.loads(response.text)
-            if bookinghistory:
-                return render_template("admin.html",title='Admin',cars=cars,users=users,user=username, rentalhistory=bookinghistory,foundcars=None,userfound=None)
-        elif ('cardetails' in request.form):
-            url=("http://127.0.0.1:5000/searchcar/"+request.form['carsearch'])
-            response=requests.get(url)
-            foundcars=json.loads(response.text)
-            if foundcars:
-                return render_template("admin.html",title='Admin',cars=cars,users=users,user=username,rentalhistory=None,foundcars=foundcars,userfound=None)
-        elif('userdetails' in request.form):
-            url=("http://127.0.0.1:5000/finduserdetails/"+request.form['usersearch'])
-            response=requests.get(url)
-            userfound=json.loads(response.text)
-            if userfound!='Not Found':
-                return render_template("admin.html",title='Admin',cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=userfound)
-            else:
-                flash(f'User Not found, please try with another keyword','danger')
-                return render_template("admin.html",title='Admin',cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=None)
-    return render_template("admin.html",title='Admin',cars=cars,users=users,user=username)
 
 @site.route("/",methods=['GET','POST'])
 def login():
@@ -117,6 +80,8 @@ def login():
                     session['email']=form.email.data
                     if(session['role']=='Admin'):
                         return redirect(url_for('site.admin'))
+                    elif(session['role']=='Manager'):
+                        return redirect(url_for('site.manager'))
                     else:
                         return redirect(url_for('site.home'))
             elif response.__contains__("password incorrect"):
@@ -180,6 +145,48 @@ def home():
         else:
             return render_template('home.html',title='Home',user=username,orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None,confirmedbookings=confirmedbookings)
     return render_template('home.html',title='Home',user=username,orderhistory=orderhistory, booking=None,availablecars=availablecars,confirmedbookings=confirmedbookings)
+
+@site.route("/admin",methods=['GET','POST'])
+def admin():
+    url=("http://127.0.0.1:5000/username/"+session['email'])
+    response=requests.get(url)
+    username=json.loads(response.text)
+    url=("http://127.0.0.1:5000/users")
+    response=requests.get(url)
+    users=json.loads(response.text)
+    url=("http://127.0.0.1:5000/cars")
+    response=requests.get(url)
+    cars=json.loads(response.text)
+    if request.method=='POST':
+        if ('find' in request.form):
+            if(request.form['search'] == ''):
+                flash(f'Please Enter Car Rego To Search','danger')
+                return render_template("admin.html",title='Admin',cars=cars,users=users,user=username, rentalhistory=None,foundcars=None,userfound=None)
+            url=("http://127.0.0.1:5000/bookinghistory/"+request.form['search'])
+            response=requests.get(url)
+            bookinghistory=json.loads(response.text)
+            if bookinghistory:
+                return render_template("admin.html",title='Admin',cars=cars,users=users,user=username, rentalhistory=bookinghistory,foundcars=None,userfound=None)
+        elif ('cardetails' in request.form):
+            url=("http://127.0.0.1:5000/searchcar/"+request.form['carsearch'])
+            response=requests.get(url)
+            foundcars=json.loads(response.text)
+            if foundcars:
+                return render_template("admin.html",title='Admin',cars=cars,users=users,user=username,rentalhistory=None,foundcars=foundcars,userfound=None)
+        elif('userdetails' in request.form):
+            url=("http://127.0.0.1:5000/finduserdetails/"+request.form['usersearch'])
+            response=requests.get(url)
+            userfound=json.loads(response.text)
+            if userfound!='Not Found':
+                return render_template("admin.html",title='Admin',cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=userfound)
+            else:
+                flash(f'User Not found, please try with another keyword','danger')
+                return render_template("admin.html",title='Admin',cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=None)
+    return render_template("admin.html",title='Admin',cars=cars,users=users,user=username)
+
+@site.route("/manager",methods=['GET','POST'])
+def manager():
+    return render_template("manager.html",title="Manager")
 
 @site.route("/logout",methods=['GET','POST'])
 def logout():

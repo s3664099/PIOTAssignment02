@@ -421,7 +421,6 @@ class databaseUtils:
 
 	#This method is designed to create an employee.
 	def create_employee(self, user_name, first_name, last_name, password, email, role):
-		#Commenting the role validation as this is not a user input. Default values are passed for the user to select on the form during registeration
 		if role != 'Manager':
 			if role != 'Admin':
 				if role != 'Engineer':
@@ -502,7 +501,7 @@ class databaseUtils:
 
 			self.connection.commit()
 
-	def get_engineer(self, email):
+	def get_engineer_address(self, email):
 
 		with self.connection.cursor(DictCursor) as cur:
 
@@ -512,6 +511,19 @@ class databaseUtils:
 				return cur.fetchall()
 			else:
 				return "No engineer found with that email"
+
+	def get_engineer_details(self, email):
+
+		with self.connection.cursor(DictCursor) as cur:
+
+			results = cur.execute("SELECT u.firstname, u.lastname, u.email FROM user u, user_role r WHERE u.email = r.email AND \
+				r.role = 'ENGINEER'")
+
+			if results:
+				return cur.fetchall()
+			else:
+				return "No engineer found with that email"
+
 
 	def get_mac_address(self, email):
 
@@ -638,7 +650,7 @@ class databaseUtils:
 						return "engineer already assigned to this service request"
 					elif service_request["needs_service"] == 0:
 						return "This service request is not active"
-					elif self.get_engineer(email) != "No engineer found with that email":
+					elif self.get_engineer_address(email) != "No engineer found with that email":
 						cur.execute("UPDATE car_service SET engineer_assigned = 1, email = '{}' WHERE request_no = '{}'".format(email, service_id))
 						return "Engineer successfully assigned"
 					else:
@@ -703,7 +715,6 @@ class databaseUtils:
 	def update_userdetails(self,firstname,lastname,role,active_status,email):
 		with self.connection.cursor(DictCursor) as cur:
 			try:
-				print("I am about to update user")
 				cur.execute("UPDATE user SET firstname = '{}', lastname = '{}' WHERE email = '{}' \
 					".format(firstname, lastname, email))
 				try:
@@ -728,7 +739,6 @@ class databaseUtils:
 	def update_cardetails(self,colour,make,model,locationLat,locationLong,rego):
 		with self.connection.cursor(DictCursor) as cur:
 			try:
-				print("I am here")
 				cur.execute("UPDATE car SET colour='{}' , make='{}', model='{}',\
 				  locationlat={} , locationlong={} WHERE rego='{}'".format(colour,make,model,float(locationLat),float(locationLong),rego))
 				self.connection.commit()

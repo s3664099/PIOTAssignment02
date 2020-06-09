@@ -4,7 +4,9 @@ sys.path.insert(0,'..')
 import unittest
 import Database.database_utils as database
 import Tests.test_database_setup as tdb
-import bluetooth.pushbullet as pb
+import pushbullet.pushbullet as pb
+import pushbullet.create_qrcode as qr
+import pushbullet.scan_barcode as bc
 
 class test_database_utils(unittest.TestCase):
 
@@ -44,6 +46,7 @@ class test_database_utils(unittest.TestCase):
 
 		self.assertTrue(pb.send_notification("Hello There","How's it going dude?",self.PB_KEY) == "Notification sent")
 
+
 	def test_pushbullet_message(self):
 		with self.db as db:
 
@@ -57,10 +60,25 @@ class test_database_utils(unittest.TestCase):
 			message = "Vehicle Rego: {}, {}, {}, {}".format(car['rego'],car['colour'], car['make'], car['model'])
 
 			self.assertTrue(pb.send_notification(title,message,key['pb_token']) == "Notification sent")
-			
 
+	def test_qr_code_creator(self):
 
+		with self.db as db:
 
+			db.create_employee('Janitor','Scruffy','mybucket','ENGINEER')
+			db.add_engineer('S.J@carshare.com','EE:6E:FF:22:2b:36',self.PB_KEY)
+
+			engineer = db.get_engineer_details('S.J@carshare.com').pop()
+
+			self.assertTrue(qr.create_qr_code(engineer['firstname'], engineer['lastname'], engineer['email']) == "QR code created")	
+
+	def test_scan_barcode(self):
+
+		self.assertTrue(bc.read_qr_no_webcam() == "First Name: Janitor, Surname: Scruffy, email J.S@carshare.com")
+
+	def test_scan_barcode_webcam(self):
+
+		self.assertTrue(bc.read_qr_webcam() == "First Name: Janitor, Surname: Scruffy, email J.S@carshare.com")
 
 if __name__ == "__main__":
     unittest.main()
