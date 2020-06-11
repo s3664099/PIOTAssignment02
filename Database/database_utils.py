@@ -267,7 +267,7 @@ class databaseUtils:
 
 			return cur.fetchall()	
 
-	def get_all_cars(self):
+	def get_engineerscars(self):
 		"""
 		All cars
 
@@ -567,8 +567,6 @@ class databaseUtils:
 
 		with self.connection.cursor(DictCursor) as cur:
 
-			result = "car booked for service"	
-
 			try:
 				if cur.execute("SELECT * FROM car WHERE rego = '{}'".format(rego)):
 
@@ -579,7 +577,7 @@ class databaseUtils:
 							return 'A service request has already been booked for vehicle {}'.format(rego)
 
 						else:
-
+						
 							cur.execute("INSERT INTO car_service (rego, email, needs_service, engineer_assigned, post_code) VALUES \
 										('{}','{}',1,0,'{}')".format(rego, email, post_code))
 							cur.execute("UPDATE car SET available = 0 WHERE rego = '{}'".format(rego))
@@ -589,7 +587,7 @@ class databaseUtils:
 							cur.execute("SELECT LAST_INSERT_ID()")
 							service_id = cur.fetchall().pop()
 
-							result += '. The service number is {}'.format(service_id['LAST_INSERT_ID()'])
+							result = 'Car Service Booked. The service number is {}'.format(service_id['LAST_INSERT_ID()'])
 					else:
 						return "Invalid email. Unable to book vehicle for service"
 				else:
@@ -746,3 +744,39 @@ class databaseUtils:
 			except pymysql.Error as e:
 				print("Caught error %d: %s" % (e.args[0], e.args[1]))
 				return "Error" 
+	def get_engineers(self):
+		with self.connection.cursor(DictCursor) as cur:
+			try:
+				cur.execute("SELECT firstname,lastname,user.email,username from user, user_role where user_role.role='ENGINEER' and user.email=user_role.email")
+				return cur.fetchall()
+
+			except pymysql.Error as e:
+				print("Caught error %d: %s" % (e.args[0], e.args[1]))
+				return "Error"
+	def get_all_unserviced_cars(self):
+		with self.connection.cursor(DictCursor) as cur:
+			try:
+				cur.execute("SELECT * from car where car.rego not in (SELECT rego from car_service)")
+				return cur.fetchall()
+
+			except pymysql.Error as e:
+				print("Caught error %d: %s" % (e.args[0], e.args[1]))
+				return "Error"
+	def getCars(self):
+		with self.connection.cursor(DictCursor) as cur:
+			try:
+				cur.execute("SELECT * from car")
+				return cur.fetchall()
+
+			except pymysql.Error as e:
+				print("Caught error %d: %s" % (e.args[0], e.args[1]))
+				return "Error"
+
+	def get_engineers_details(self):
+		with self.connection.cursor(DictCursor) as cur:
+			try:
+				cur.execute("Select email,mac_address from engineer")
+				return cur.fetchall()
+			except pymysql.Error as e:
+				print("Caught error %d: %s" % (e.args[0], e.args[1]))
+				return "Error"

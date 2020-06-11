@@ -333,6 +333,43 @@ def modifycardetails():
     rows=dbObj.update_cardetails(request.json['colour'],request.json['make'],request.json['model'],request.json['locationLat'],request.json['locationLong'],request.json['rego'])
     return jsonify(rows)
 
+@api.route("/findengineers",methods=['GET'])
+def getEngineers():
+    rows=dbObj.get_engineers()
+    if rows:
+        return jsonify(rows)
+    return "No Engineers Found"
+
+@api.route("/createservicerequest",methods=['POST'])
+def createServiceRequest():
+    rows=dbObj.create_service_request(request.json['rego'],'3000',request.json['engineeremail'])
+    return jsonify(rows)
+
+@api.route("/servicehistory",methods=['GET'])
+def getServiceHistory():
+    rows=dbObj.get_all_service_requests()
+    return jsonify(rows)
+    
+@api.route("/unservicedcars",methods=['GET'])
+def getUnservicedCars():
+    rows=dbObj.get_all_unserviced_cars()
+    unservicedcars=json.dumps(rows,default=decimal_default)
+    unservicedcars=json.loads(unservicedcars)
+    return jsonify(unservicedcars)
+
+@api.route("/getallcars",methods=['GET'])
+def getAllCars():
+    rows=dbObj.getCars()
+    allcars=json.dumps(rows,default=decimal_default)
+    allcars=json.loads(allcars)
+    return jsonify(allcars)
+
+@api.route("/engineerdetails",methods=['GET'])
+def getEngineersDetails():
+    rows=dbObj.get_engineers_details()
+    if rows:
+        return jsonify(rows)
+    return "No Engineers Found"
 #A helper method to convert onjects to floats or strings to avoid conflicts with jsonify .
 def decimal_default(obj):
     """

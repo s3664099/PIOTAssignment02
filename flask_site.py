@@ -32,7 +32,6 @@ def register():
                 url=("http://127.0.0.1:5000/registeremployee")
                 response=requests.post(url,json=result)
                 response=response.text
-                print(response)
                 if response:
                     response=response.replace('"','')
                     response=response.replace('\n','')
@@ -154,35 +153,41 @@ def admin():
     url=("http://127.0.0.1:5000/users")
     response=requests.get(url)
     users=json.loads(response.text)
-    url=("http://127.0.0.1:5000/cars")
+    url=("http://127.0.0.1:5000/getallcars")
     response=requests.get(url)
     cars=json.loads(response.text)
+    url=("http://127.0.0.1:5000/unservicedcars")
+    response=requests.get(url)
+    unservicedcars=json.loads(response.text)
+    print(unservicedcars)
+    response=requests.get("http://127.0.0.1:5000/servicehistory")
+    servicehistory=json.loads(response.text)
     if request.method=='POST':
         if ('find' in request.form):
             if(request.form['search'] == ''):
                 flash(f'Please Enter Car Rego To Search','danger')
-                return render_template("admin.html",title='Admin',cars=cars,users=users,user=username, rentalhistory=None,foundcars=None,userfound=None)
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username, rentalhistory=None,foundcars=None,userfound=None)
             url=("http://127.0.0.1:5000/bookinghistory/"+request.form['search'])
             response=requests.get(url)
             bookinghistory=json.loads(response.text)
             if bookinghistory:
-                return render_template("admin.html",title='Admin',cars=cars,users=users,user=username, rentalhistory=bookinghistory,foundcars=None,userfound=None)
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username, rentalhistory=bookinghistory,foundcars=None,userfound=None)
         elif ('cardetails' in request.form):
             url=("http://127.0.0.1:5000/searchcar/"+request.form['carsearch'])
             response=requests.get(url)
             foundcars=json.loads(response.text)
             if foundcars:
-                return render_template("admin.html",title='Admin',cars=cars,users=users,user=username,rentalhistory=None,foundcars=foundcars,userfound=None)
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=foundcars,userfound=None)
         elif('userdetails' in request.form):
             url=("http://127.0.0.1:5000/finduserdetails/"+request.form['usersearch'])
             response=requests.get(url)
             userfound=json.loads(response.text)
             if userfound!='Not Found':
-                return render_template("admin.html",title='Admin',cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=userfound)
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=userfound)
             else:
                 flash(f'User Not found, please try with another keyword','danger')
-                return render_template("admin.html",title='Admin',cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=None)
-    return render_template("admin.html",title='Admin',cars=cars,users=users,user=username)
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=None)
+    return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username)
 
 @site.route("/manager",methods=['GET','POST'])
 def manager():
@@ -291,3 +296,30 @@ def about():
 
     """
     return render_template("about.html")
+
+@site.route("/reportcar",methods=['GET','POST'])
+def reportcar():
+    if request.method=='POST':
+        if 'goback' in request.form:
+            return redirect(url_for('site.admin'))
+        if 'cartoreport' in request.form:
+            response=requests.get("http://127.0.0.1:5000/findengineers")
+            engineers=json.loads(response.text)
+            if engineers!='No Engineers Found':
+                return render_template("reportcar.html",title='Report Car',engineerdetails=engineers,rego=request.form['cartoreport'])
+        if 'report' in request.form:
+            print(request.form)
+            url="http://127.0.0.1:5000/createservicerequest"
+            response=requests.post(url,json=request.form)
+            response=response.text
+            if response:
+                    response=response.replace('"','')
+                    response=response.replace('\n','')
+                    if response.__contains__("Car Service Booked"):
+                        flash(response,'success')
+                        return redirect(url_for('site.admin'))
+                    else:
+                        flash(f'Service request could not be raised, please try again','danger')
+                        return redirect(url_for('site.admin'))
+    return render_template("reportcar.html",title='Report Car')
+
