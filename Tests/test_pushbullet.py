@@ -65,7 +65,7 @@ class test_database_utils(unittest.TestCase):
 
 		with self.db as db:
 
-			db.create_employee('Janitor','Scruffy','mybucket','ENGINEER')
+			db.create_employee('SJanitor','Janitor','Scruffy','mybucket','J.S@carshare.com','Engineer')
 			db.add_engineer('S.J@carshare.com','EE:6E:FF:22:2b:36',self.PB_KEY)
 
 			engineer = db.get_engineer_details('S.J@carshare.com').pop()
@@ -76,9 +76,9 @@ class test_database_utils(unittest.TestCase):
 
 		self.assertTrue(bc.read_qr_no_webcam() == "First Name: Janitor, Surname: Scruffy, email J.S@carshare.com")
 
-	def test_scan_barcode_webcam(self):
+	#def test_scan_barcode_webcam(self):
 
-		self.assertTrue(bc.read_qr_webcam() == "First Name: Janitor, Surname: Scruffy, email J.S@carshare.com")
+		#self.assertTrue(bc.read_qr_webcam() == "First Name: Janitor, Surname: Scruffy, email J.S@carshare.com")
 
 if __name__ == "__main__":
     unittest.main()
