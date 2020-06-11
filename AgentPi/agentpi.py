@@ -9,9 +9,9 @@ import socket ,requests,json, agent_socket_utils
 from google.cloud import storage
 import glob
 import datetime
+import unlock_car as bt
 from getpass import getpass
 from FacialRecognition.recognise import recognise
-
 
 with open("config.json", "r") as file:
 	
@@ -45,10 +45,14 @@ def main():
 		sys.exit(1)
 
 	while(operating == True):
+
 		"""
 		Options menu
 
 		"""
+
+		unlocked = scan_bluetooth(unlocked)
+
 		option = menu(unlocked)
 
 		if option == "1":
@@ -62,8 +66,11 @@ def main():
 		elif(option == "2"):
 			unlocked = recognise_face(unlocked,client)
 
-			#facial recognition code here
 		elif(option == "3"):
+			unlocked = scan_bluetooth(unlocked)
+
+			#facial recognition code here
+		elif(option == "5"):
 
 			user = returnCar(get_input("Enter your username:\n"),client)
 			if(user == True):
@@ -82,6 +89,24 @@ def main():
 		else:
 			print("Invalid input, try again.")
 			print()
+
+#Function to scan bluetooth
+def scan_bluetooth(unlocked):
+
+	#Calls MP to access DB and get list of mac addresses
+	#Mac addresses are saved as a list, and then passed through check any
+	#Devices in the area
+	url=("http://127.0.0.1:5000/get_macaddress")
+	mac_addresses = requests.post(url)
+	mac_addresses = mac_addresses['mac_addresses']
+
+	authorisation = bt.scan_devices(mac_addresses)
+
+	if authorisation != None:
+		print(authorisation)
+		unlocked = True
+
+	return unlocked
 
 #Downloads the encodings.pickle file from Cloud Storage for Facial Recognition
 def download_blob():
@@ -111,6 +136,8 @@ def menu(unlocked):
 		if unlocked == False:
 			print("1. Login via Console")
 			print("2. Login via Facial Recognition")
+			print("3. Lobin vis Bluetooth")
+			print("4. Login via QR Code")
 		else:
 			print("1. Return Car")
 
@@ -129,7 +156,7 @@ def menu(unlocked):
 				print("Invalid Input")
 		else:
 			if text == "1":
-				text = "3"
+				text = "5"
 				valid_input = True
 			elif text == "0":
 				valid_input = True
@@ -157,6 +184,7 @@ def getUser_remotely(user,password,client):
 	"""
 	unlocked = False
 	data={"email":user ,"password": password}
+
 	#Change the URL based on the location at which the API is hosted
 	url=("http://127.0.0.1:5000/hashme")
 	password=requests.post(url, json=data)

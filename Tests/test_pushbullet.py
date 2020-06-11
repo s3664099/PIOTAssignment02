@@ -74,11 +74,11 @@ class test_database_utils(unittest.TestCase):
 
 	def test_scan_barcode(self):
 
-		self.assertTrue(bc.read_qr_no_webcam() == "First Name: Janitor, Surname: Scruffy, email J.S@carshare.com")
+		self.assertTrue(bc.read_qr_no_webcam('Janitor','Scruffy') == "First Name: Janitor, Surname: Scruffy, email J.S@carshare.com")
 
 	#def test_scan_barcode_webcam(self):
 
-		#self.assertTrue(bc.read_qr_webcam() == "First Name: Janitor, Surname: Scruffy, email J.S@carshare.com")
+		#self.assertTrue(bc.read_qr_webcam('Janitor','Scruffy') == "First Name: Janitor, Surname: Scruffy, email J.S@carshare.com")
 
 if __name__ == "__main__":
     unittest.main()

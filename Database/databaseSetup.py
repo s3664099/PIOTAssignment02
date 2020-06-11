@@ -218,7 +218,9 @@ def sql_queries(conn):
 
 	cur = conn.cursor()
 
-	cur.execute("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'user_role'")
+	cur.execute("ALTER TABLE engineer ADD pb_token VARCHAR(40)")
+
+	cur.execute("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'engineer'")
 
 	for x in cur.fetchall():
 		print(x)
