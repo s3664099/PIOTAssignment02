@@ -9,21 +9,25 @@ def scan_devices(authorised_addresses):
 	car_unlocked = False
 	name = None
 	#print(authorised_addresses)
+	timeout = 0
 
 	while car_unlocked == False:
 
-		#print("scanning")
+		print("scanning")
 
 
 		#Attempts to locate any nearby bluetooth devices
 		nearby_devices = bluetooth.discover_devices()
-		#print(nearby_devices)
+		print(nearby_devices)
+		print(timeout)
+
+		timeout +=1
 
 		#Will then compare the nearby devices with the devices
 		#In memorory
 		for mac_address in nearby_devices:
 
-			#print(mac_address)
+			print(mac_address)
 			print(bluetooth.lookup_name(mac_address, timeout=50))
 
 			for addresses in authorised_addresses:
@@ -36,5 +40,6 @@ def scan_devices(authorised_addresses):
 					name = addresses['name']
 					
 					return "Greetings {}. The car is unlocked".format(name)
-				else:
-					return None
+
+		if timeout == 4:
+			return None

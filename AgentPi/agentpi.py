@@ -6,12 +6,12 @@
 # Documentation: https://docs.python.org/3/library/socket.html
 import sys
 import socket ,requests,json, agent_socket_utils
-from google.cloud import storage
+#from google.cloud import storage
 import glob
 import datetime
 import unlock_car as bt
 from getpass import getpass
-from FacialRecognition.recognise import recognise
+#from FacialRecognition.recognise import recognise
 
 with open("config.json", "r") as file:
 	
@@ -51,7 +51,7 @@ def main():
 
 		"""
 
-		unlocked = scan_bluetooth(unlocked)
+		unlocked = scan_bluetooth(unlocked, client)
 
 		option = menu(unlocked)
 
@@ -67,7 +67,7 @@ def main():
 			unlocked = recognise_face(unlocked,client)
 
 		elif(option == "3"):
-			unlocked = scan_bluetooth(unlocked)
+			unlocked = scan_bluetooth(unlocked, client)
 
 			#facial recognition code here
 		elif(option == "5"):
@@ -90,30 +90,12 @@ def main():
 			print("Invalid input, try again.")
 			print()
 
-#Function to scan bluetooth
-def scan_bluetooth(unlocked):
-
-	#Calls MP to access DB and get list of mac addresses
-	#Mac addresses are saved as a list, and then passed through check any
-	#Devices in the area
-	url=("http://127.0.0.1:5000/get_macaddress")
-	mac_addresses = requests.post(url)
-	mac_addresses = mac_addresses['mac_addresses']
-
-	authorisation = bt.scan_devices(mac_addresses)
-
-	if authorisation != None:
-		print(authorisation)
-		unlocked = True
-
-	return unlocked
-
 #Downloads the encodings.pickle file from Cloud Storage for Facial Recognition
+"""
 def download_blob():
-        """
-		Downloads a blob from the bucket.
+        Downloads a blob from the bucket.
 		
-		"""
+		
         bucket_name = "car-hire"
         source_blob_name = "encodings.pickle"
         destination_file_name = "FacialRecognition/encodings.pickle"
@@ -122,6 +104,7 @@ def download_blob():
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(source_blob_name)
         blob.download_to_filename(destination_file_name)
+"""
 
 #Menu to enable user to chose which code to use
 def menu(unlocked):
@@ -149,7 +132,7 @@ def menu(unlocked):
 		#Validates the input in restricting options
 		if unlocked == False:
 
-			if (text == "1") or (text == "2") or (text == "0"):
+			if (text == "1") or (text == "2") or (text == "3") or (text == "4") or (text == "0"):
 				valid_input = True
 
 			else:
@@ -176,6 +159,28 @@ def get_input(input_type):
 	entry = input(input_type)
 	return entry
 
+#Function to scan bluetooth
+def scan_bluetooth(unlocked, client):
+
+	#Calls MP to access DB and get list of mac addresses
+	#Mac addresses are saved as a list, and then passed through check any
+	#Devices in the area
+
+	agent_socket_utils.sendJson(client,{"ForBlueTooth": True,"FacialRecognition": False,"ForLogin": True,"ForReturnCar":False})
+
+	while(True):
+		object = agent_socket_utils.recvJson(client)
+
+		mac_addresses = object['mac_addresses']
+
+		authorisation = bt.scan_devices(mac_addresses)
+
+		if authorisation != None:
+			print(authorisation)
+			unlocked = True
+
+		return unlocked
+
 #Function that sends user details to the master pi for validation
 def getUser_remotely(user,password,client):
 	"""
@@ -192,7 +197,7 @@ def getUser_remotely(user,password,client):
 	password=password.replace("\n",'')
 	password=password.replace('"','')
 	print("Logging in as {}".format(user))
-	agent_socket_utils.sendJson(client,{"FacialRecognition": False,"ForLogin": True,"ForReturnCar":False, "email":user,"password":password,"rego":rego,"date_time": str(datetime.datetime.now())})
+	agent_socket_utils.sendJson(client,{"ForBlueTooth": False,"FacialRecognition": False,"ForLogin": True,"ForReturnCar":False, "email":user,"password":password,"rego":rego,"date_time": str(datetime.datetime.now())})
 	print("Waiting for Confirmation...")
 	while(True):
 		object = agent_socket_utils.recvJson(client)
@@ -217,7 +222,7 @@ def getUserName_remotely(username,client):
 	"""
 	unlocked=False
 	print("Logging in as {}".format(username))
-	agent_socket_utils.sendJson(client,{"FacialRecognition": True, "ForLogin": True,"ForReturnCar":False, "email":username,"rego":rego,"date_time": str(datetime.datetime.now())})
+	agent_socket_utils.sendJson(client,{"ForBlueTooth": False,"FacialRecognition": True, "ForLogin": True,"ForReturnCar":False, "email":username,"rego":rego,"date_time": str(datetime.datetime.now())})
 	print("Waiting for Confirmation...")
 	while(True):
 		object = agent_socket_utils.recvJson(client)
@@ -235,19 +240,19 @@ def getUserName_remotely(username,client):
 			print(object['Response'])
 			return unlocked
 
-
+"""
 #Fuction for facial recognition
 def facialrecognition(img,client):
-	"""
+	
 	Facial recognition function
 
-	"""
 	print("In Facial recognition")
 	download_blob()
 	name=recognise('FacialRecognition/encodings.pickle',img)
     #user=name.split(":")
 	unlocked=getUserName_remotely(name,client)
 	return unlocked
+"""
 
 #Function that performs the return car function
 def returnCar(username,client):
@@ -256,7 +261,7 @@ def returnCar(username,client):
 
 	"""
 	print("Trying to return car for {}".format(username))
-	agent_socket_utils.sendJson(client, {"ForLogin": False,"ForReturnCar":True,"email": username, "rego": rego})
+	agent_socket_utils.sendJson(client, {"ForBlueTooth": False,"ForLogin": False,"ForReturnCar":True,"email": username, "rego": rego})
 	print("Waiting for Confirmation...")
 	while(True):
 		object = agent_socket_utils.recvJson(client)
@@ -267,6 +272,7 @@ def returnCar(username,client):
 		else:
 			print(object['Response'])
 			return False
+
 
 #Function to run the facial recognition
 def recognise_face(unlocked, client):

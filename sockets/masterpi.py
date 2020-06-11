@@ -38,7 +38,13 @@ class ClientThread(threading.Thread):
             data= socket_utils.recvJson(self.csocket)
             if("ForLogin" in data):
                 if(data["ForLogin"]==True):
-                    if(data["FacialRecognition"]==False):
+
+                    if(data["ForBlueTooth"]==True):
+
+                        socket_utils.sendJson(self.csocket, {'mac_addresses': [{"mac_address": "60:14:B3:C1:5B:22", "name": "Professor Farnsworth"}]})
+
+
+                    elif(data["FacialRecognition"]==False):
                         url=("http://127.0.0.1:5000/validate")
                         response=requests.post(url,json=data)
                         response=response.text
