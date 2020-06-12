@@ -376,6 +376,16 @@ def getEngineersDetails():
 def deleteUser(email):
     rows=dbObj.delete_user(email)
     return jsonify(rows)
+
+@api.route("/findallocatedcars/<email>",methods=['GET'])
+def getEngineerCars(email):
+    result='Error'
+    rows=dbObj.get_this_engineer_cars(email)
+    if rows:
+        result='Success'
+        return jsonify(rows)
+    return jsonify(result)
+
 #A helper method to convert onjects to floats or strings to avoid conflicts with jsonify .
 def decimal_default(obj):
     """
