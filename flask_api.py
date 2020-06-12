@@ -52,8 +52,6 @@ def registerUser():
 @api.route("/registeremployee", methods=['POST'])
 def registerEmplyee():
     password=hash_password(request.json['password'])
-    print("In API")
-    print(request.json['role'])
     response=dbObj.create_employee(request.json['username'],request.json['firstname'],request.json['lastname'],password,request.json['email'],request.json['role'])
     return jsonify(response)
 
@@ -293,9 +291,9 @@ def getUserRole(role,email):
         return jsonify(result)
     return jsonify(result)
 
-@api.route("/finduserdetails/<search>",methods=['GET'])
-def getUserDetails(search):
-    rows=dbObj.get_user_search(search)
+@api.route("/finduserdetails/<email>",methods=['GET'])
+def getUserDetails(email):
+    rows=dbObj.get_user_search(email)
     return jsonify(rows)
     
 
@@ -373,6 +371,11 @@ def getEngineersDetails():
     if rows:
         return jsonify(rows)
     return "No Engineers Found"
+
+@api.route("/deleteuser/<email>",methods=['GET'])
+def deleteUser(email):
+    rows=dbObj.delete_user(email)
+    return jsonify(rows)
 #A helper method to convert onjects to floats or strings to avoid conflicts with jsonify .
 def decimal_default(obj):
     """

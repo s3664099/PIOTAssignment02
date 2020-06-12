@@ -28,7 +28,6 @@ def register():
         if request.method == 'POST':
                 result=json.dumps(request.form)
                 result=json.loads(result)
-                print(request.form['role'])
                 url=("http://127.0.0.1:5000/registeremployee")
                 response=requests.post(url,json=result)
                 response=response.text
@@ -83,6 +82,8 @@ def login():
                         return redirect(url_for('site.manager'))
                     elif(session['role']=='Engineer'):
                         return redirect(url_for('site.engineer'))
+                    elif(session['role']=='Customer'):
+                        return redirect(url_for('site.home'))
                     else:
                         return redirect(url_for('site.home'))
             elif response.__contains__("password incorrect"):
@@ -149,6 +150,7 @@ def home():
 
 @site.route("/admin",methods=['GET','POST'])
 def admin():
+    form=RegistrationForm()
     url=("http://127.0.0.1:5000/username/"+session['email'])
     response=requests.get(url)
     username=json.loads(response.text)
@@ -161,35 +163,49 @@ def admin():
     url=("http://127.0.0.1:5000/unservicedcars")
     response=requests.get(url)
     unservicedcars=json.loads(response.text)
-    print(unservicedcars)
     response=requests.get("http://127.0.0.1:5000/servicehistory")
     servicehistory=json.loads(response.text)
-    if request.method=='POST':
-        if ('find' in request.form):
+    if form.validate_on_submit():
+        if 'add' in request.form:
+                result=json.dumps(request.form)
+                result=json.loads(result)
+                url=("http://127.0.0.1:5000/registeremployee")
+                response=requests.post(url,json=result)
+                response=response.text
+                if response:
+                    response=response.replace('"','')
+                    response=response.replace('\n','')
+                if response.__contains__("success"):
+                    flash(f'Account Created', 'success')
+                    return redirect(url_for('site.admin'))
+                else:
+                    flash(f'Username or Email already in use','danger')
+                    return redirect(url_for('site.admin'))
+        if 'find' in request.form:
             if(request.form['search'] == ''):
                 flash(f'Please Enter Car Rego To Search','danger')
-                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username, rentalhistory=None,foundcars=None,userfound=None)
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username, rentalhistory=None,foundcars=None,userfound=None,form=form)
             url=("http://127.0.0.1:5000/bookinghistory/"+request.form['search'])
             response=requests.get(url)
             bookinghistory=json.loads(response.text)
             if bookinghistory:
-                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username, rentalhistory=bookinghistory,foundcars=None,userfound=None)
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username, rentalhistory=bookinghistory,foundcars=None,userfound=None,form=form)
         elif ('cardetails' in request.form):
             url=("http://127.0.0.1:5000/searchcar/"+request.form['carsearch'])
             response=requests.get(url)
             foundcars=json.loads(response.text)
             if foundcars:
-                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=foundcars,userfound=None)
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=foundcars,userfound=None,form=form)
         elif('userdetails' in request.form):
             url=("http://127.0.0.1:5000/finduserdetails/"+request.form['usersearch'])
             response=requests.get(url)
             userfound=json.loads(response.text)
             if userfound!='Not Found':
-                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=userfound)
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=userfound,form=form)
             else:
                 flash(f'User Not found, please try with another keyword','danger')
-                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=None)
-    return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username)
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=None,form=form)
+    return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,form=form)
 
 @site.route("/manager",methods=['GET','POST'])
 def manager():
@@ -254,13 +270,25 @@ def booking():
 @site.route("/modifyuser",methods=['GET','POST'])
 def modifyuser():
     if request.method=='POST':
-        if 'emailtomodify' in request.form:
+        if 'deleteuser' in request.form:
+            url=("http://127.0.0.1:5000/deleteuser/"+request.form['emailtomodify'])
+            response=requests.get(url)
+            response=json.loads(response.text)
+            if 'Success' in response:
+                flash(f'User Has Been Deleted Successfully','success')
+                return redirect(url_for('site.admin'))
+            else:
+                flash(f'Encountered an internal error while trying to delete user, please check logs for more information','danger')
+                return redirect(url_for('site.admin'))
+        if 'usermodify' in request.form:
+            print("I am here")
             url=("http://127.0.0.1:5000/finduserdetails/"+request.form['emailtomodify'])
             response=requests.get(url)
             userdetails=json.loads(response.text)
+            print(userdetails)
             return render_template("modifyuser.html",title="Modify User",userdetails=userdetails)
         if 'goback' in request.form:
-            return redirect(url_for('site.admin'))
+            return redirect(url_for('site.admin'))            
         if 'modify' in request.form:
             if request.form['status']!='1' and request.form['status'] != '0':
                 flash(f'Active Status can be either 0 or 1 only\nPlease try again!','danger')
@@ -280,12 +308,10 @@ def modifycar():
             url=("http://127.0.0.1:5000/findcardetails/"+request.form['cartomodify'])
             response=requests.get(url)
             cardetails=json.loads(response.text)
-            print(cardetails)
             return render_template("modifycar.html",cardetails=cardetails,title="Modify Car")
         if 'goback' in request.form:
             return redirect(url_for('site.admin'))
         if 'modify' in request.form:
-            print(request.form)
             url="http://127.0.0.1:5000/modifycardetails"
             response=requests.post(url,json=request.form)
             response=json.loads(response.text)
@@ -313,7 +339,6 @@ def reportcar():
             if engineers!='No Engineers Found':
                 return render_template("reportcar.html",title='Report Car',engineerdetails=engineers,rego=request.form['cartoreport'])
         if 'report' in request.form:
-            print(request.form)
             url="http://127.0.0.1:5000/createservicerequest"
             response=requests.post(url,json=request.form)
             response=response.text

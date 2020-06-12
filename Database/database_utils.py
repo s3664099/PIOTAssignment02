@@ -267,7 +267,7 @@ class databaseUtils:
 
 			return cur.fetchall()	
 
-	def get_engineerscars(self):
+	def get_all_cars(self):
 		"""
 		All cars
 
@@ -424,7 +424,8 @@ class databaseUtils:
 		if role != 'Manager':
 			if role != 'Admin':
 				if role != 'Engineer':
-					return 'invalid role'
+					if role!= 'Customer':
+						return 'invalid role'
 		with self.connection.cursor(DictCursor) as cur:
 			#Registeration form accepts user's email and user name as this will be needed for appropriate pushbullet messaging
 			"""email = "{}.{}@carshare.com".format(first_name[0], last_name[0])
@@ -692,12 +693,12 @@ class databaseUtils:
 
 				return cur.fetchall()
 	
-	def get_user_search(self,search):
+	def get_user_search(self,email):
 		user="Not Found"
 		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT username, firstname, lastname, role, user.email, is_active from user, user_role where\
-				username='{}' OR firstname='{}' OR lastname='{}' OR user.email='{}' \
-					OR role='{}' ".format(search, search, search,search, search))
+				user.email=user_role.email and user.email='{}' \
+				 ".format(email))
 
 			users = cur.fetchall()
 			if users:
@@ -780,3 +781,22 @@ class databaseUtils:
 			except pymysql.Error as e:
 				print("Caught error %d: %s" % (e.args[0], e.args[1]))
 				return "Error"
+	
+	def delete_user(self,email):
+		with self.connection.cursor(DictCursor) as cur:
+			user_role_deleted=0
+			try:
+				cur.execute("DELETE from user_role where email='{}'".format(email))
+				user_role_deleted=1
+			except pymysql.Error as e:
+				print("Caught error %d: %s" % (e.args[0],e.args[1]))
+			
+			if user_role_deleted==1:
+				try:
+					cur.execute("DELETE from user where email='{}'".format(email))
+					self.connection.commit()
+					return "Success"
+				except pymysql.Error as e:
+					print("Caught error %d: %s" % (e.args[0],e.args[1]))
+					return "Error"
+				

@@ -44,7 +44,7 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), my_password_check], description="Minimum 8 Characters, 1 Capital, 1 number")
     confirm_password = PasswordField('Confirm Password',
                                      validators=[DataRequired(), EqualTo('password')])
-    role = SelectField('Role', choices = [('Admin','Admin'),('Manager','Manager'),('Engineer','Engineer')], validators = [DataRequired()])
+    role = SelectField('Role', choices = [('Admin','Admin'),('Manager','Manager'),('Engineer','Engineer'),('Customer','Customer')], validators = [DataRequired()])
     submit = SubmitField('Sign Up')
 
 
@@ -56,7 +56,7 @@ class LoginForm(FlaskForm):
     email = StringField('Email',
                         validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
-    role = SelectField('Role', choices = [('Admin','Admin'),('Manager','Manager'),('Engineer','Engineer')], validators = [DataRequired()])
+    role = SelectField('Role', choices = [('Admin','Admin'),('Manager','Manager'),('Engineer','Engineer'),('Customer','Customer')], validators = [DataRequired()])
     submit = SubmitField('Login')
 
 class BookingForm(FlaskForm):
