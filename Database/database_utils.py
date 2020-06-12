@@ -599,6 +599,15 @@ class databaseUtils:
 
 			return result
 
+	def get_this_engineer_cars(self, email):
+	
+		with self.connection.cursor(DictCursor) as cur:
+				
+			if cur.execute("SELECT rego FROM car_service WHERE email = '{}' AND needs_service = 1".format(email)):	
+					return cur.fetchall()
+			else:
+				return "No jobs assigned to {}".format(email)
+		 
 
 	def get_service_request(self, service_id):
 
