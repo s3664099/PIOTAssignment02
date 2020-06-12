@@ -81,6 +81,8 @@ def login():
                         return redirect(url_for('site.admin'))
                     elif(session['role']=='Manager'):
                         return redirect(url_for('site.manager'))
+                    elif(session['role']=='Engineer'):
+                        return redirect(url_for('site.engineer'))
                     else:
                         return redirect(url_for('site.home'))
             elif response.__contains__("password incorrect"):
@@ -196,6 +198,9 @@ def manager():
     username=json.loads(response.text)
     return render_template("manager.html",user=username,title="Manager")
 
+@site.route("/engineer",methods=['GET','POST'])
+def engineer():
+    return render_template("engineer.html",title='Engineer')
 @site.route("/logout",methods=['GET','POST'])
 def logout():
     """
