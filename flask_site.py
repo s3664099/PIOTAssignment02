@@ -216,7 +216,31 @@ def manager():
 
 @site.route("/engineer",methods=['GET','POST'])
 def engineer():
-    return render_template("engineer.html",title='Engineer')
+    url=("http://127.0.0.1:5000/username/"+session['email'])
+    response=requests.get(url)
+    username=json.loads(response.text)
+    url="http://127.0.0.1:5000/checkengineerdetails/"+session['email']
+    response=requests.get(url)
+    engineerdetails=json.loads(response.text)
+    if engineerdetails=='No engineer found with that email':
+        engineerdetails=session['email']
+        needdetails=True
+    else:
+        needdetails=False
+    print(needdetails)
+    if request.method=="POST":
+        if 'addengineerdetails' in request.form:
+            url="http://127.0.0.1:5000/addengineerdetails"
+            response=requests.post(url, json=request.form)
+            response=json.loads(response.text)
+            if 'Success' in response:
+                flash(f'Details Added','success')
+                return redirect(url_for('site.engineer'))
+            else:
+                flash(f'We have encountered an internal error, please try again later or contact the admin','danger')
+                return redirect(url_for('site.engineer'))
+    return render_template("engineer.html",title='Engineer',user=username,needdetails=needdetails,engineerdetails=engineerdetails)
+
 @site.route("/logout",methods=['GET','POST'])
 def logout():
     """

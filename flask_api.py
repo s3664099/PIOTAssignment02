@@ -386,6 +386,21 @@ def getEngineerCars(email):
         return jsonify(rows)
     return jsonify(result)
 
+@api.route("/checkengineerdetails/<email>",methods=['GET'])
+def getEngineerDetails(email):
+    rows=dbObj.get_engineer_address(email)
+    return jsonify(rows)
+
+@api.route("/addengineerdetails",methods=['POST'])
+def addEngineerDetails():
+    rows=dbObj.add_engineer(request.json['email'],request.json['macaddress'],request.json['pbtoken'])
+    return jsonify(rows)
+    
+@api.route("/getengineerbluetoothdetails",methods=['GET'])
+def getEngineerBluetoothDetails():
+    rows=dbObj.get_engineer_bluetooth_details()
+    return jsonify(rows)
+    
 #A helper method to convert onjects to floats or strings to avoid conflicts with jsonify .
 def decimal_default(obj):
     """
