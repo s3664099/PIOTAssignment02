@@ -214,9 +214,16 @@ def manager():
     username=json.loads(response.text)
     return render_template("manager.html",user=username,title="Manager")
 
-@site.route("/engineer",methods=['GET','POST'])
+@site.route("/engineer",methods=['GET', 'POST'])
 def engineer():
-    return render_template("engineer.html",title='Engineer')
+    url=("http://127.0.0.1:5000/username/"+session['email'])
+    response=requests.get(url)
+    username=json.loads(response.text)
+    url=("http://127.0.0.1:5000/findallocatedcars/"+session['email'])
+    response=requests.get(url)
+    availablecars=json.loads(response.text)
+    return render_template("engineer.html",user=username, availablecars=availablecars, title="Engineer")
+
 @site.route("/logout",methods=['GET','POST'])
 def logout():
     """
