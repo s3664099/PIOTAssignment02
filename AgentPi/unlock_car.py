@@ -26,8 +26,7 @@ def scan_devices(authorised_addresses):
 		#In memorory
 		for mac_address in nearby_devices:
 
-			print(mac_address)
-			print(bluetooth.lookup_name(mac_address, timeout=50))
+			#print(bluetooth.lookup_name(mac_address, timeout=50))
 
 			for addresses in authorised_addresses:
 
@@ -36,7 +35,7 @@ def scan_devices(authorised_addresses):
 
 					print("address found")
 					car_unlocked == True
-					name = addresses['name']
+					name = "{} {}".format(addresses['firstname'], addresses['lastname'])
 					
 					return "Greetings {}. The car is unlocked".format(name)
 

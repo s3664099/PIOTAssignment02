@@ -814,6 +814,7 @@ class databaseUtils:
 				except pymysql.Error as e:
 					print("Caught error %d: %s" % (e.args[0],e.args[1]))
 					return "Error"
+					
 	def get_engineer_bluetooth_details(self):
 		with self.connection.cursor(DictCursor) as cur:
 			try:

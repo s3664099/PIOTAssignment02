@@ -41,8 +41,16 @@ class ClientThread(threading.Thread):
 
                     if(data["ForBlueTooth"]==True):
 
-                        socket_utils.sendJson(self.csocket, {'mac_addresses': [{"mac_address": "60:14:B3:C1:5B:22", "name": "Professor Farnsworth"}]})
+                        url = ("http://127.0.0.1:5000/getengineerbluetoothdetails")
+                        response = requests.get(url)
+                        respond = response.text
+                        response = response.json()
 
+                        if "firstname" in respond:
+                            socket_utils.sendJson(self.csocket, {"Engineers": response})
+                        else:
+                            socket_utils.sendJson(self.csocket, {"Response": "Failure"})
+                        
                     elif(data["ForQRCode"] == True):
 
                         socket_utils.sendJson(self.csocket, {"Unlock": True})

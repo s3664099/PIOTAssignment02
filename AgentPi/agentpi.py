@@ -53,7 +53,7 @@ def main():
 
 		"""
 
-		#unlocked = scan_bluetooth(unlocked, client)
+		unlocked = scan_bluetooth(unlocked, client)
 		if unlocked == True:
 			isEngineer = True
 
@@ -186,13 +186,17 @@ def scan_bluetooth(unlocked, client):
 	while(True):
 		object = agent_socket_utils.recvJson(client)
 
-		mac_addresses = object['mac_addresses']
+		if ("Response" in object):
+			return False
+
+		mac_addresses = object['Engineers']
 
 		#Calls Bluetooth function to scan for authorised mac addresses
 		authorisation = bt.scan_devices(mac_addresses)
 
 		#If the mac address is authorised, the car is unlcoked
 		if authorisation != None:
+			print(authorisation)
 			unlocked = True
 
 		return unlocked

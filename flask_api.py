@@ -398,6 +398,7 @@ def addEngineerDetails():
     
 @api.route("/getengineerbluetoothdetails",methods=['GET'])
 def getEngineerBluetoothDetails():
+    print("Hello")
     rows=dbObj.get_engineer_bluetooth_details()
     return jsonify(rows)
     
