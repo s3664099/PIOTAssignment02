@@ -498,7 +498,13 @@ class databaseUtils:
 
 		with self.connection.cursor(DictCursor) as cur:
 
-			cur.execute("INSERT INTO engineer VALUES ('{}','{}','{}')".format(email, mac_address,token))
+			try:
+				cur.execute("INSERT INTO engineer VALUES ('{}','{}','{}')".format(email, mac_address,token))
+				self.connection.commit()
+				return "Success"
+			except pymysql.Error as e:
+					print("Caught error %d: %s" % (e.args[0], e.args[1]))
+					return "Error"
 
 			self.connection.commit()
 
@@ -808,4 +814,12 @@ class databaseUtils:
 				except pymysql.Error as e:
 					print("Caught error %d: %s" % (e.args[0],e.args[1]))
 					return "Error"
-				
+	def get_engineer_bluetooth_details(self):
+		with self.connection.cursor(DictCursor) as cur:
+			try:
+				cur.execute("SELECT firstname,lastname,mac_address,pb_token from user u, engineer e \
+					WHERE u.email=e.email")
+				return cur.fetchall()
+			except pymysql.Error as e:
+					print("Caught error %d: %s" % (e.args[0],e.args[1]))
+					return "Error"
