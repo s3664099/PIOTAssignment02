@@ -84,6 +84,8 @@ class test_database_utils(unittest.TestCase):
 
 		self.assertTrue(bc.read_qr_no_webcam() == "First Name: Janitor, Surname: Scruffy, email J.S@carshare.com")
 
+		print(qr.create_qr_code("testing","engineer","engineer@phase2.com"))
+
 	#def test_scan_barcode_webcam(self):
 
 		#self.assertTrue(bc.read_qr_webcam('Janitor','Scruffy') == "First Name: Janitor, Surname: Scruffy, email J.S@carshare.com")

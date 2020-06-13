@@ -217,6 +217,8 @@ def sql_queries(conn):
 	"""
 
 	cur = conn.cursor()
+	
+	"""
 
 	cur.execute("ALTER TABLE engineer ADD pb_token VARCHAR(40)")
 
@@ -227,6 +229,12 @@ def sql_queries(conn):
 
 
 	"""
+
+	cur.execute("SELECT * FROM engineer")
+
+	print(cur.fetchall())
+
+
 	cur.execute("SELECT locationLong, locationLat, rego FROM car")
 
 	for x in cur.fetchall():
@@ -238,7 +246,7 @@ def sql_queries(conn):
 
 	for x in cur.fetchall():
 		print("Longatude: {} latitude: {}",x["locationLong"],x["locationLat"])
-	"""		
+			
 
 
 conn = db.get_connection()

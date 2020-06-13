@@ -9,6 +9,7 @@ import sys
 
 import requests
 import threading
+from flask import request
 
 import socket_utils
 
@@ -53,7 +54,21 @@ class ClientThread(threading.Thread):
                         
                     elif(data["ForQRCode"] == True):
 
-                        socket_utils.sendJson(self.csocket, {"Unlock": True})
+                        data["first_name"] = data["first_name"].replace(',','')
+                        data["surname"] = data["surname"].replace(',','')
+
+                        url = ("http://127.0.0.1:5000/finduserdetails/"+data["email"])
+                        response = requests.get(url)
+                        respond = response.text
+
+                        if "firstname" in respond:
+
+                            response = response.json().pop()
+
+                            if (response["firstname"] == data["first_name"]) and (response["lastname"] == data["surname"]):
+                                socket_utils.sendJson(self.csocket, {"Unlock": True})
+
+                        socket_utils.sendJson(self.csocket, {"Response": 'QR code invalid'})
 
                     elif(data["FacialRecognition"]==False):
                         url=("http://127.0.0.1:5000/validate")

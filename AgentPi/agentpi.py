@@ -53,7 +53,7 @@ def main():
 
 		"""
 
-		unlocked = scan_bluetooth(unlocked, client)
+		#unlocked = scan_bluetooth(unlocked, client)
 		if unlocked == True:
 			isEngineer = True
 
