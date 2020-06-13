@@ -1,6 +1,5 @@
 <html>
     <head>
-      <title>Engineer Dashboard</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
@@ -16,57 +15,11 @@
   </style>
   </head>
     <body>
-        <div class="container mt-3">
-          <h2>Engineer Dashboard for {{ user }}</h2>
-        </div>
-          <br>
+        <h5>Michael to Add Engineer's Page here</h5>
         <div class="border-top" style="position: fixed; bottom: 10px; left:5px">
             <small class="text-muted">
                <a class="ml-2" href="{{ url_for('site.logout') }}">Logout</a>
             </small>
           </div>
-          
-            <div id ="map" style="width: 1000px; height: 500px;"></div><br>
-              
-            <script src="{{ url_for('static', filename='js/engineermap.js') }}">
-              </script>
-              
-            <div class='col-md-4'>
-                <h3>Cars</h3>
-                    </div>
-                <div class='col-md-8'>
-                  {% if availablecars %}
-                    <table class='table table-hover'>
-                    <thead>
-                    <tr>
-                    <th>Rego</th>
-                    <th>Make</th>
-                    <th>Model</th>
-                    <th>Latitude</th>
-                    <th>Longitude</th>
-                    <th>Color</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                      {% for row in availablecars %}
-                      <tr>
-                        <td>{{row.rego}}</td>
-                        <td>{{row.make}}</td>
-                        <td>{{row.model}}</td>
-                        <td>{{row.locationlat}}</td>
-                        <td>{{row.locationlong}}</td>
-                        <td>{{row.colour}}</td>
-                    </tr>
-                      {% endfor %}
-                      {% else %}
-                      <h3>Sorry! We are currently booked out!</h3>
-                      {%endif%}
-                      </tbody>
-                </table>
-                </div>
-                
-        <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD4SCXnc_FkHnGqlEMXnDCxyrb_EE_YIkc&callback=initMap">
-        </script>
     </body>
-</html>
+</html> 
