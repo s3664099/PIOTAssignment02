@@ -230,6 +230,7 @@ def engineer():
         needdetails=True
     else:
         needdetails=False
+    print(needdetails)
     if request.method=="POST":
         if 'addengineerdetails' in request.form:
             url="http://127.0.0.1:5000/addengineerdetails"
@@ -241,7 +242,7 @@ def engineer():
             else:
                 flash(f'We have encountered an internal error, please try again later or contact the admin','danger')
                 return redirect(url_for('site.engineer'))
-    return render_template("engineer.html",title='Engineer',availablecars=availablecars,user=username,needdetails=needdetails,engineerdetails=engineerdetails)
+    return render_template("engineer.html",title='Engineer',availablecars=availablecars,user=username,needdetails=needdetails,engineerdetails=engineerdetails, data=data)
 
 @site.route("/logout",methods=['GET','POST'])
 def logout():
@@ -307,9 +308,11 @@ def modifyuser():
                 flash(f'Encountered an internal error while trying to delete user, please check logs for more information','danger')
                 return redirect(url_for('site.admin'))
         if 'usermodify' in request.form:
+            print("I am here")
             url=("http://127.0.0.1:5000/finduserdetails/"+request.form['emailtomodify'])
             response=requests.get(url)
             userdetails=json.loads(response.text)
+            print(userdetails)
             return render_template("modifyuser.html",title="Modify User",userdetails=userdetails)
         if 'goback' in request.form:
             return redirect(url_for('site.admin'))            
