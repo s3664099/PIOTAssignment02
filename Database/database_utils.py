@@ -606,11 +606,11 @@ class databaseUtils:
 			return result
 
 	def get_this_engineer_cars(self, email):
-	
+		
 		with self.connection.cursor(DictCursor) as cur:
-				
-			if cur.execute("SELECT rego FROM car_service WHERE email = '{}' AND needs_service = 1".format(email)):	
-					return cur.fetchall()
+			
+			if cur.execute("SELECT * FROM car WHERE rego IN (SELECT rego FROM car_service WHERE email = '{}')".format(email)):
+				return cur.fetchall()
 			else:
 				return "No jobs assigned to {}".format(email)
 		 

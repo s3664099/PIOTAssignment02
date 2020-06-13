@@ -383,7 +383,9 @@ def getEngineerCars(email):
     rows=dbObj.get_this_engineer_cars(email)
     if rows:
         result='Success'
-        return jsonify(rows)
+        allocatedcars=json.dumps(rows,default=decimal_default)
+        allocatedcars=json.loads(allocatedcars)
+        return jsonify(allocatedcars)
     return jsonify(result)
 
 @api.route("/checkengineerdetails/<email>",methods=['GET'])
@@ -398,7 +400,7 @@ def addEngineerDetails():
     
 @api.route("/getengineerbluetoothdetails",methods=['GET'])
 def getEngineerBluetoothDetails():
-    print("Hello")
+
     rows=dbObj.get_engineer_bluetooth_details()
     return jsonify(rows)
     
