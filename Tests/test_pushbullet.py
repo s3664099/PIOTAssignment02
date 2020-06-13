@@ -6,7 +6,7 @@ import Database.database_utils as database
 import Tests.test_database_setup as tdb
 import pushbullet.pushbullet as pb
 import pushbullet.create_qrcode as qr
-import pushbullet.scan_barcode as bc
+import AgentPi.scan_barcode as bc
 
 class test_database_utils(unittest.TestCase):
 
@@ -74,7 +74,15 @@ class test_database_utils(unittest.TestCase):
 
 	def test_scan_barcode(self):
 
-		self.assertTrue(bc.read_qr_no_webcam('Janitor','Scruffy') == "First Name: Janitor, Surname: Scruffy, email J.S@carshare.com")
+		details = bc.read_qr_no_webcam()
+		details = details.split(' ')
+		print(details)
+		try:
+			print(details[2], details[4], details[6])
+		except:
+			print("Invalid QR Code")
+
+		self.assertTrue(bc.read_qr_no_webcam() == "First Name: Janitor, Surname: Scruffy, email J.S@carshare.com")
 
 	#def test_scan_barcode_webcam(self):
 

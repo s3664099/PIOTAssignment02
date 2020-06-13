@@ -10,6 +10,7 @@ import socket ,requests,json, agent_socket_utils
 import glob
 import datetime
 import unlock_car as bt
+import scan_barcode as sb
 from getpass import getpass
 #from FacialRecognition.recognise import recognise
 
@@ -68,6 +69,9 @@ def main():
 
 		elif(option == "3"):
 			unlocked = scan_bluetooth(unlocked, client)
+
+		elif(option == "4"):
+			unlocked = qr_validation(unlocked, client)
 
 			#facial recognition code here
 		elif(option == "5"):
@@ -162,10 +166,7 @@ def get_input(input_type):
 #Function to scan bluetooth
 def scan_bluetooth(unlocked, client):
 
-	#Calls MP to access DB and get list of mac addresses
-	#Mac addresses are saved as a list, and then passed through check any
-	#Devices in the area
-
+	#Gets a list of mac addresses from the MP
 	agent_socket_utils.sendJson(client,{"ForBlueTooth": True,"FacialRecognition": False,"ForLogin": True,"ForReturnCar":False})
 
 	while(True):
@@ -173,13 +174,56 @@ def scan_bluetooth(unlocked, client):
 
 		mac_addresses = object['mac_addresses']
 
+		#Calls Bluetooth function to scan for authorised mac addresses
 		authorisation = bt.scan_devices(mac_addresses)
 
+		#If the mac address is authorised, the car is unlcoked
 		if authorisation != None:
-			print(authorisation)
 			unlocked = True
 
 		return unlocked
+
+#Function to validate via a QR code
+def qr_validation(unlocked, client):
+
+
+	details = sb.read_qr_no_webcam()
+	first_name = None
+	surname = None
+	email = None
+
+	details = details.split(" ")
+
+	try:
+		first_name = details[2]
+		surname = details[4]
+		email = details[6]
+	except:
+		print("Invalid QR Code")
+		return
+
+	agent_socket_utils.sendJson(client,{"ForQRCode": True,"FacialRecognition": False,"ForLogin": True,"ForReturnCar":False,
+		"email": email, "surname": surname, "first_name": first_name})
+
+	return await_response(client, unlocked)
+
+def await_response(client, unlocked):
+
+	while(True):
+		object = agent_socket_utils.recvJson(client)
+		if("Unlock" in object):
+			if("Response" in object):
+				print(object['Response'])
+				return True
+			else:
+				print()
+			print("Master Pi validated user, Unlock code to be sent from here to bluetooth device.")
+			print()
+			unlocked=True
+			return unlocked
+		else:
+			print(object['Response'])
+			return unlocked
 
 #Function that sends user details to the master pi for validation
 def getUser_remotely(user,password,client):
@@ -197,8 +241,13 @@ def getUser_remotely(user,password,client):
 	password=password.replace("\n",'')
 	password=password.replace('"','')
 	print("Logging in as {}".format(user))
-	agent_socket_utils.sendJson(client,{"ForBlueTooth": False,"FacialRecognition": False,"ForLogin": True,"ForReturnCar":False, "email":user,"password":password,"rego":rego,"date_time": str(datetime.datetime.now())})
+	agent_socket_utils.sendJson(client,{"ForBlueTooth": False,"FacialRecognition": False,"ForLogin": True,"ForReturnCar":False, 
+		"email":user,"password":password,"rego":rego,"date_time": str(datetime.datetime.now())})
 	print("Waiting for Confirmation...")
+
+	return await_response(client, unlocked)
+
+	"""
 	while(True):
 		object = agent_socket_utils.recvJson(client)
 		if("Unlock" in object):
@@ -214,6 +263,7 @@ def getUser_remotely(user,password,client):
 		else:
 			print(object['Response'])
 			return unlocked
+	"""
 
 def getUserName_remotely(username,client):
 	"""
@@ -224,6 +274,10 @@ def getUserName_remotely(username,client):
 	print("Logging in as {}".format(username))
 	agent_socket_utils.sendJson(client,{"ForBlueTooth": False,"FacialRecognition": True, "ForLogin": True,"ForReturnCar":False, "email":username,"rego":rego,"date_time": str(datetime.datetime.now())})
 	print("Waiting for Confirmation...")
+
+	return await_response(client, unlocked)
+
+	"""
 	while(True):
 		object = agent_socket_utils.recvJson(client)
 		if("Unlock" in object):
@@ -239,6 +293,7 @@ def getUserName_remotely(username,client):
 		else:
 			print(object['Response'])
 			return unlocked
+	"""
 
 """
 #Fuction for facial recognition
