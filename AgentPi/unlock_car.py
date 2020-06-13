@@ -19,7 +19,6 @@ def scan_devices(authorised_addresses):
 		#Attempts to locate any nearby bluetooth devices
 		nearby_devices = bluetooth.discover_devices()
 		print(nearby_devices)
-		print(timeout)
 
 		timeout +=1
 

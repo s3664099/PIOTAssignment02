@@ -13,12 +13,12 @@ import imutils
 import cv2
 import time
 
+file_name = "myqr.png"
 
-def read_qr_no_webcam(first_name, last_name):
 
-	name = "{}{}".format(first_name,last_name)
+def read_qr_no_webcam():
 
-	frame = cv2.imread('{}.png'.format(name))
+	frame = cv2.imread(file_name)
 	barcodeData = decode_frame(frame)
 
 	return barcodeData
@@ -34,16 +34,14 @@ def decode_frame(frame):
 			
 		return barcodeData
 
-def read_qr_webcam(first_name, last_name):
-
-	name = "{}{}".format(first_name,last_name)
+def read_qr_webcam():
 
 	# initialize the video stream and allow the camera sensor to warm up
 	print("[INFO] starting video stream...")
 	vs = VideoStream(src = 0).start()
 	time.sleep(2.0)
 
-	frame = cv2.imread('{}.png'.format(name))
+	frame = cv2.imread(file_name)
 
 	found_data = False
 
