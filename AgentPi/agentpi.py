@@ -95,20 +95,22 @@ def main():
 			print()
 
 #Downloads the encodings.pickle file from Cloud Storage for Facial Recognition
-"""
-def download_blob():
-        Downloads a blob from the bucket.
-		
-		
-        bucket_name = "car-hire"
-        source_blob_name = "encodings.pickle"
-        destination_file_name = "FacialRecognition/encodings.pickle"
 
-        storage_client = storage.Client() 
-        bucket = storage_client.bucket(bucket_name)
-        blob = bucket.blob(source_blob_name)
-        blob.download_to_filename(destination_file_name)
-"""
+def download_blob():
+
+    """
+    Downloads a blob from the bucket.
+    """
+		
+    bucket_name = "car-hire"
+    source_blob_name = "encodings.pickle"
+    destination_file_name = "FacialRecognition/encodings.pickle"
+
+    storage_client = storage.Client() 
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(source_blob_name)
+    blob.download_to_filename(destination_file_name)
+
 
 #Menu to enable user to chose which code to use
 def menu(unlocked):
@@ -250,7 +252,6 @@ def getUser_remotely(user,password,client):
 
 	return await_response(client, unlocked)
 
-	"""
 	while(True):
 		object = agent_socket_utils.recvJson(client)
 		if("Unlock" in object):
@@ -266,7 +267,6 @@ def getUser_remotely(user,password,client):
 		else:
 			print(object['Response'])
 			return unlocked
-	"""
 
 def getUserName_remotely(username,client):
 	"""
@@ -280,7 +280,6 @@ def getUserName_remotely(username,client):
 
 	return await_response(client, unlocked)
 
-	"""
 	while(True):
 		object = agent_socket_utils.recvJson(client)
 		if("Unlock" in object):
@@ -296,21 +295,20 @@ def getUserName_remotely(username,client):
 		else:
 			print(object['Response'])
 			return unlocked
-	"""
 
-"""
 #Fuction for facial recognition
 def facialrecognition(img,client):
-	
+
+	"""	
 	Facial recognition function
+	"""
 
 	print("In Facial recognition")
 	download_blob()
 	name=recognise('FacialRecognition/encodings.pickle',img)
-    #user=name.split(":")
+	#user=name.split(":")
 	unlocked=getUserName_remotely(name,client)
 	return unlocked
-"""
 
 #Function that performs the return car function
 def returnCar(username,client):
