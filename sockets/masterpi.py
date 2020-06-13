@@ -43,6 +43,9 @@ class ClientThread(threading.Thread):
 
                         socket_utils.sendJson(self.csocket, {'mac_addresses': [{"mac_address": "60:14:B3:C1:5B:22", "name": "Professor Farnsworth"}]})
 
+                    elif(data["ForQRCode"] == True):
+
+                        socket_utils.sendJson(self.csocket, {"Unlock": True})
 
                     elif(data["FacialRecognition"]==False):
                         url=("http://127.0.0.1:5000/validate")

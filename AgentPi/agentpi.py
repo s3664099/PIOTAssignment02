@@ -30,6 +30,7 @@ def main():
 	"""
 	unlocked = False
 	operating = True
+	isEngineer = False
 
 	try:
 		client=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -52,9 +53,11 @@ def main():
 
 		"""
 
-		unlocked = scan_bluetooth(unlocked, client)
+		#unlocked = scan_bluetooth(unlocked, client)
+		if unlocked == True:
+			isEngineer = True
 
-		option = menu(unlocked)
+		option = menu(unlocked, isEngineer)
 
 		if option == "1":
             #Please do not remove the password function, for security I've used the getpass functionrather than get_input
@@ -69,9 +72,13 @@ def main():
 
 		elif(option == "3"):
 			unlocked = scan_bluetooth(unlocked, client)
+			if unlocked == True:
+				isEngineer = True
 
 		elif(option == "4"):
 			unlocked = qr_validation(unlocked, client)
+			if unlocked == True:
+				isEngineer = True
 
 			#facial recognition code here
 		elif(option == "5"):
@@ -113,11 +120,12 @@ def download_blob():
 
 
 #Menu to enable user to chose which code to use
-def menu(unlocked):
+def menu(unlocked, isEngineer):
 	"""
 	Menu for user to login through via console or facial recognition
 	
 	"""
+
 	valid_input = False
 
 	while valid_input == False:
@@ -125,10 +133,11 @@ def menu(unlocked):
 		if unlocked == False:
 			print("1. Login via Console")
 			print("2. Login via Facial Recognition")
-			print("3. Lobin vis Bluetooth")
+			print("3. Lobin via Bluetooth")
 			print("4. Login via QR Code")
 		else:
-			print("1. Return Car")
+			if isEngineer == False:
+				print("1. Return Car")
 
 		print("0. Quit")
 		print()
@@ -172,7 +181,7 @@ def scan_bluetooth(unlocked, client):
 	#Mac addresses are saved as a list, and then passed through check any
 	#Devices in the area
 
-	agent_socket_utils.sendJson(client,{"ForBlueTooth": True,"FacialRecognition": False,"ForLogin": False,"ForReturnCar":False})
+	agent_socket_utils.sendJson(client,{"ForBlueTooth": True,"ForQRCode": False, "FacialRecognition": False,"ForLogin": True,"ForReturnCar":False})
 
 	while(True):
 		object = agent_socket_utils.recvJson(client)
@@ -205,9 +214,9 @@ def qr_validation(unlocked, client):
 		email = details[6]
 	except:
 		print("Invalid QR Code")
-		return
+		return False
 
-	agent_socket_utils.sendJson(client,{"ForQRCode": True,"FacialRecognition": False,"ForLogin": True,"ForReturnCar":False,
+	agent_socket_utils.sendJson(client,{"ForBlueTooth": False, "ForQRCode": True,"FacialRecognition": False,"ForLogin": True,"ForReturnCar":False,
 		"email": email, "surname": surname, "first_name": first_name})
 
 	return await_response(client, unlocked)
@@ -246,7 +255,7 @@ def getUser_remotely(user,password,client):
 	password=password.replace("\n",'')
 	password=password.replace('"','')
 	print("Logging in as {}".format(user))
-	agent_socket_utils.sendJson(client,{"ForBlueTooth": False,"FacialRecognition": False,"ForLogin": True,"ForReturnCar":False, 
+	agent_socket_utils.sendJson(client,{"ForBlueTooth": False,"ForQRCode": False,"FacialRecognition": False,"ForLogin": True,"ForReturnCar":False, 
 		"email":user,"password":password,"rego":rego,"date_time": str(datetime.datetime.now())})
 	print("Waiting for Confirmation...")
 
@@ -275,7 +284,7 @@ def getUserName_remotely(username,client):
 	"""
 	unlocked=False
 	print("Logging in as {}".format(username))
-	agent_socket_utils.sendJson(client,{"ForBlueTooth": False,"FacialRecognition": True, "ForLogin": True,"ForReturnCar":False, "email":username,"rego":rego,"date_time": str(datetime.datetime.now())})
+	agent_socket_utils.sendJson(client,{"ForBlueTooth": False,"ForQRCode": False,"FacialRecognition": True, "ForLogin": True,"ForReturnCar":False, "email":username,"rego":rego,"date_time": str(datetime.datetime.now())})
 	print("Waiting for Confirmation...")
 
 	return await_response(client, unlocked)
@@ -317,7 +326,7 @@ def returnCar(username,client):
 
 	"""
 	print("Trying to return car for {}".format(username))
-	agent_socket_utils.sendJson(client, {"ForBlueTooth": False,"ForLogin": False,"ForReturnCar":True,"email": username, "rego": rego})
+	agent_socket_utils.sendJson(client, {"ForBlueTooth": False,"ForQRCode": False,"ForLogin": False,"ForReturnCar":True,"email": username, "rego": rego})
 	print("Waiting for Confirmation...")
 	while(True):
 		object = agent_socket_utils.recvJson(client)
