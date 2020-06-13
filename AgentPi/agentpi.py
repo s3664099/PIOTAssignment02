@@ -166,7 +166,7 @@ def scan_bluetooth(unlocked, client):
 	#Mac addresses are saved as a list, and then passed through check any
 	#Devices in the area
 
-	agent_socket_utils.sendJson(client,{"ForBlueTooth": True,"FacialRecognition": False,"ForLogin": True,"ForReturnCar":False})
+	agent_socket_utils.sendJson(client,{"ForBlueTooth": True,"FacialRecognition": False,"ForLogin": False,"ForReturnCar":False})
 
 	while(True):
 		object = agent_socket_utils.recvJson(client)
