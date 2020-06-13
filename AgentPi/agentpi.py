@@ -166,8 +166,11 @@ def get_input(input_type):
 #Function to scan bluetooth
 def scan_bluetooth(unlocked, client):
 
-	#Gets a list of mac addresses from the MP
-	agent_socket_utils.sendJson(client,{"ForBlueTooth": True,"FacialRecognition": False,"ForLogin": True,"ForReturnCar":False})
+	#Calls MP to access DB and get list of mac addresses
+	#Mac addresses are saved as a list, and then passed through check any
+	#Devices in the area
+
+	agent_socket_utils.sendJson(client,{"ForBlueTooth": True,"FacialRecognition": False,"ForLogin": False,"ForReturnCar":False})
 
 	while(True):
 		object = agent_socket_utils.recvJson(client)
