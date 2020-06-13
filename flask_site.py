@@ -337,7 +337,11 @@ def reportcar():
             response=requests.get("http://127.0.0.1:5000/findengineers")
             engineers=json.loads(response.text)
             if engineers!='No Engineers Found':
+
                 return render_template("reportcar.html",title='Report Car',engineerdetails=engineers,rego=request.form['cartoreport'])
+            else:
+                flash(f'No Engineers Found, Cannot Book Service','danger')
+                return redirect(url_for('site.admin'))
         if 'report' in request.form:
             url="http://127.0.0.1:5000/createservicerequest"
             response=requests.post(url,json=request.form)
