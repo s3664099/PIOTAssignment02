@@ -214,11 +214,14 @@ def manager():
     username=json.loads(response.text)
     return render_template("manager.html",user=username,title="Manager")
 
-@site.route("/engineer",methods=['GET','POST'])
+@site.route("/engineer",methods=['GET', 'POST'])
 def engineer():
     url=("http://127.0.0.1:5000/username/"+session['email'])
     response=requests.get(url)
     username=json.loads(response.text)
+    url=("http://127.0.0.1:5000/findallocatedcars/"+session['email'])
+    response=requests.get(url)
+    availablecars=json.loads(response.text)
     url="http://127.0.0.1:5000/checkengineerdetails/"+session['email']
     response=requests.get(url)
     engineerdetails=json.loads(response.text)
@@ -239,7 +242,7 @@ def engineer():
             else:
                 flash(f'We have encountered an internal error, please try again later or contact the admin','danger')
                 return redirect(url_for('site.engineer'))
-    return render_template("engineer.html",title='Engineer',user=username,needdetails=needdetails,engineerdetails=engineerdetails)
+    return render_template("engineer.html",title='Engineer',availablecars=availablecars,user=username,needdetails=needdetails,engineerdetails=engineerdetails)
 
 @site.route("/logout",methods=['GET','POST'])
 def logout():
