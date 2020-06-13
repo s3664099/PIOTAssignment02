@@ -7,6 +7,9 @@ from decimal import Decimal
 
 import datetime
 import pymysql
+import pushbullet.create_qrcode as qr
+import pushbullet.pushbullet as pb
+
 from flask import Blueprint, request, jsonify
 
 from Database.database_utils import databaseUtils
@@ -343,7 +346,20 @@ def getEngineers():
 
 @api.route("/createservicerequest",methods=['POST'])
 def createServiceRequest():
-    rows=dbObj.create_service_request(request.json['rego'],'3000',request.json['engineeremail'])
+
+    engineeremail = request.json['engineeremail']
+    rego = request.json['rego']
+
+    engineer = dbObj.get_engineer_address(engineeremail)
+    engineer = engineer.pop()
+    engineer = engineer['pb_token']
+
+    title = "Service Request"
+    message = "Vehicle {} at {} requires service. It has been assigned to you".format(rego, '3000')
+
+    print(pb.send_notification(title, message, engineer))
+
+    rows=dbObj.create_service_request(rego,'3000',engineeremail)
     return jsonify(rows)
 
 @api.route("/servicehistory",methods=['GET'])
@@ -383,9 +399,7 @@ def getEngineerCars(email):
     rows=dbObj.get_this_engineer_cars(email)
     if rows:
         result='Success'
-        allocatedcars=json.dumps(rows,default=decimal_default)
-        allocatedcars=json.loads(allocatedcars)
-        return jsonify(allocatedcars)
+        return jsonify(rows)
     return jsonify(result)
 
 @api.route("/checkengineerdetails/<email>",methods=['GET'])
@@ -395,12 +409,21 @@ def getEngineerDetails(email):
 
 @api.route("/addengineerdetails",methods=['POST'])
 def addEngineerDetails():
-    rows=dbObj.add_engineer(request.json['email'],request.json['macaddress'],request.json['pbtoken'])
+
+    email = request.json['email']
+    mac_address = request.json['macaddress']
+    token = request.json['pbtoken']
+    user = dbObj.return_user_details(email)
+    user = user.pop()
+    firstname = user["firstname"]
+    lastname = user["lastname"]
+    print(qr.create_qr_code(firstname,lastname,email))
+
+    rows=dbObj.add_engineer(email,mac_address,token)
     return jsonify(rows)
     
 @api.route("/getengineerbluetoothdetails",methods=['GET'])
 def getEngineerBluetoothDetails():
-
     rows=dbObj.get_engineer_bluetooth_details()
     return jsonify(rows)
     

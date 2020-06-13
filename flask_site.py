@@ -230,6 +230,7 @@ def engineer():
         needdetails=True
     else:
         needdetails=False
+    print(needdetails)
     if request.method=="POST":
         if 'addengineerdetails' in request.form:
             url="http://127.0.0.1:5000/addengineerdetails"
@@ -307,9 +308,11 @@ def modifyuser():
                 flash(f'Encountered an internal error while trying to delete user, please check logs for more information','danger')
                 return redirect(url_for('site.admin'))
         if 'usermodify' in request.form:
+            print("I am here")
             url=("http://127.0.0.1:5000/finduserdetails/"+request.form['emailtomodify'])
             response=requests.get(url)
             userdetails=json.loads(response.text)
+            print(userdetails)
             return render_template("modifyuser.html",title="Modify User",userdetails=userdetails)
         if 'goback' in request.form:
             return redirect(url_for('site.admin'))            
