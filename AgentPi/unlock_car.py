@@ -1,3 +1,7 @@
+"""
+.. module:: unlock_car
+
+"""
 import bluetooth
 
 db_name = "engineer.db"
@@ -5,7 +9,11 @@ db_name = "engineer.db"
 #The function takes a list of Json files that contains the name, and mac addresses
 #The print statements exist to keep track of the movement of the function
 def scan_devices(authorised_addresses):
+	
+	"""
+	Scan device
 
+	"""
 	car_unlocked = False
 	name = None
 	#print(authorised_addresses)

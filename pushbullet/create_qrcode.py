@@ -1,3 +1,7 @@
+"""
+.. module:: create_qrcode
+
+"""
 import pyqrcode
 
 file_name = "myqr.png"
@@ -5,6 +9,10 @@ file_name = "myqr.png"
 #Source: https://www.geeksforgeeks.org/python-generate-qr-code-using-pyqrcode-module/
 
 def create_qr_code(first_name, last_name, email):
+	"""
+	Create the QR code
+	
+	"""
 	#String which represents QR code
 	s = "First Name: {}, Surname: {}, email {}".format(first_name, last_name, email)
 
