@@ -159,7 +159,7 @@ def home():
     url=("http://127.0.0.1:5000/confirmedbookings/"+session['email']) #API call to fetch confirmed bookings of the logged in customer to be able to display on cancel page
     response=requests.get(url)
     confirmedbookings=json.loads(response.text)
-    url=("http://127.0.0.1:5000/cars") #API call to fetch available cars' list
+    url=("http://127.0.0.1:5000/availablecars") #API call to fetch available cars' list
     response=requests.get(url)
     availablecars=json.loads(response.text)
     if request.method=='POST':
