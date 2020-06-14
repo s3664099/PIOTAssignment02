@@ -244,13 +244,12 @@ def cancelBooking(emailid):
 @api.route("/cars",methods=['GET'])
 def getCars():
     """
-    List of cars
+    List of all available cars
 
     """
     rows=dbObj.get_all_cars()
     availablecars=json.dumps(rows,default=decimal_default)
     availablecars=json.loads(availablecars)
-    cur.close()
     return jsonify(availablecars)
 
 #@api.route("/booking",methods=['POST'])
