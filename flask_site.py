@@ -242,7 +242,7 @@ def engineer():
             else:
                 flash(f'We have encountered an internal error, please try again later or contact the admin','danger')
                 return redirect(url_for('site.engineer'))
-    return render_template("engineer.html",title='Engineer',availablecars=availablecars,user=username,needdetails=needdetails,engineerdetails=engineerdetails, data=data)
+    return render_template("engineer.html",title='Engineer',availablecars=availablecars,user=   ,needdetails=needdetails,engineerdetails=engineerdetails)
 
 @site.route("/logout",methods=['GET','POST'])
 def logout():

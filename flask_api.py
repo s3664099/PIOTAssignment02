@@ -397,10 +397,9 @@ def deleteUser(email):
 def getEngineerCars(email):
     result='Error'
     rows=dbObj.get_this_engineer_cars(email)
-    if rows:
-        result='Success'
-        return jsonify(rows)
-    return jsonify(result)
+    rows=json.dumps(rows,default=decimal_default)
+    rows=json.loads(rows)
+    return jsonify(rows)
 
 @api.route("/checkengineerdetails/<email>",methods=['GET'])
 def getEngineerDetails(email):

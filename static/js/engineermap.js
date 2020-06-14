@@ -12,7 +12,7 @@ function initMap() { //start initMap
   // DeviceIP goes here if running app on separate device
   // e.g. var url = "http://192.168.0.1:5000/cars"
   // If running on locally, leave unchanged
-  var url = "http://localhost:5000/findallocatedcars/"+email;
+  var url = "http://10.0.0.44:5000/findallocatedcars/"+email;
   
  
   
