@@ -1,9 +1,16 @@
+"""
+.. module:: speech_recognition_console
+
+"""
 import speech_recog as recog
 import requests
 
 #Performs a search from the vehicles
 def search():
-
+	"""
+	Search
+	
+	"""
 	#Calls the voice recognition module
 	search = recog.get_speech()
 
@@ -27,7 +34,10 @@ def search():
 
 #Main voice search console
 def main():
+	"""
+	Main console
 
+	"""
 	running = True
 
 	while running == True:

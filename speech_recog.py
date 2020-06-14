@@ -1,3 +1,7 @@
+"""
+.. module:: speech_recog
+
+"""
 # Reference: https://pypi.org/project/SpeechRecognition/
 # Reference: https://www.geeksforgeeks.org/speech-recognition-in-python-using-google-speech-api/
 # Note this example requires PyAudio because it uses the Microphone class
@@ -6,6 +10,10 @@ import speech_recognition as sr
 import subprocess
 
 def get_speech():
+    """
+    Get speech
+
+    """
     # Set the device ID of the mic that we specifically want to use to avoid ambiguity
 
     MIC_NAME = "ATGM1-USB: USB Audio (hw:1,0)"

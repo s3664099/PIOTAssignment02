@@ -1,3 +1,7 @@
+"""
+.. module:: test_agentpi
+
+"""
 import unittest
 import AgentPi.agentpi as agent
 import unittest.mock as mock

@@ -1,4 +1,4 @@
-# PIoT Assignment 02
+# PIoT Assignment 03
 
 ## Bhavi Sanjay Mehta s3811346
 ## David Alfred Sarkies s3664099
@@ -94,6 +94,5 @@ Manager: manager@phase2.com/Password1
 
 ## Trello Board Usage
 
-## File Structure
 
 

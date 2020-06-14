@@ -1,3 +1,7 @@
+"""
+.. module:: scan_barcode
+
+"""
 # USAGE
 # python3 barcode_scanner_console.py
 
@@ -18,12 +22,22 @@ file_name = "myqr.png"
 
 def read_qr_no_webcam():
 
+	"""
+	Read qr
+
+	"""
+
 	frame = cv2.imread(file_name)
 	barcodeData = decode_frame(frame)
 
 	return barcodeData
 
 def decode_frame(frame):
+
+	"""
+	Decode frame
+
+	"""
 
 	barcodes = pyzbar.decode(frame)
 
@@ -36,6 +50,10 @@ def decode_frame(frame):
 
 def read_qr_webcam():
 
+	"""
+	Read qr webcam
+
+	"""
 	# initialize the video stream and allow the camera sensor to warm up
 	print("[INFO] starting video stream...")
 	vs = VideoStream(src = 0).start()

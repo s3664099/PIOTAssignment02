@@ -1,3 +1,7 @@
+"""
+.. module:: pushbullet
+
+"""
 import requests
 import json
 
@@ -6,7 +10,10 @@ import json
 #The token is stored in the database and relates to the engineer assigned the tasl
 #The message comprises of othe details of the vehicle
 def send_notification(title, message, token):
+    """
+    Send notifications
 
+    """
 	#Constructs the json file for push bullet
     data_send = {"type": "note", "title": title, "body": message}
 
