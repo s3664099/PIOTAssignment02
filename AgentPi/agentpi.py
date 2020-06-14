@@ -31,6 +31,8 @@ def main():
 	unlocked = False
 	operating = True
 	isEngineer = False
+	service_required = False
+	service_no = None
 
 	try:
 		client=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -46,6 +48,15 @@ def main():
 		print("Address-related error connecting to server: %s" % e)
 		sys.exit(1)
 
+	unlocked = scan_bluetooth(unlocked, client)
+	
+	if unlocked == True:
+		isEngineer = True
+		service_no = check_service(client)
+
+		if service_no != False:
+			service_required = True
+
 	while(operating == True):
 
 		"""
@@ -53,11 +64,7 @@ def main():
 
 		"""
 
-		#unlocked = scan_bluetooth(unlocked, client)
-		if unlocked == True:
-			isEngineer = True
-
-		option = menu(unlocked, isEngineer)
+		option = menu(unlocked, isEngineer, service_required)
 
 		if option == "1":
             #Please do not remove the password function, for security I've used the getpass functionrather than get_input
@@ -89,6 +96,10 @@ def main():
 				unlocked = False
 			else:
 				print("Username incorrect, please try again")
+
+		elif(option == "6"):
+			update_service(client, service_no)
+			service_required = False
         
 		elif(option == "0"):
 			data={"Quit": True}
@@ -120,7 +131,7 @@ def download_blob():
 
 
 #Menu to enable user to chose which code to use
-def menu(unlocked, isEngineer):
+def menu(unlocked, isEngineer, service_required):
 	"""
 	Menu for user to login through via console or facial recognition
 	
@@ -138,6 +149,8 @@ def menu(unlocked, isEngineer):
 		else:
 			if isEngineer == False:
 				print("1. Return Car")
+			elif service_required == True:
+				print("1. Update Service")
 
 		print("0. Quit")
 		print()
@@ -153,11 +166,17 @@ def menu(unlocked, isEngineer):
 			else:
 				print("Invalid Input")
 		else:
-			if text == "1":
-				text = "5"
+
+			if text == "0":
 				valid_input = True
-			elif text == "0":
-				valid_input = True
+			elif isEngineer == False:
+				if text == "1":
+					text = "5"
+					valid_input = True
+			elif service_required == True:
+				if text == "1":
+					text = "6"
+					valid_input = True
 			else:
 				print("Invalid Input")
 
@@ -165,7 +184,7 @@ def menu(unlocked, isEngineer):
 
 	return text   
 
-#Source: https://stackoverflow.com/questions/35851323/how-to-test-a-function-with-input-call
+#Source: https://stackoobject["service_no"]verflow.com/questions/35851323/how-to-test-a-function-with-input-call
 def get_input(input_type):
 	"""
 	Get input call
@@ -201,9 +220,31 @@ def scan_bluetooth(unlocked, client):
 
 		return unlocked
 
+def check_service(client):
+
+	agent_socket_utils.sendJson(client, {"ForService": True, "Check_Status": True, "rego": rego})
+
+	while(True):
+		object = agent_socket_utils.recvJson(client)
+
+		if("Response" in object):
+			return False
+		else:
+			service_no = object["service_no"].pop()["request_no"]
+			return service_no
+
+def update_service(client, service_no):
+
+	agent_socket_utils.sendJson(client, {"ForService": True, "Check_Status": False, "service_no": service_no})
+
+	while(True):
+		object = agent_socket_utils.recvJson(client)
+		print(object["Response"])
+		return
+
+
 #Function to validate via a QR code
 def qr_validation(unlocked, client):
-
 
 	details = sb.read_qr_no_webcam()
 	first_name = None

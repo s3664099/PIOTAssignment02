@@ -230,14 +230,23 @@ def sql_queries(conn):
 
 	"""
 
-	cur.execute("SELECT * FROM car_service")
+	cur.execute("SELECT * FROM engineer")
 
 	print(cur.fetchall())
 
-	cur.execute("SELECT * FROM car")
 
-	print(cur.fetchall())
-		
+	cur.execute("SELECT locationLong, locationLat, rego FROM car")
+
+	for x in cur.fetchall():
+		cur.execute("UPDATE car SET locationLong = '"+str(x["locationLat"])+"', locationLat= '"+str(x["locationLong"])+"' WHERE rego = '"+x["rego"]+"'")
+
+	conn.commit()
+
+	cur.execute("SELECT locationLong, locationLat FROM car")
+
+	for x in cur.fetchall():
+		print("Longatude: {} latitude: {}",x["locationLong"],x["locationLat"])
+			
 
 
 conn = db.get_connection()

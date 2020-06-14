@@ -9,7 +9,6 @@ import sys
 
 import requests
 import threading
-from flask import request
 
 import socket_utils
 
@@ -37,7 +36,26 @@ class ClientThread(threading.Thread):
         #self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
         while(True):
             data= socket_utils.recvJson(self.csocket)
-            if("ForLogin" in data):
+
+            if ("ForService" in data):
+                if(data["Check_Status"] == True):
+
+                    url = ("http://127.0.0.1:5000/getservicestatus/"+data["rego"])
+                    response = requests.get(url)
+                    respond = response.text
+                    response = response.json()
+
+                    if "request_no" in respond:
+                        socket_utils.sendJson(self.csocket, {"service_no": response})
+                    else:
+                        socket_utils.sendJson(self.csocket, {"Response": "No Service"})
+                else:
+                    url = ("http://127.0.0.1:5000/updateservicestatus/"+str(data["service_no"]))
+                    response = requests.post(url)
+                    
+                    socket_utils.sendJson(self.csocket, {"Response": response.text})
+
+            elif("ForLogin" in data):
                 if(data["ForLogin"]==True):
 
                     if(data["ForBlueTooth"]==True):
@@ -152,9 +170,6 @@ while True:
     newthread = ClientThread(clientAddress, clientsock)
     newthread.start()
 
-
-
-
 def main():
     """
     Start connection
@@ -167,10 +182,6 @@ def main():
             conn, addr = s.accept()
             newthread = ClientThread(clientAddress, clientsock)
             newthread.start()
-
-                
-
-     
 
 # Execute program.
 if __name__ == "__main__":

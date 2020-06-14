@@ -612,8 +612,16 @@ class databaseUtils:
 				return cur.fetchall()
 			else:
 				return "No jobs assigned to {}".format(email)
-		 
 
+	def get_service_request_rego(self, rego):
+
+		with self.connection.cursor(DictCursor) as cur:
+
+			if cur.execute("SELECT request_no FROM car_service WHERE rego = '{}' AND needs_service = 1".format(rego)):
+				return cur.fetchall()
+			else:
+				return "No service request for rego {}".format(rego)
+		 
 	def get_service_request(self, service_id):
 
 		with self.connection.cursor(DictCursor) as cur:
@@ -685,12 +693,11 @@ class databaseUtils:
 				else:
 					service_request = service_request.pop()
 
-					if service_request["engineer_assigned"] == 0:
-						return "No engineer assigned to this service request"
-					elif service_request["needs_service"] == 0:
+					if service_request["needs_service"] == 0:
 						return "Service request not active"
 					else:
 						cur.execute("UPDATE car_service SET needs_service = 0 WHERE request_no = '{}'".format(service_id))
+						self.connection.commit()
 						return "Service completed"
 			except:
 				return "Unable to update service"
@@ -721,6 +728,7 @@ class databaseUtils:
 			if users:
 				return users
 			return user
+
 	def get_all_users(self):
 		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT user.firstname,user.lastname,user.email,user.username, user_role.role, user_role.is_active FROM user, user_role WHERE user.email=user_role.email")
@@ -728,6 +736,7 @@ class databaseUtils:
 			allusers=cur.fetchall()
 			
 			return allusers
+
 	def update_userdetails(self,firstname,lastname,role,active_status,email):
 		with self.connection.cursor(DictCursor) as cur:
 			try:
@@ -761,7 +770,8 @@ class databaseUtils:
 				return "Success"
 			except pymysql.Error as e:
 				print("Caught error %d: %s" % (e.args[0], e.args[1]))
-				return "Error" 
+				return "Error"
+
 	def get_engineers(self):
 		with self.connection.cursor(DictCursor) as cur:
 			try:
@@ -771,17 +781,20 @@ class databaseUtils:
 			except pymysql.Error as e:
 				print("Caught error %d: %s" % (e.args[0], e.args[1]))
 				return "Error"
+
 	def get_all_unserviced_cars(self):
 		with self.connection.cursor(DictCursor) as cur:
 			try:
-				cur.execute("SELECT * from car where car.rego not in (SELECT rego from car_service and needs_service='1')")
+				cur.execute("SELECT * from car where car.rego not in (SELECT rego FROM car_service WHERE needs_service='1')")
 				return cur.fetchall()
 
 			except pymysql.Error as e:
 				print("Caught error %d: %s" % (e.args[0], e.args[1]))
 				return "Error"
+
 	def getCars(self):
 		with self.connection.cursor(DictCursor) as cur:
+
 			try:
 				cur.execute("SELECT * from car")
 				return cur.fetchall()
