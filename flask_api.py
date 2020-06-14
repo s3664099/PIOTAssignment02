@@ -241,8 +241,8 @@ def cancelBooking(emailid):
     return jsonify(result)
 
 #This method retures a list of all of the cars
-@api.route("/cars",methods=['GET'])
-def getCars():
+@api.route("/availablecars",methods=['GET'])
+def getAvailableCars():
     """
     List of all available cars
 
