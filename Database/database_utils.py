@@ -693,12 +693,11 @@ class databaseUtils:
 				else:
 					service_request = service_request.pop()
 
-					if service_request["engineer_assigned"] == 0:
-						return "No engineer assigned to this service request"
-					elif service_request["needs_service"] == 0:
+					if service_request["needs_service"] == 0:
 						return "Service request not active"
 					else:
 						cur.execute("UPDATE car_service SET needs_service = 0 WHERE request_no = '{}'".format(service_id))
+						self.connection.commit()
 						return "Service completed"
 			except:
 				return "Unable to update service"

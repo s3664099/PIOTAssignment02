@@ -32,6 +32,7 @@ def main():
 	operating = True
 	isEngineer = False
 	service_required = False
+	service_no = None
 
 	try:
 		client=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -47,20 +48,21 @@ def main():
 		print("Address-related error connecting to server: %s" % e)
 		sys.exit(1)
 
+	unlocked = scan_bluetooth(unlocked, client)
+	
+	if unlocked == True:
+		isEngineer = True
+		service_no = check_service(client)
+
+		if service_no != False:
+			service_required = True
+
 	while(operating == True):
 
 		"""
 		Options menu
 
 		"""
-
-		unlocked = scan_bluetooth(unlocked, client)
-		if unlocked == True:
-			isEngineer = True
-			service_no = check_service(client)
-
-			if service_no != False:
-				service_required = True
 
 		option = menu(unlocked, isEngineer, service_required)
 
@@ -94,6 +96,10 @@ def main():
 				unlocked = False
 			else:
 				print("Username incorrect, please try again")
+
+		elif(option == "6"):
+			update_service(client, service_no)
+			service_required = False
         
 		elif(option == "0"):
 			data={"Quit": True}
@@ -224,7 +230,17 @@ def check_service(client):
 		if("Response" in object):
 			return False
 		else:
-			return object["service_no"]
+			service_no = object["service_no"].pop()["request_no"]
+			return service_no
+
+def update_service(client, service_no):
+
+	agent_socket_utils.sendJson(client, {"ForService": True, "Check_Status": False, "service_no": service_no})
+
+	while(True):
+		object = agent_socket_utils.recvJson(client)
+		print(object["Response"])
+		return
 
 
 #Function to validate via a QR code

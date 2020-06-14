@@ -49,6 +49,11 @@ class ClientThread(threading.Thread):
                         socket_utils.sendJson(self.csocket, {"service_no": response})
                     else:
                         socket_utils.sendJson(self.csocket, {"Response": "No Service"})
+                else:
+                    url = ("http://127.0.0.1:5000/updateservicestatus/"+str(data["service_no"]))
+                    response = requests.post(url)
+                    
+                    socket_utils.sendJson(self.csocket, {"Response": response.text})
 
             elif("ForLogin" in data):
                 if(data["ForLogin"]==True):
