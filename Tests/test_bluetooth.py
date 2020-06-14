@@ -2,7 +2,7 @@ import sys
 sys.path.insert(0,'..')
 
 import unittest
-import unlock_car as uc
+import AgentPi.unlock_car as uc
 
 class test_database_utils(unittest.TestCase):
 

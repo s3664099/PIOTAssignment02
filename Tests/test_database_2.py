@@ -46,7 +46,7 @@ class test_database_utils(unittest.TestCase):
 
 	def test_insert_person(self):
 		with self.db as db:
-			print("Test Insert")
+			
 			count = self.countPeople()
 
 			self.assertTrue(db.insert_user("Ralphie", "Ralpho", "Emmerson", "poetry", "ralph@deadpoet.com") == "success")
@@ -59,8 +59,6 @@ class test_database_utils(unittest.TestCase):
 	def test_insert_employee(self):
 
 		with self.db as db:
-
-			print("Test insert employee")
 
 			self.assertTrue(db.create_employee('HFarnsworth','Hubert','Farnsworth','password','H.F@carshare.com','Manager') 
 				== 'success')
@@ -83,8 +81,6 @@ class test_database_utils(unittest.TestCase):
 
 	def test_get_employee_type(self):
 
-		print("Test get employee type")
-
 		with self.db as db:
 
 			db.create_employee('HFarnsworth','Hubert','Farnsworth','password','H.F@carshare.com','Manager')
@@ -102,8 +98,6 @@ class test_database_utils(unittest.TestCase):
 
 	def test_activate_employee(self):
 
-		print("Test activate employee")
-
 		with self.db as db:
 
 			db.create_employee('HFarnsworth','Hubert','Farnsworth','password','H.F@carshare.com','Manager')
@@ -113,8 +107,6 @@ class test_database_utils(unittest.TestCase):
 			self.assertTrue(db.activate_employee("P.Q@carshare.com") == "user not found")
 
 	def test_add_engineer(self):
-
-		print("Test Engineer")
 
 		with self.db as db:
 
@@ -152,7 +144,7 @@ class test_database_utils(unittest.TestCase):
 
 			self.add_engineer(db)
 
-			self.assertTrue(db.create_service_request('U75PYV', 3000, 'H.C@carshare.com') == 'car booked for service. The service number is 1')
+			self.assertTrue(db.create_service_request('U75PYV', 3000, 'H.C@carshare.com') == 'Car Service Booked. The service number is 1')
 			self.assertTrue(db.create_service_request('PPPQQQ', 3000, 'H.C@carshare.com') == 'Unable to book vehicle for service, no such vehicle exists')
 			self.assertTrue(db.create_service_request('U75PYV', 3000, 'P.Q@email.com') == 'Invalid email. Unable to book vehicle for service')
 			self.assertTrue(db.create_service_request('U75PYV', 3000, 'H.C@carshare.com') == 'A service request has already been booked for vehicle U75PYV')
@@ -218,7 +210,6 @@ class test_database_utils(unittest.TestCase):
 			self.assertTrue(db.service_complete(1) == "Service completed")						
 			self.assertTrue(len(db.get_all_active_service_requests()) == 2)
 			self.assertTrue(db.service_complete(4) == "No service request found with id 4")
-			self.assertTrue(db.service_complete(2) == "No engineer assigned to this service request")
 			self.assertTrue(db.service_complete(1) == "Service request not active")
 
 		
