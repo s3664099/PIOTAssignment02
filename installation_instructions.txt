@@ -1,5 +1,17 @@
 1. Ensure Python3.3 or later is installed.
 2. Navigate to main project folder in Terminal/Cmd. - (alternatively open project in VScode and use Terminal there)
-3. Enter "pip install -r requirements.txt"
+3. Enter "pip3 install -r requirements.txt"
    - Note this may take some to install all required packages
 4. Enter "python3 flask_main.py" to run.
+
+Raspberry pi 
+1. Enter "pip3 install -r requirements.txt"
+2. Navigate to folder static/js within main project folder
+3. edit customermap.js by changing "localhost" in <var url = "localhost:5000/availablecars"> to the
+   local ip of your raspberry pi device
+   - e.g: <var url = "10.1.1.1:5000/availablecars"
+4. Repeat this process for engineermap.js changing <var url = "localhost:5000/findallocatedcars"+email>
+   and once again replacing localhost with your raspberry pi ip.
+5. Once this is completed navigate to main project folder
+6. Enter <export FLASK_APP=flask_main.py>
+7. Enter <flask run> to run the app
