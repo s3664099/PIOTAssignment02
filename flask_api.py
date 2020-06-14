@@ -359,7 +359,7 @@ def createServiceRequest():
 
     print(pb.send_notification(title, message, engineer))
 
-    rows=dbObj.create_service_request(rego,'3000',engineeremail)
+    rows=dbObj.create_service_request(request.json['rego'],'3000',request.json['engineeremail'])
     return jsonify(rows)
 
 @api.route("/servicehistory",methods=['GET'])
