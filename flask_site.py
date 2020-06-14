@@ -8,7 +8,7 @@ import json,os,requests, shutil
 from werkzeug.utils import secure_filename
 from flask import send_from_directory
 from flask import Blueprint, request, render_template, session, flash, url_for, redirect
-from forms import RegistrationForm, LoginForm, BookingForm
+from forms import RegistrationForm, LoginForm, BookingForm, CarForm
 from Encoding.encode_recognise import recognise
 from config import app
 
@@ -203,6 +203,7 @@ def home():
 @site.route("/admin",methods=['GET','POST'])
 def admin():
     form=RegistrationForm()
+    formcar=CarForm()
     url=("http://127.0.0.1:5000/username/"+session['email'])
     response=requests.get(url)
     username=json.loads(response.text)
@@ -217,6 +218,22 @@ def admin():
     unservicedcars=json.loads(response.text)
     response=requests.get("http://127.0.0.1:5000/servicehistory")
     servicehistory=json.loads(response.text)
+    if formcar.validate_on_submit():
+        if 'addcar' in request.form:
+            result=json.dumps(request.form)
+            result=json.loads(result)
+            url=("http://127.0.0.1:5000/addnewcar")
+            response=requests.post(url,json=result)
+            response=response.text
+            if response:
+                response=response.replace('"','')
+                response=response.replace('\n','')
+            if response.__contains__("Success"):
+                flash(f'Car Created Successfully', 'success')
+                return redirect(url_for('site.admin'))
+            else:
+                flash(f'Error occured. Please ensure that the rego entered is unique','danger')
+                return redirect(url_for('site.admin'))
     if form.validate_on_submit():
         if 'add' in request.form:
                 result=json.dumps(request.form)
@@ -236,34 +253,34 @@ def admin():
     if 'find' in request.form:
             if(request.form['search'] == ''):
                 flash(f'Please Enter Car Rego To Search','danger')
-                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username, rentalhistory=None,foundcars=None,userfound=None,form=form)
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username, rentalhistory=None,foundcars=None,userfound=None,form=form,formcar=formcar)
             url=("http://127.0.0.1:5000/bookinghistory/"+request.form['search'])
             response=requests.get(url)
             bookinghistory=json.loads(response.text)
             if bookinghistory!='No Bookings Found':
-                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username, rentalhistory=bookinghistory,foundcars=None,userfound=None,form=form)
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username, rentalhistory=bookinghistory,foundcars=None,userfound=None,form=form,formcar=formcar)
             else:
                 flash(f'No Bookings found for that car','info')
-                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username, rentalhistory=None,foundcars=None,userfound=None,form=form)
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username, rentalhistory=None,foundcars=None,userfound=None,form=form,formcar=formcar)
     elif ('cardetails' in request.form):
             url=("http://127.0.0.1:5000/searchallcars/"+request.form['carsearch'])
             response=requests.get(url)
             foundcars=json.loads(response.text)
             if foundcars!='Not Found':
-                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=foundcars,userfound=None,form=form)
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=foundcars,userfound=None,form=form,formcar=formcar)
             else:
                 flash(f'No Cars found, please try with another keyword','info')
-                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=None,form=form)
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=None,form=form,formcar=formcar)
     elif('userdetails' in request.form):
             url=("http://127.0.0.1:5000/finduserdetails/"+request.form['usersearch'])
             response=requests.get(url)
             userfound=json.loads(response.text)
             if userfound!='Not Found':
-                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=userfound,form=form)
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=userfound,form=form,formcar=formcar)
             else:
                 flash(f'User Not found, please try with another keyword','info')
-                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=None,form=form)
-    return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,form=form)
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=None,form=form,formcar=formcar)
+    return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,form=form,formcar=formcar)
 
 @site.route("/manager",methods=['GET','POST'])
 def manager():

@@ -855,4 +855,16 @@ class databaseUtils:
 			if cars:
 				return cars
 			return car
-
+	def addCar(self,rego,makemodel,color,lat,long):
+		
+		x = makemodel.split('-')
+		make=x[0]
+		model=x[1]
+		with self.connection.cursor(DictCursor) as cur:
+			try:
+				cur.execute("INSERT INTO car (rego,make,model,colour,locationLat,locationLong,available) VALUES ('{}','{}','{}','{}',{},{},'1')".format(rego,make,model,color,float(lat),float(long)))
+				self.connection.commit()
+				return "Success"
+			except pymysql.Error as e:
+					print("Caught error %d: %s" % (e.args[0],e.args[1]))
+					return "Error"

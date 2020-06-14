@@ -40,6 +40,7 @@
     <li><a class="nav-link" data-toggle="tab" href="#search">Search Details</a></li>
     <li><a class="nav-link" data-toggle="tab" href="#modifyusers">Modify Users</a></li>
     <li><a class="nav-link" data-toggle="tab" href="#adduser">Add User</a></li>
+    <li><a class="nav-link" data-toggle="tab" href="#addcar">Add Car</a></li>
     <li><a class="nav-link" data-toggle="tab" href="#modifycars">Modify Cars</a></li>
     <li><a class="nav-link" data-toggle="tab" href="#report">Report Car Issue</a></li>
     <li><a class="nav-link" data-toggle="tab" href="#servicehistory">Cars Booked for Service</a></li>
@@ -49,7 +50,7 @@
  <!-- Tab panes -->
  <div class="tab-content">
   <div id="adduser" class="tab-pane fade">
-  <form method="POST" action="" enctype=multipart/form-data>
+  <form method="POST" action="" >
       {{ form.hidden_tag() }}
       <fieldset class="form-group">
           <legend class="border-bottom mb-4">Join Today</legend>
@@ -139,10 +140,6 @@
                   {{ form.role(class="form-control form-control-lg") }}
               {% endif %}
           </div>
-         <!-- <div class="form-group">
-              <label>Upload your Image For Facial Recognition</label><input type=file name=file required>
-              <div class='small' style="color: green">For better accuracy, email us some more photos at carhiring@rmit.com.au 
-          </div>-->
       </fieldset>
       <div class="form-group">
         <input type="hidden" name="add" value="adduser">
@@ -260,7 +257,84 @@
     </table>
       {%endif%}
   </div>
-
+<div id="addcar" class="tab-pane fade">
+  <form method="POST" action="" >
+  {{ formcar.hidden_tag() }}
+  <fieldset class="form-group">
+      <legend class="border-bottom mb-4">Add Car Details</legend>
+      <div class="form-group">
+          {{ formcar.rego.label(class="form-control-label") }}
+          {% if formcar.rego.errors %}
+              {{ formcar.rego(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                  {% for error in formcar.rego.errors %}
+                      <span>{{ error }}</span>
+                  {% endfor %}
+              </div>
+          {% else %}
+              {{ formcar.rego(class="form-control form-control-lg") }}
+          {% endif %}
+      </div>
+      <div class="form-group">
+        {{ formcar.color.label(class="form-control-label") }}
+        {% if formcar.color.errors %}
+            {{ formcar.color(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in formcar.color.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% else %}
+            {{ formcar.color(class="form-control form-control-lg") }}
+        {% endif %}
+    </div>
+    <div class="form-group">
+      {{ formcar.locationlat.label(class="form-control-label") }}
+      {% if formcar.locationlat.errors %}
+          {{ formcar.locationlat(class="form-control form-control-lg is-invalid") }}
+          <div class="invalid-feedback">
+              {% for error in formcar.locationlat.errors %}
+                  <span>{{ error }}</span>
+              {% endfor %}
+          </div>
+      {% else %}
+          {{ formcar.locationlat(class="form-control form-control-lg") }}
+      {% endif %}
+  </div>
+  <div class="form-group">
+    {{ formcar.locationlong.label(class="form-control-label") }}
+    {% if formcar.locationlong.errors %}
+        {{ formcar.locationlong(class="form-control form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+            {% for error in formcar.locationlong.errors %}
+                <span>{{ error }}</span>
+            {% endfor %}
+        </div>
+    {% else %}
+        {{ formcar.locationlong(class="form-control form-control-lg") }}
+    {% endif %}
+</div>
+<div class="form-group">
+  {{ formcar.makemodel.label(class="form-control-label") }}
+  {% if formcar.makemodel.errors %}
+      {{ formcar.makemodel(class="form-control form-control-lg is-invalid") }}
+      <div class="invalid-feedback">
+          {% for error in formcar.makemodel.errors %}
+              <span>{{ error }}</span>
+          {% endfor %}
+      </div>
+  {% else %}
+      {{ formcar.makemodel(class="form-control form-control-lg") }}
+  {% endif %}
+</div>
+</fieldset>
+<div class="form-group">
+  <input type="hidden" name="addcar" value="addcar">
+    {{ formcar.submit(class="btn btn-outline-info") }}
+</div>
+</form>
+      
+</div>
 <div id="modifyusers" class="tab-pane fade"><br>
     {% if users %}
     <form method="POST"  action="{{url_for('site.modifyuser')}}">

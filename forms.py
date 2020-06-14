@@ -69,3 +69,11 @@ class BookingForm(FlaskForm):
     pickup = DateField('PickUp Date', format='%Y-%m-%d %H:%M:%S',validators=[DataRequired()])
     dropoff = DateField('Drop Off Date', format='%Y-%m-%d %H:%M:%S',validators=[DataRequired()])
     submit = SubmitField('bookedcar')
+
+class CarForm(FlaskForm):
+    rego = StringField('Rego',validators=[DataRequired()])
+    color = StringField('Color',validators=[DataRequired()])
+    locationlat = StringField('Location Latitude',validators=[DataRequired()])
+    locationlong = StringField('Location Longitude',validators=[DataRequired()])
+    makemodel=SelectField('MakeModel',choices =[('Holden-Spark','Holden-Spark'),('Ford-Falcon','Ford-Falcon'),('Holden-Commodore','Holden-Commodore'),('Ford-Festiva','Ford-Festiva'),('Holden-Astra','Holden-Astra'),('Toyota-Camry','Toyota-Camry'),('BMW-F32','BMW-F32'),('Holden-Barina','Holden-Barina'),('Toyota-Yaris','Toyota-Yaris'),('Ferrari-Testorosa','Ferrari-Testorosa'),('Toyota-Rav4','Toyota-Rav4')], validators=[DataRequired()])
+    submit = SubmitField('Add Car')
