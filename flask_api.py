@@ -177,6 +177,7 @@ def getUsername(email):
     Get the username
 
     """
+    print(email)
     rows=dbObj.return_user_details(email)
     if rows:
         for row in rows:

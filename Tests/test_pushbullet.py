@@ -76,15 +76,8 @@ class test_database_utils(unittest.TestCase):
 
 		details = bc.read_qr_no_webcam()
 		details = details.split(' ')
-		print(details)
-		try:
-			print(details[2], details[4], details[6])
-		except:
-			print("Invalid QR Code")
 
 		self.assertTrue(bc.read_qr_no_webcam() == "First Name: Janitor, Surname: Scruffy, email J.S@carshare.com")
-
-		print(qr.create_qr_code("testing","engineer","engineer@phase2.com"))
 
 	#def test_scan_barcode_webcam(self):
 
