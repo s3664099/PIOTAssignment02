@@ -3,16 +3,43 @@
 
 """
 from datetime import datetime
-#from google.cloud import storage
-import json,os,requests
+from google.cloud import storage
+import json,os,requests, shutil
 from werkzeug.utils import secure_filename
 from flask import send_from_directory
 from flask import Blueprint, request, render_template, session, flash, url_for, redirect
 from forms import RegistrationForm, LoginForm, BookingForm
-#from Encoding.encode_recognise import recognise
+from Encoding.encode_recognise import recognise
 from config import app
 
 site = Blueprint("site", __name__)
+
+ALLOWED_EXTENSIONS = {'png'}
+
+#Downloads the encodings.pickle file from Google Storage bucket
+def download_blob():
+        """
+        Downloads a blob from the bucket.
+        
+        """
+        bucket_name = "car-hire"
+        source_blob_name = "encodings.pickle"
+        destination_file_name = "Encoding/encodings.pickle"
+
+        storage_client = storage.Client() 
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(source_blob_name)
+        blob.download_to_filename(destination_file_name)
+
+#Defines the accepted file extensions for images uploaded for Facial Recognition
+def allowed_file(filename):
+    """
+    Allowed files
+    """
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 
 
 # Client webpage.
@@ -26,20 +53,43 @@ def register():
     form=RegistrationForm()
     if form.validate_on_submit():
         if request.method == 'POST':
-                result=json.dumps(request.form)
-                result=json.loads(result)
-                url=("http://127.0.0.1:5000/registeremployee")
-                response=requests.post(url,json=result)
-                response=response.text
-                if response:
-                    response=response.replace('"','')
-                    response=response.replace('\n','')
-                if response.__contains__("success"):
-                    flash(f'Account Created', 'success')
-                    return redirect(url_for('site.login'))
-                else:
-                    flash(f'Username or Email already in use','danger')
+            # check if the post request has the file part
+            if 'file' not in request.files:
+                flash('No file part')
+                return render_template("about.html")
+            file = request.files['file']
+            # if user does not select file, browser also
+            # submit an empty part without filename
+            if file.filename == '':
+                flash('No selected file','danger')
+                return redirect(url_for("site.register"))
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))    
+                img=os.path.join("Images/",filename)
+                download_blob()
+                exists=recognise("Encoding/encodings.pickle",img)
+                if exists!="Unknown":
+                    flash(f'User image already exists, please create a new user','danger')
                     return redirect(url_for('site.register'))
+                else:
+                    result=json.dumps(request.form)
+                    result=json.loads(result)
+                    url=("http://127.0.0.1:5000/registeremployee")
+                    response=requests.post(url,json=result)
+                    response=response.text
+                    if response:
+                        response=response.replace('"','')
+                        response=response.replace('\n','')
+                    if response.__contains__("success"):
+                        dir=os.path.join("Encoding/dataset/",request.form['email'])
+                        os.mkdir(dir)
+                        shutil.copy(img,os.path.abspath(dir))
+                        flash(f'Account Created', 'success')
+                        return redirect(url_for('site.login'))
+                    else:
+                        flash(f'Username or Email already in use','danger')
+                        return redirect(url_for('site.register'))
     return render_template("register.html",title="Register", form=form)
 
     return render_template("register.html",title='Register',form=form)
@@ -181,29 +231,35 @@ def admin():
                 else:
                     flash(f'Username or Email already in use','danger')
                     return redirect(url_for('site.admin'))
-        if 'find' in request.form:
+    if 'find' in request.form:
             if(request.form['search'] == ''):
                 flash(f'Please Enter Car Rego To Search','danger')
                 return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username, rentalhistory=None,foundcars=None,userfound=None,form=form)
             url=("http://127.0.0.1:5000/bookinghistory/"+request.form['search'])
             response=requests.get(url)
             bookinghistory=json.loads(response.text)
-            if bookinghistory:
+            if bookinghistory!='No Bookings Found':
                 return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username, rentalhistory=bookinghistory,foundcars=None,userfound=None,form=form)
-        elif ('cardetails' in request.form):
-            url=("http://127.0.0.1:5000/searchcar/"+request.form['carsearch'])
+            else:
+                flash(f'No Bookings found for that car','info')
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username, rentalhistory=None,foundcars=None,userfound=None,form=form)
+    elif ('cardetails' in request.form):
+            url=("http://127.0.0.1:5000/searchallcars/"+request.form['carsearch'])
             response=requests.get(url)
             foundcars=json.loads(response.text)
-            if foundcars:
+            if foundcars!='Not Found':
                 return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=foundcars,userfound=None,form=form)
-        elif('userdetails' in request.form):
+            else:
+                flash(f'No Cars found, please try with another keyword','info')
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=None,form=form)
+    elif('userdetails' in request.form):
             url=("http://127.0.0.1:5000/finduserdetails/"+request.form['usersearch'])
             response=requests.get(url)
             userfound=json.loads(response.text)
             if userfound!='Not Found':
                 return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=userfound,form=form)
             else:
-                flash(f'User Not found, please try with another keyword','danger')
+                flash(f'User Not found, please try with another keyword','info')
                 return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=None,form=form)
     return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,form=form)
 
@@ -242,7 +298,7 @@ def engineer():
             else:
                 flash(f'We have encountered an internal error, please try again later or contact the admin','danger')
                 return redirect(url_for('site.engineer'))
-    return render_template("engineer.html",title='Engineer',availablecars=availablecars,user=username,needdetails=needdetails,engineerdetails=engineerdetails, data=data)
+    return render_template("engineer.html",title='Engineer',availablecars=availablecars,user=username,needdetails=needdetails,engineerdetails=engineerdetails)
 
 @site.route("/logout",methods=['GET','POST'])
 def logout():

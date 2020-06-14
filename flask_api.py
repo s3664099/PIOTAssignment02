@@ -244,13 +244,12 @@ def cancelBooking(emailid):
 @api.route("/cars",methods=['GET'])
 def getCars():
     """
-    List of cars
+    List of all available cars
 
     """
     rows=dbObj.get_all_cars()
     availablecars=json.dumps(rows,default=decimal_default)
     availablecars=json.loads(availablecars)
-    cur.close()
     return jsonify(availablecars)
 
 #@api.route("/booking",methods=['POST'])
@@ -284,7 +283,7 @@ def bookcar():
     return jsonify(response)
 
 #APIs for phase 2
-
+#Endpoing to check if the email and role match 
 @api.route("/role/<role>/<email>",methods=['GET'])
 def getUserRole(role,email):
     result='Error'
@@ -294,12 +293,13 @@ def getUserRole(role,email):
         return jsonify(result)
     return jsonify(result)
 
+#Endpoint to return the user's details based on his/her email
 @api.route("/finduserdetails/<email>",methods=['GET'])
 def getUserDetails(email):
     rows=dbObj.get_user_search(email)
     return jsonify(rows)
     
-
+#Endpoint to return the booking history of a car
 @api.route("/bookinghistory/<rego>", methods=['GET'])
 def bookinghistory(rego):
     rows=dbObj.get_car_booking_history(rego)
@@ -309,6 +309,7 @@ def bookinghistory(rego):
         return jsonify(bookinghistory)
     return jsonify(rows)
 
+#Endpoint to return all users and their information 
 @api.route("/users", methods=['GET'])
 def getUsers():
     result='No Users'
@@ -317,11 +318,13 @@ def getUsers():
         return jsonify(rows)
     return jsonify(result)
 
+#Endpoint to modify user details
 @api.route("/modifyuserdetails",methods=['POST'])
 def modifyuserdetails():
     rows=dbObj.update_userdetails(request.json['firstname'],request.json['lastname'],request.json['role'],request.json['status'],request.json['email'])
     return jsonify(rows)
 
+#Endpoint to find the details of a car based on rego provided
 @api.route("/findcardetails/<rego>",methods=['GET'])
 def getCarDetails(rego):
     rows=dbObj.get_car_details(rego)
@@ -332,11 +335,13 @@ def getCarDetails(rego):
     else:
         return jsonify("Error")
         
+#Endpoint to modify car details
 @api.route("/modifycardetails",methods=['POST'])
 def modifycardetails():
     rows=dbObj.update_cardetails(request.json['colour'],request.json['make'],request.json['model'],request.json['locationLat'],request.json['locationLong'],request.json['rego'])
     return jsonify(rows)
 
+#Endpoing to find all engineers in the system
 @api.route("/findengineers",methods=['GET'])
 def getEngineers():
     rows=dbObj.get_engineers()
@@ -344,6 +349,7 @@ def getEngineers():
         return jsonify(rows)
     return "No Engineers Found"
 
+#Endpoint to create a service request and send push notification to the engineer
 @api.route("/createservicerequest",methods=['POST'])
 def createServiceRequest():
 
@@ -362,11 +368,13 @@ def createServiceRequest():
     rows=dbObj.create_service_request(request.json['rego'],'3000',request.json['engineeremail'])
     return jsonify(rows)
 
+#Endpoint to return entire service history for all booked services
 @api.route("/servicehistory",methods=['GET'])
 def getServiceHistory():
     rows=dbObj.get_all_service_requests()
     return jsonify(rows)
     
+#Endpoint to return all cars that have not been reported for service
 @api.route("/unservicedcars",methods=['GET'])
 def getUnservicedCars():
     rows=dbObj.get_all_unserviced_cars()
@@ -374,6 +382,7 @@ def getUnservicedCars():
     unservicedcars=json.loads(unservicedcars)
     return jsonify(unservicedcars)
 
+#Endpoint to retrieve all cars in the system
 @api.route("/getallcars",methods=['GET'])
 def getAllCars():
     rows=dbObj.getCars()
@@ -381,6 +390,7 @@ def getAllCars():
     allcars=json.loads(allcars)
     return jsonify(allcars)
 
+#Endpoint to get details of all engineers
 @api.route("/engineerdetails",methods=['GET'])
 def getEngineersDetails():
     rows=dbObj.get_engineers_details()
@@ -388,25 +398,28 @@ def getEngineersDetails():
         return jsonify(rows)
     return "No Engineers Found"
 
+#Endpoint to delete a user and respond with success or error message
 @api.route("/deleteuser/<email>",methods=['GET'])
 def deleteUser(email):
-    rows=dbObj.delete_user(email)
-    return jsonify(rows)
+    result=dbObj.delete_user(email)
+    return jsonify(result)
 
+#Endpoint to find all allocated cars to an engineer
 @api.route("/findallocatedcars/<email>",methods=['GET'])
 def getEngineerCars(email):
     result='Error'
     rows=dbObj.get_this_engineer_cars(email)
-    if rows:
-        result='Success'
-        return jsonify(rows)
-    return jsonify(result)
+    rows=json.dumps(rows,default=decimal_default)
+    rows=json.loads(rows)
+    return jsonify(rows)
 
+#Endpoint to check for an engineer's details
 @api.route("/checkengineerdetails/<email>",methods=['GET'])
 def getEngineerDetails(email):
     rows=dbObj.get_engineer_address(email)
     return jsonify(rows)
 
+#Endpoint that adds engineer's personal details and also creates the QR code containing the details
 @api.route("/addengineerdetails",methods=['POST'])
 def addEngineerDetails():
 
@@ -422,9 +435,18 @@ def addEngineerDetails():
     rows=dbObj.add_engineer(email,mac_address,token)
     return jsonify(rows)
     
+#Endpoint to return engineer's personal details filled by the engineer 
 @api.route("/getengineerbluetoothdetails",methods=['GET'])
 def getEngineerBluetoothDetails():
     rows=dbObj.get_engineer_bluetooth_details()
+    return jsonify(rows)
+
+#Endpoint to return cars when searched by a search string
+@api.route("/searchallcars/<search>",methods=['GET'])
+def searchAllCars(search):
+    rows=dbObj.search_all_cars(search)
+    rows=json.dumps(rows,default=decimal_default)
+    rows=json.loads(rows)
     return jsonify(rows)
     
 #A helper method to convert onjects to floats or strings to avoid conflicts with jsonify .
