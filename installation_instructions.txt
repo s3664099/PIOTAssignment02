@@ -7,7 +7,7 @@
 Raspberry pi 
 1. Enter "pip3 install -r requirements.txt"
 2. Navigate to folder static/js within main project folder
-3. edit customermap.js by changing <var url = "localhost:5000/availablecars"> to the
+3. edit customermap.js by changing "localhost" in <var url = "localhost:5000/availablecars"> to the
    local ip of your raspberry pi device
    - e.g: <var url = "10.1.1.1:5000/availablecars"
 4. Repeat this process for engineermap.js changing <var url = "localhost:5000/findallocatedcars"+email>
