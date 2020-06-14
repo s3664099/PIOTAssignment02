@@ -785,7 +785,7 @@ class databaseUtils:
 	def get_all_unserviced_cars(self):
 		with self.connection.cursor(DictCursor) as cur:
 			try:
-				cur.execute("SELECT * from car where car.rego not in (SELECT rego from car_service and needs_service='1')")
+				cur.execute("SELECT * from car where car.rego not in (SELECT rego FROM car_service WHERE needs_service='1')")
 				return cur.fetchall()
 
 			except pymysql.Error as e:
@@ -794,6 +794,7 @@ class databaseUtils:
 
 	def getCars(self):
 		with self.connection.cursor(DictCursor) as cur:
+
 			try:
 				cur.execute("SELECT * from car")
 				return cur.fetchall()
