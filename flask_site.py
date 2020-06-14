@@ -238,8 +238,11 @@ def admin():
             url=("http://127.0.0.1:5000/bookinghistory/"+request.form['search'])
             response=requests.get(url)
             bookinghistory=json.loads(response.text)
-            if bookinghistory:
+            if bookinghistory!='No Bookings Found':
                 return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username, rentalhistory=bookinghistory,foundcars=None,userfound=None,form=form)
+            else:
+                flash(f'No Bookings found for that car','info')
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username, rentalhistory=None,foundcars=None,userfound=None,form=form)
     elif ('cardetails' in request.form):
             url=("http://127.0.0.1:5000/searchallcars/"+request.form['carsearch'])
             response=requests.get(url)
@@ -247,6 +250,7 @@ def admin():
             if foundcars!='Not Found':
                 return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=foundcars,userfound=None,form=form)
             else:
+                flash(f'No Cars found, please try with another keyword','info')
                 return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=None,form=form)
     elif('userdetails' in request.form):
             url=("http://127.0.0.1:5000/finduserdetails/"+request.form['usersearch'])
@@ -255,7 +259,7 @@ def admin():
             if userfound!='Not Found':
                 return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=userfound,form=form)
             else:
-                flash(f'User Not found, please try with another keyword','danger')
+                flash(f'User Not found, please try with another keyword','info')
                 return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=None,form=form)
     return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,form=form)
 

@@ -704,8 +704,11 @@ class databaseUtils:
 	def get_car_booking_history(self,rego):
 			with self.connection.cursor(DictCursor) as cur:
 				cur.execute("SELECT * FROM booking where rego ='"+rego+"'")
-
-				return cur.fetchall()
+				result=cur.fetchall()
+				if result:
+					return result
+				else:
+					return "No Bookings Found"
 	
 	def get_user_search(self,search):
 		user="Not Found"
@@ -777,7 +780,7 @@ class databaseUtils:
 			except pymysql.Error as e:
 				print("Caught error %d: %s" % (e.args[0], e.args[1]))
 				return "Error"
-	def getCarsgetCars(self):
+	def getCars(self):
 		with self.connection.cursor(DictCursor) as cur:
 			try:
 				cur.execute("SELECT * from car")
