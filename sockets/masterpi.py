@@ -37,9 +37,11 @@ class ClientThread(threading.Thread):
         while(True):
             data= socket_utils.recvJson(self.csocket)
 
+            #Checks to see if the message is in relation to servicing the vehicle
             if ("ForService" in data):
                 if(data["Check_Status"] == True):
 
+                    #Checks to see if the vehicle has been flagged as needing a service
                     url = ("http://127.0.0.1:5000/getservicestatus/"+data["rego"])
                     response = requests.get(url)
                     respond = response.text
@@ -49,15 +51,19 @@ class ClientThread(threading.Thread):
                         socket_utils.sendJson(self.csocket, {"service_no": response})
                     else:
                         socket_utils.sendJson(self.csocket, {"Response": "No Service"})
+
+                #Updates the service status of the vehicle to note that it has been services
                 else:
                     url = ("http://127.0.0.1:5000/updateservicestatus/"+str(data["service_no"]))
                     response = requests.post(url)
                     
                     socket_utils.sendJson(self.csocket, {"Response": response.text})
 
+            #Checks to see if the call is for a login
             elif("ForLogin" in data):
                 if(data["ForLogin"]==True):
 
+                    #Handles the blue tooth login details
                     if(data["ForBlueTooth"]==True):
 
                         url = ("http://127.0.0.1:5000/getengineerbluetoothdetails")
@@ -69,7 +75,8 @@ class ClientThread(threading.Thread):
                             socket_utils.sendJson(self.csocket, {"Engineers": response})
                         else:
                             socket_utils.sendJson(self.csocket, {"Response": "Failure"})
-                        
+                    
+                    #Handles the QR Code login    
                     elif(data["ForQRCode"] == True):
 
                         data["first_name"] = data["first_name"].replace(',','')
@@ -88,6 +95,7 @@ class ClientThread(threading.Thread):
 
                         socket_utils.sendJson(self.csocket, {"Response": 'QR code invalid'})
 
+                    #Handles the facial recognition login
                     elif(data["FacialRecognition"]==False):
                         url=("http://127.0.0.1:5000/validate")
                         response=requests.post(url,json=data)
@@ -137,7 +145,7 @@ class ClientThread(threading.Thread):
                         else:
                                 socket_utils.sendJson(self.csocket , { "Lock": True,"Response" : 'Credentials not found, please check and try again' })
 
-
+                #Handles the return car functionality in updating the database
                 elif (data["ForReturnCar"]==True):
                     url=("http://127.0.0.1:5000/returncar")
                     response=requests.post(url, json=data)

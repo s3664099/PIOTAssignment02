@@ -34,6 +34,7 @@ def main():
 	service_required = False
 	service_no = None
 
+	#Establishes socket connection
 	try:
 		client=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	except socket.error as e:
@@ -48,8 +49,10 @@ def main():
 		print("Address-related error connecting to server: %s" % e)
 		sys.exit(1)
 
+	#Initial bluetooth scan for engineer
 	unlocked = scan_bluetooth(unlocked, client)
-	
+
+	#If scan successful checks to see if service is required	
 	if unlocked == True:
 		isEngineer = True
 		service_no = check_service(client)
@@ -167,6 +170,7 @@ def menu(unlocked, isEngineer, service_required):
 				print("Invalid Input")
 		else:
 
+			#Validates input for differing menu options
 			if text == "0":
 				valid_input = True
 			elif isEngineer == False:
@@ -220,6 +224,7 @@ def scan_bluetooth(unlocked, client):
 
 		return unlocked
 
+#Function to check to see if the vehicle requires a service
 def check_service(client):
 
 	agent_socket_utils.sendJson(client, {"ForService": True, "Check_Status": True, "rego": rego})
@@ -233,6 +238,8 @@ def check_service(client):
 			service_no = object["service_no"].pop()["request_no"]
 			return service_no
 
+#Function that updates the service record in the database
+#If the servie has been completed, it will update it
 def update_service(client, service_no):
 
 	agent_socket_utils.sendJson(client, {"ForService": True, "Check_Status": False, "service_no": service_no})
@@ -246,6 +253,7 @@ def update_service(client, service_no):
 #Function to validate via a QR code
 def qr_validation(unlocked, client):
 
+	#Reads the details of the QR-Code
 	details = sb.read_qr_no_webcam()
 	first_name = None
 	surname = None
@@ -261,11 +269,14 @@ def qr_validation(unlocked, client):
 		print("Invalid QR Code")
 		return False
 
-	agent_socket_utils.sendJson(client,{"ForBlueTooth": False, "ForQRCode": True,"FacialRecognition": False,"ForLogin": True,"ForReturnCar":False,
-		"email": email, "surname": surname, "first_name": first_name})
+	#Checks the details with the database to conform
+	agent_socket_utils.sendJson(client,{"ForBlueTooth": False, "ForQRCode": True,"FacialRecognition": False,"ForLogin": True,
+		"ForReturnCar":False, "email": email, "surname": surname, "first_name": first_name})
 
 	return await_response(client, unlocked)
 
+#Function that awaits for a response from the master pi
+#Related to validating login details
 def await_response(client, unlocked):
 
 	while(True):
