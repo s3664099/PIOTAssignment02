@@ -167,9 +167,11 @@ def home():
             url=("http://127.0.0.1:5000/searchcar/"+request.form['search'])
             response=requests.get(url)
             searchcars=json.loads(response.text)
-            if searchcars:
+            print(searchcars)
+            if searchcars!='Not Found':
                 return render_template('home.html',user=username,title='Home',orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=searchcars,confirmedbookings=confirmedbookings)
             else:
+                flash(f'No Available Cars Found','info')
                 return render_template('home.html',title='Home',user=username,orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None,confirmedbookings=confirmedbookings)
             #If Customer tries to cancel a booking
         elif ('cancel' in request.form):
