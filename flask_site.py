@@ -43,6 +43,9 @@ def allowed_file(filename):
 
 
 # Client webpage to register new users and employees
+# This function handles all the navigations and controls that are passed to this url endpoint
+# It validates if the user doesn't exist in the system through Facial Recognition
+# It calls different APIs to insert a role based user into the system and returns appropriate error messages if user exists in the system
 @site.route("/register",methods=['GET','POST'])
 def register():
     """
@@ -93,7 +96,10 @@ def register():
 
     return render_template("register.html",title='Register',form=form)
 
-
+#This endpoint takes the user to the login page of the application by default
+#Based Login or Register option, the user is allowed to login or sign up for an account
+#The function makes API calls to hash the password initially so the password remains encrypted within the network of the application
+#The function then makes API calls to validate the user's login information and allows the user to login based on his/her role
 @site.route("/",methods=['GET','POST'])
 def login():
     """
@@ -142,6 +148,8 @@ def login():
     return render_template('login.html', title='Login', form=form)
 
 
+#This endpoint is the customer's homepage
+#Customer can view order history, search for cars and rent a car amongst other things
 
 @site.route("/home",methods=['GET','POST'])
 def home():
@@ -199,6 +207,10 @@ def home():
             return render_template('home.html',title='Home',user=username,orderhistory=orderhistory, booking=None,availablecars=availablecars,searchcars=None,confirmedbookings=confirmedbookings)
     return render_template('home.html',title='Home',user=username,orderhistory=orderhistory, booking=None,availablecars=availablecars,confirmedbookings=confirmedbookings)
 
+#This endpoint is the Admin's landing page
+#Admin can search and view car rental history, add/modify/delete information of users and cars and can also add/delete users and cars
+#Admin can report a car for service and assign it to a particular engineer
+#Admin can also view the service history of all cars reported for service to date and view their status 
 @site.route("/admin",methods=['GET','POST'])
 def admin():
     form=RegistrationForm()
@@ -281,6 +293,9 @@ def admin():
                 return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=None,form=form,formcar=formcar)
     return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,form=form,formcar=formcar)
 
+#This endpoint is the manager's landing page
+#Manage can view different charts to analyze certain aspects of the company based on business needs
+
 @site.route("/manager",methods=['GET','POST'])
 def manager():
     url=("http://127.0.0.1:5000/username/"+session['email'])
@@ -288,6 +303,10 @@ def manager():
     username=json.loads(response.text)
     return render_template("manager.html",user=username,title="Manager")
 
+#This endpoint is the engineer's landing page
+#The engineer can view cars booked for service with him/her.
+#The engineer can also view a map that locates the cars booked for him/her
+#The engineer can add his/her bluetooth mac address and pushbullet token into the system the first time
 @site.route("/engineer",methods=['GET', 'POST'])
 def engineer():
     url=("http://127.0.0.1:5000/username/"+session['email'])
@@ -318,6 +337,7 @@ def engineer():
                 return redirect(url_for('site.engineer'))
     return render_template("engineer.html",title='Engineer',availablecars=availablecars,user=username,needdetails=needdetails,engineerdetails=engineerdetails)
 
+#This endpoint is to logout and clear the session of the user
 @site.route("/logout",methods=['GET','POST'])
 def logout():
     """
@@ -326,7 +346,10 @@ def logout():
     """
     session.clear()
     return redirect(url_for('site.login'))
-
+#This endpoint is for the customer after the customer selects a car for booking.
+#The user can book a car by adding his/her pickup and dropoff time preferences.
+#The car's availability is checked and then the user is informed if the booking was successful or not
+#The pickup and dropoff time are validated against current time and for logical reasoning
 @site.route("/booking",methods=['GET','POST'])
 def booking():
     """
@@ -368,6 +391,8 @@ def booking():
 
     return render_template("booking.html",title='Booking Car',carid=None, username=session['email'],form=form)
 
+#This endpoint is for the admin after a user is selected for modifying information.
+
 @site.route("/modifyuser",methods=['GET','POST'])
 def modifyuser():
     if request.method=='POST':
@@ -402,6 +427,8 @@ def modifyuser():
                 return redirect(url_for('site.admin'))
     return render_template("modifyuser.html",title="Modify User")
 
+#This endpoint is for the admin after a car is select for modifying information.
+
 @site.route("/modifycar",methods=['GET','POST'])
 def modifycar():
     if request.method=='POST':
@@ -428,6 +455,7 @@ def modifycar():
                 return redirect(url_for('site.admin'))
     return render_template("modifycar.html",title="Modify Car")
 
+#This endpoint is for information purposes
 @site.route("/about",methods=['GET','POST'])
 def about():
     """
@@ -436,6 +464,7 @@ def about():
     """
     return render_template("about.html")
 
+#This endpoint is for the admin after a car is selected to be reported for service to an engineer
 @site.route("/reportcar",methods=['GET','POST'])
 def reportcar():
     if request.method=='POST':

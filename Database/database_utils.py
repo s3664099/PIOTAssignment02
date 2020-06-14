@@ -716,7 +716,8 @@ class databaseUtils:
 					return result
 				else:
 					return "No Bookings Found"
-	
+
+	#Search string based search on the user table
 	def get_user_search(self,search):
 		user="Not Found"
 		with self.connection.cursor(DictCursor) as cur:
@@ -728,7 +729,7 @@ class databaseUtils:
 			if users:
 				return users
 			return user
-
+	#Returns all the users and their roles in the system
 	def get_all_users(self):
 		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT user.firstname,user.lastname,user.email,user.username, user_role.role, user_role.is_active FROM user, user_role WHERE user.email=user_role.email")
@@ -737,6 +738,7 @@ class databaseUtils:
 			
 			return allusers
 
+	#Updates user information
 	def update_userdetails(self,firstname,lastname,role,active_status,email):
 		with self.connection.cursor(DictCursor) as cur:
 			try:
@@ -755,12 +757,14 @@ class databaseUtils:
 			self.connection.commit()
 			return "Success"
 
+	#Returns car details based on rego
 	def get_car_details(self,rego):
 		with self.connection.cursor(DictCursor) as cur:
 			cur.execute("SELECT * from car where rego='{}'".format(rego))
 
 			return cur.fetchall()
 	
+	#Updates car information
 	def update_cardetails(self,colour,make,model,locationLat,locationLong,rego):
 		with self.connection.cursor(DictCursor) as cur:
 			try:
@@ -772,6 +776,7 @@ class databaseUtils:
 				print("Caught error %d: %s" % (e.args[0], e.args[1]))
 				return "Error"
 
+	#Fetches engineers registered in the system
 	def get_engineers(self):
 		with self.connection.cursor(DictCursor) as cur:
 			try:
@@ -782,6 +787,7 @@ class databaseUtils:
 				print("Caught error %d: %s" % (e.args[0], e.args[1]))
 				return "Error"
 
+	#Returns all cars that have not already been reported for service
 	def get_all_unserviced_cars(self):
 		with self.connection.cursor(DictCursor) as cur:
 			try:
@@ -792,6 +798,7 @@ class databaseUtils:
 				print("Caught error %d: %s" % (e.args[0], e.args[1]))
 				return "Error"
 
+	#Returns all cars without any conditions
 	def getCars(self):
 		with self.connection.cursor(DictCursor) as cur:
 
@@ -803,6 +810,7 @@ class databaseUtils:
 				print("Caught error %d: %s" % (e.args[0], e.args[1]))
 				return "Error"
 
+	#Returns mac_addresses and email of all engineers from engineer table
 	def get_engineers_details(self):
 		with self.connection.cursor(DictCursor) as cur:
 			try:
@@ -811,7 +819,8 @@ class databaseUtils:
 			except pymysql.Error as e:
 				print("Caught error %d: %s" % (e.args[0], e.args[1]))
 				return "Error"
-	
+
+	#Deletes a user from the system
 	def delete_user(self,email):
 		with self.connection.cursor(DictCursor) as cur:
 			user_role_deleted=0
@@ -829,7 +838,8 @@ class databaseUtils:
 				except pymysql.Error as e:
 					print("Caught error %d: %s" % (e.args[0],e.args[1]))
 					return "Error"
-					
+	
+	#returns engineer details from engineer and user table
 	def get_engineer_bluetooth_details(self):
 		with self.connection.cursor(DictCursor) as cur:
 			try:
@@ -840,6 +850,7 @@ class databaseUtils:
 					print("Caught error %d: %s" % (e.args[0],e.args[1]))
 					return "Error"
 	
+	#Returns all cars that match the search critera
 	def search_all_cars(self, search):
 		"""
 		Details of a particular vehicle
@@ -855,6 +866,8 @@ class databaseUtils:
 			if cars:
 				return cars
 			return car
+
+	#Inserts a new car into the system		
 	def addCar(self,rego,makemodel,color,lat,long):
 		
 		x = makemodel.split('-')
@@ -869,6 +882,7 @@ class databaseUtils:
 					print("Caught error %d: %s" % (e.args[0],e.args[1]))
 					return "Error"
 
+	#Deletes a car from the system
 	def deleteCar(self,rego):
 			with self.connection.cursor(DictCursor) as cur:
 				try:
