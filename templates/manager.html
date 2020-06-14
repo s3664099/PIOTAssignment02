@@ -23,8 +23,8 @@
     <ul class="nav nav-tabs" id="myTab">
         <li><a class="nav-link"  data-toggle="tab" href="#home">Home</a></li>
         <li><a class="nav-link" data-toggle="tab" href="#Total">Bookings</a></li>
-        <li><a class="nav-link" data-toggle="tab" href="#MostBookedCar">Cars Booked</a></li>
-        <li><a class="nav-link" data-toggle="tab" href="#Profits">Cost</a></li>
+        <li><a class="nav-link" data-toggle="tab" href="#MostBookedCar">Car Type In Demand</a></li>
+        <li><a class="nav-link" data-toggle="tab" href="#Faulty">Services Reported</a></li>
   </ul>    
   <div class="tab-content">
     <div id="home" class="tab-pane fade in active"><br>
@@ -45,18 +45,18 @@
     {% endwith %}
     </div>
 <div id="Total" class="tab-pane fade">
-    <legend>Total Confirmed Bookings v/s Cancelled Bookings</legened>
+    <legend>Total Bookings - Confirmed v/s Cancelled</legened>
     <br>
     <iframe width="600" height="450" src="https://datastudio.google.com/embed/reporting/c9f8cecd-8631-43a0-8d7d-ed90ec967443/page/wQZTB" frameborder="0" style="border:0" allowfullscreen></iframe>
 
 </div>
 <div id="MostBookedCar" class="tab-pane fade">
-    <legend>Most Frequently Booked Car</legend>
+    <legend>Type of Car In Demand</legend>
     <br>
     <iframe width="600" height="450" src="https://datastudio.google.com/embed/reporting/deeeb19e-565c-431a-9a2c-ee6f39456345/page/yOYTB" frameborder="0" style="border:0" allowfullscreen></iframe>
 </div>
-<div id="Profits" class="tab-pane fade">
-    <legend>Daily Profit</legend>
+<div id="Faulty" class="tab-pane fade">
+    <legend>Most Services booked based on the make of the car</legend>
     <br>
     <iframe width="600" height="450" src="https://datastudio.google.com/embed/reporting/01378d57-e12c-4ce4-800a-eaf159456049/page/UKaTB" frameborder="0" style="border:0" allowfullscreen></iframe>
 </div>
