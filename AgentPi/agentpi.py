@@ -31,6 +31,7 @@ def main():
 	unlocked = False
 	operating = True
 	isEngineer = False
+	service_required = False
 
 	try:
 		client=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -53,11 +54,15 @@ def main():
 
 		"""
 
-		#unlocked = scan_bluetooth(unlocked, client)
+		unlocked = scan_bluetooth(unlocked, client)
 		if unlocked == True:
 			isEngineer = True
+			service_no = check_service(client)
 
-		option = menu(unlocked, isEngineer)
+			if service_no != False:
+				service_required = True
+
+		option = menu(unlocked, isEngineer, service_required)
 
 		if option == "1":
             #Please do not remove the password function, for security I've used the getpass functionrather than get_input
@@ -120,7 +125,7 @@ def download_blob():
 
 
 #Menu to enable user to chose which code to use
-def menu(unlocked, isEngineer):
+def menu(unlocked, isEngineer, service_required):
 	"""
 	Menu for user to login through via console or facial recognition
 	
@@ -138,6 +143,8 @@ def menu(unlocked, isEngineer):
 		else:
 			if isEngineer == False:
 				print("1. Return Car")
+			elif service_required == True:
+				print("1. Update Service")
 
 		print("0. Quit")
 		print()
@@ -153,11 +160,17 @@ def menu(unlocked, isEngineer):
 			else:
 				print("Invalid Input")
 		else:
-			if text == "1":
-				text = "5"
+
+			if text == "0":
 				valid_input = True
-			elif text == "0":
-				valid_input = True
+			elif isEngineer == False:
+				if text == "1":
+					text = "5"
+					valid_input = True
+			elif service_required == True:
+				if text == "1":
+					text = "6"
+					valid_input = True
 			else:
 				print("Invalid Input")
 
@@ -165,7 +178,7 @@ def menu(unlocked, isEngineer):
 
 	return text   
 
-#Source: https://stackoverflow.com/questions/35851323/how-to-test-a-function-with-input-call
+#Source: https://stackoobject["service_no"]verflow.com/questions/35851323/how-to-test-a-function-with-input-call
 def get_input(input_type):
 	"""
 	Get input call
@@ -201,9 +214,21 @@ def scan_bluetooth(unlocked, client):
 
 		return unlocked
 
+def check_service(client):
+
+	agent_socket_utils.sendJson(client, {"ForService": True, "Check_Status": True, "rego": rego})
+
+	while(True):
+		object = agent_socket_utils.recvJson(client)
+
+		if("Response" in object):
+			return False
+		else:
+			return object["service_no"]
+
+
 #Function to validate via a QR code
 def qr_validation(unlocked, client):
-
 
 	details = sb.read_qr_no_webcam()
 	first_name = None

@@ -448,6 +448,12 @@ def searchAllCars(search):
     rows=json.dumps(rows,default=decimal_default)
     rows=json.loads(rows)
     return jsonify(rows)
+
+#Endpoint to return service request for vehicle
+@api.route("/getservicestatus/<rego>", methods=['GET'])
+def get_service_status(rego):
+    rows = dbObj.get_service_request_rego(rego)
+    return jsonify(rows)
     
 #A helper method to convert onjects to floats or strings to avoid conflicts with jsonify .
 def decimal_default(obj):

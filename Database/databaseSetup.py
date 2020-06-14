@@ -232,11 +232,14 @@ def sql_queries(conn):
 
 	cur.execute("SELECT * FROM car_service")
 
-	print(cur.fetchall())
+	for x in cur.fetchall():
+		print (x)
+
 
 	cur.execute("SELECT * FROM car")
 
-	print(cur.fetchall())
+	for x in cur.fetchall():
+		print (x)
 		
 
 
