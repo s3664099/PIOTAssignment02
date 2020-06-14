@@ -15,25 +15,30 @@ function initMap() { //start initMap
   request.onload = function() {
     carsArray = JSON.parse(request.responseText);
 
+    console.log(carsArray);
+    
+
     for (var i = 0; i < carsArray.length; i++) {
+
+      console.log(carsArray[i].locationLat);
 
       // Create a string for every object in the array which will be used populate the infoWindow for each car
       var carDetails = '<div id="content" style="width:400px; background-color:white;">' +
-      "Colour: " + carsArray[i].colour.substring(0, 1).toUpperCase() + carsArray[i].colour.slice(1) + '</br>' +
-      "Latitude: " + carsArray[i].locationLat + '</br>' +
-      "Longitude: " + carsArray[i].locationLong + '</br>' +
-      "Make: " + carsArray[i].make + '</br>' +
-      "Model: " + carsArray[i].model + '</br>' +
-      "Registration: " + carsArray[i].rego + '</br>' +
-        '</div>';
+            "Colour: " + carsArray[i].colour.substring(0, 1).toUpperCase() + carsArray[i].colour.slice(1) + '</br>' +
+            "Latitude: " + carsArray[i].locationlat + '</br>' +
+            "Longitude: " + carsArray[i].locationlong + '</br>' +
+            "Make: " + carsArray[i].make + '</br>' +
+            "Model: " + carsArray[i].model + '</br>' +
+            "Registration: " + carsArray[i].rego + '</br>' +
+              '</div>';
 
-addMarker({
-  coords:{lat:carsArray[i].locationLong, lng:carsArray[i].locationLat}, 
-  content:carDetails});
-}
+      addMarker({
+        coords:{lat:carsArray[i].locationlong, lng:carsArray[i].locationlat}, 
+        content:carDetails});
+      }
 
 
-};
+  };
 request.send();
 
 
