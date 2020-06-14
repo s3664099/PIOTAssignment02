@@ -14,4 +14,4 @@ Raspberry pi
    and once again replacing localhost with your raspberry pi ip.
 5. Once this is completed navigate to main project folder
 6. Enter <export FLASK_APP=flask_main.py>
-7. Enter flask run to run the app
+7. Enter <flask run> to run the app
