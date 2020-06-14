@@ -155,7 +155,7 @@ def login(email, user_password, db_connection):
     cur = db_connection.cursor()
     # SQL Query to search for the user and retrieves the password
     try:
-        result = cur.execute("SELECT email, password FROM user WHERE email='" + email + "'")
+        result = cur.execute("SELECT u.email, password FROM user u , user_role ur WHERE u.email='" + email + "' and u.email=ur.email and ur.is_active='1'")
     except pymysql.Error as e:
         print(e)
         return 1

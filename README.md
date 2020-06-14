@@ -18,11 +18,15 @@ In summary, the implementation of this project involves the following components
 - AI features such as object-detection system
 - Programming with Cloud databases•Selected Software Engineering Project Management/Tools
 
-**Installation instructions**:
+**Instructions**:
 - Ensure Python3.3 or later is installed.
 - Navigate to main project folder in Terminal/Cmd. (alternatively open project in VScode and use Terminal there)
 - Enter "pip install -r requirements.txt" to install all required packages.
 - Enter "python3 flask_main.py" to run the application.
+- API calls for map in the JavaScript files in static folder and the agentpi and master pi files need to be modified during setup.
+- These calls need to be made to the specific host name of the server where the flask app is running.
+- For instance: if flask is running on 10.0.0.1 then all api calls being made need to change from 127.0.0.1 to 10.0.0.1
+
 
 ## Project Features
 
@@ -37,7 +41,7 @@ In summary, the implementation of this project involves the following components
 
 3. Upon logging in, the user is now presented with another page including following functions:
 
-- show a list of cars available, you need to show the detailed information of cars in the list such as Make, Body Type, Colour, Seats, Location, Cost per hour.
+- List of available cars will be shown, such as the detailed information of cars in the list such as Make, Body Type, Colour, Seats, Location, Cost per hour.
 - search for a car based on body type or other features.
 - book a car based on car identity, the user will be asked to input booking details.
 - cancel a booking
@@ -60,9 +64,9 @@ The system admin is able to:
 - Add, remove and modify information of users and cars
 - Report car with issue, then the engineer can find and fix the problem.
 
-**For manager**: The manager can login to the websiteandcapture key information by looking at visualisationdashboard.
+**For manager**: The manager can login to the website and capture key information by looking at the visualisation dashboard.
 
-1. Upon logging in,a dashboard webpage will be shown.In the dashboard webpage, there will be 3 types of visualisation graph.
+1. Upon logging in, a dashboard webpage will be shown. In the dashboard webpage, there will be 3 types of visualisation graph.
 
 2. The first graph is a combo bar chart where it will show the results of total comfirmed booking and cancelled the booking from our application.
 
@@ -70,7 +74,7 @@ The system admin is able to:
 
 4. Lastly, the third graph is a line chart where give us our day to day profit sales result.
 
-**For engineer**: The engineerstake responsibility to repair the reported cars. They will receive anotification via email once admin reported a car that is needed to be repaired. After that, the engineer can login to the system to check outand find the car’s location.
+**For engineer**: The engineers take responsibility to repair the reported cars. They will receive anotification via email once admin reported a car that is needed to be repaired. After that, the engineer can login to the system to check outand find the car’s location.
 
 1. The engineer is able to:
 - Login 
@@ -81,9 +85,10 @@ The system admin is able to:
 3. The AP attached in the car will have the ability to detect QR code carried by engineers in order to retrieve their personal information, which will help company to know who has done what.
 
 **Usernames and Passwords**
-Admin:
-Manager:
-Engineer:
+Engineer: engineer@phase2.com/Password1
+Admin: admin@phase2.com/Password1
+Manager: manager@phase2.com/Password1
+
 
 ## Github Repository Usage
 
