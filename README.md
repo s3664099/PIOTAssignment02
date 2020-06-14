@@ -92,7 +92,25 @@ Manager: manager@phase2.com/Password1
 
 ## Github Repository Usage
 
+![1](https://user-images.githubusercontent.com/62014219/84592506-8d253580-ae89-11ea-8d7b-bccacfdc796c.PNG)
+
+![2](https://user-images.githubusercontent.com/62014219/84592496-88f91800-ae89-11ea-8aa5-a3a6f76f792f.PNG)
+
+![3](https://user-images.githubusercontent.com/62014219/84592499-8ac2db80-ae89-11ea-8ad2-18840b9cbeee.PNG)
+
+![4](https://user-images.githubusercontent.com/62014219/84592500-8ac2db80-ae89-11ea-9b88-f45ffd08c4b0.PNG)
+
+![5](https://user-images.githubusercontent.com/62014219/84592502-8b5b7200-ae89-11ea-90a3-8e7ee3888861.PNG)
+
+![6](https://user-images.githubusercontent.com/62014219/84592503-8bf40880-ae89-11ea-8fa5-2315c9c7a56a.PNG)
+
+![7](https://user-images.githubusercontent.com/62014219/84592504-8c8c9f00-ae89-11ea-8989-f6fbd09d68cf.PNG)
+
+![8](https://user-images.githubusercontent.com/62014219/84592505-8c8c9f00-ae89-11ea-8598-998c78af9eab.PNG)
+
 ## Trello Board Usage
 
+![9](https://user-images.githubusercontent.com/62014219/84592526-a7f7aa00-ae89-11ea-9bb4-a91d7896111c.PNG)
 
+![10](https://user-images.githubusercontent.com/62014219/84592524-a62de680-ae89-11ea-9f77-a54b1b1a4303.PNG)
 
