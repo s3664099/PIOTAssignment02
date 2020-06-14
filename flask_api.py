@@ -467,6 +467,12 @@ def update_service_status(service_no):
 def addCarDetails():
     rows=dbObj.addCar(request.json['rego'],request.json['makemodel'],request.json['color'],request.json['locationlat'],request.json['locationlong'])
     return jsonify(rows)
+
+#Endpoint to delete a car
+@api.route("/deletecar/<rego>",methods=['GET'])
+def deleteCar(rego):
+    rows=dbObj.deleteCar(rego)
+    return jsonify(rows)
 #A helper method to convert onjects to floats or strings to avoid conflicts with jsonify .
 def decimal_default(obj):
     """

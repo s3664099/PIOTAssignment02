@@ -868,3 +868,13 @@ class databaseUtils:
 			except pymysql.Error as e:
 					print("Caught error %d: %s" % (e.args[0],e.args[1]))
 					return "Error"
+
+	def deleteCar(self,rego):
+			with self.connection.cursor(DictCursor) as cur:
+				try:
+					cur.execute("Delete from car where rego='{}'".format(rego))
+					self.connection.commit()
+					return "Success"
+				except pymysql.Error as e:
+						print("Caught error %d: %s" % (e.args[0],e.args[1]))
+						return "Error"

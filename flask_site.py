@@ -42,15 +42,15 @@ def allowed_file(filename):
 
 
 
-# Client webpage.
+# Client webpage to register new users and employees
 @site.route("/register",methods=['GET','POST'])
 def register():
     """
     Registration form from forms.py
 
     """
-    # Use REST API.
-    form=RegistrationForm()
+    #form passed to front end to enable form validations using flask wtf
+    form=RegistrationForm() 
     if form.validate_on_submit():
         if request.method == 'POST':
             # check if the post request has the file part
@@ -58,8 +58,7 @@ def register():
                 flash('No file part')
                 return render_template("about.html")
             file = request.files['file']
-            # if user does not select file, browser also
-            # submit an empty part without filename
+            # if user does not select file we redirect to register page with error message
             if file.filename == '':
                 flash('No selected file','danger')
                 return redirect(url_for("site.register"))
@@ -406,6 +405,13 @@ def modifyuser():
 @site.route("/modifycar",methods=['GET','POST'])
 def modifycar():
     if request.method=='POST':
+        if 'deletecar' in request.form:
+            url=("http://127.0.0.1:5000/deletecar/"+request.form['cartomodify'])
+            response=requests.get(url)
+            response=json.loads(response.text)
+            if 'Success' in response:
+                flash(f'Car deleted successfully','success')
+                return redirect(url_for('site.admin'))
         if 'cartomodify' in request.form:
             url=("http://127.0.0.1:5000/findcardetails/"+request.form['cartomodify'])
             response=requests.get(url)
