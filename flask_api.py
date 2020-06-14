@@ -365,7 +365,7 @@ def createServiceRequest():
 
     print(pb.send_notification(title, message, engineer))
 
-    rows=dbObj.create_service_request(rego,'3000',engineeremail)
+    rows=dbObj.create_service_request(request.json['rego'],'3000',request.json['engineeremail'])
     return jsonify(rows)
 
 #Endpoint to return entire service history for all booked services
