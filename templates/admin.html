@@ -368,6 +368,7 @@
         <th>ServiceId</th>
         <th>Car Rego</th>
         <th>Engineer</th>
+        <th>Needs Service</th>
         </tr></thead>
         <tbody>
         {% for row in servicehistory%}
@@ -375,6 +376,7 @@
           <td>{{row.request_no}}</td>
           <td>{{row.rego}}</td>
           <td>{{row.email}}</td>
+          <td>{{row.needs_service}}</td>
       </tr>
         {% endfor %}
         {%endif%}
