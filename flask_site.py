@@ -241,11 +241,13 @@ def admin():
             if bookinghistory:
                 return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username, rentalhistory=bookinghistory,foundcars=None,userfound=None,form=form)
     elif ('cardetails' in request.form):
-            url=("http://127.0.0.1:5000/searchcar/"+request.form['carsearch'])
+            url=("http://127.0.0.1:5000/searchallcars/"+request.form['carsearch'])
             response=requests.get(url)
             foundcars=json.loads(response.text)
-            if foundcars:
+            if foundcars!='Not Found':
                 return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=foundcars,userfound=None,form=form)
+            else:
+                return render_template("admin.html",title='Admin',unservicedcars=unservicedcars,servicehistory=servicehistory,cars=cars,users=users,user=username,rentalhistory=None,foundcars=None,userfound=None,form=form)
     elif('userdetails' in request.form):
             url=("http://127.0.0.1:5000/finduserdetails/"+request.form['usersearch'])
             response=requests.get(url)

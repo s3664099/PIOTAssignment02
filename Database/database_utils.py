@@ -185,7 +185,6 @@ class databaseUtils:
 				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
 				AND m.bodytype = b.bodytype AND c.available = 1 AND (c.rego='{}' OR c.make='{}' OR c.model='{}' \
 				OR c.colour='{}' OR b.bodytype='{}' OR  seats='{}') ".format(search, search, search, search, search, search))
-
 			cars = cur.fetchall()
 			if cars:
 				return cars
@@ -708,12 +707,12 @@ class databaseUtils:
 
 				return cur.fetchall()
 	
-	def get_user_search(self,email):
+	def get_user_search(self,search):
 		user="Not Found"
 		with self.connection.cursor(DictCursor) as cur:
-			cur.execute("SELECT username, firstname, lastname, role, user.email, is_active from user, user_role where\
-				user.email=user_role.email and user.email='{}' \
-				 ".format(email))
+			cur.execute("SELECT username, firstname, lastname, role, user.email, is_active from user, user_role WHERE \
+				user.email=user_role.email and (user.email='{}' OR user.firstname='{}' OR user.lastname='{}' \
+				 OR user.username='{}')".format(search,search,search,search))
 
 			users = cur.fetchall()
 			if users:
@@ -778,7 +777,7 @@ class databaseUtils:
 			except pymysql.Error as e:
 				print("Caught error %d: %s" % (e.args[0], e.args[1]))
 				return "Error"
-	def getCars(self):
+	def getCarsgetCars(self):
 		with self.connection.cursor(DictCursor) as cur:
 			try:
 				cur.execute("SELECT * from car")
@@ -824,3 +823,20 @@ class databaseUtils:
 			except pymysql.Error as e:
 					print("Caught error %d: %s" % (e.args[0],e.args[1]))
 					return "Error"
+	
+	def search_all_cars(self, search):
+		"""
+		Details of a particular vehicle
+
+		"""
+		car="Not Found"
+		with self.connection.cursor(DictCursor) as cur:
+			cur.execute("SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice \
+				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model \
+				AND m.bodytype = b.bodytype AND (c.rego='{}' OR c.make='{}' OR c.model='{}' \
+				OR c.colour='{}' OR b.bodytype='{}' OR  seats='{}') ".format(search, search, search, search, search, search))
+			cars = cur.fetchall()
+			if cars:
+				return cars
+			return car
+
