@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>forms module &#8212; Car Share IOT Application  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="login module" href="login.html" />
+    <link rel="prev" title="flask_site module" href="flask_site.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-forms">
+<span id="forms-module"></span><h1>forms module<a class="headerlink" href="#module-forms" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-0"></span><dl class="py class">
+<dt id="forms.BookingForm">
+<em class="property">class </em><code class="sig-prename descclassname">forms.</code><code class="sig-name descname">BookingForm</code><span class="sig-paren">(</span><em class="sig-param">formdata=&lt;object object&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forms.html#BookingForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#forms.BookingForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
+<p>Booking flask form</p>
+<dl class="py attribute">
+<dt id="forms.BookingForm.dropoff">
+<code class="sig-name descname">dropoff</code><em class="property"> = &lt;UnboundField(DateField, ('Drop Off Date',), {'format': '%Y-%m-%d %H:%M:%S', 'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#forms.BookingForm.dropoff" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="forms.BookingForm.email">
+<code class="sig-name descname">email</code><em class="property"> = &lt;UnboundField(StringField, ('Email',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#forms.BookingForm.email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="forms.BookingForm.pickup">
+<code class="sig-name descname">pickup</code><em class="property"> = &lt;UnboundField(DateField, ('PickUp Date',), {'format': '%Y-%m-%d %H:%M:%S', 'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#forms.BookingForm.pickup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="forms.BookingForm.rego">
+<code class="sig-name descname">rego</code><em class="property"> = &lt;UnboundField(StringField, ('Car',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#forms.BookingForm.rego" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="forms.BookingForm.submit">
+<code class="sig-name descname">submit</code><em class="property"> = &lt;UnboundField(SubmitField, ('bookedcar',), {})&gt;</em><a class="headerlink" href="#forms.BookingForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="forms.LoginForm">
+<em class="property">class </em><code class="sig-prename descclassname">forms.</code><code class="sig-name descname">LoginForm</code><span class="sig-paren">(</span><em class="sig-param">formdata=&lt;object object&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forms.html#LoginForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#forms.LoginForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
+<p>Login flask form</p>
+<dl class="py attribute">
+<dt id="forms.LoginForm.email">
+<code class="sig-name descname">email</code><em class="property"> = &lt;UnboundField(StringField, ('Email',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;, &lt;wtforms.validators.Email object&gt;]})&gt;</em><a class="headerlink" href="#forms.LoginForm.email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="forms.LoginForm.password">
+<code class="sig-name descname">password</code><em class="property"> = &lt;UnboundField(PasswordField, ('Password',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#forms.LoginForm.password" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="forms.LoginForm.role">
+<code class="sig-name descname">role</code><em class="property"> = &lt;UnboundField(SelectField, ('Role',), {'choices': [('Admin', 'Admin'), ('Manager', 'Manager'), ('Engineer', 'Engineer'), ('Customer', 'Customer')], 'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#forms.LoginForm.role" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="forms.LoginForm.submit">
+<code class="sig-name descname">submit</code><em class="property"> = &lt;UnboundField(SubmitField, ('Login',), {})&gt;</em><a class="headerlink" href="#forms.LoginForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="forms.RegistrationForm">
+<em class="property">class </em><code class="sig-prename descclassname">forms.</code><code class="sig-name descname">RegistrationForm</code><span class="sig-paren">(</span><em class="sig-param">formdata=&lt;object object&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forms.html#RegistrationForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#forms.RegistrationForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
+<p>Registration flask form</p>
+<dl class="py attribute">
+<dt id="forms.RegistrationForm.confirm_password">
+<code class="sig-name descname">confirm_password</code><em class="property"> = &lt;UnboundField(PasswordField, ('Confirm Password',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;, &lt;wtforms.validators.EqualTo object&gt;]})&gt;</em><a class="headerlink" href="#forms.RegistrationForm.confirm_password" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="forms.RegistrationForm.email">
+<code class="sig-name descname">email</code><em class="property"> = &lt;UnboundField(StringField, ('Email',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;, &lt;wtforms.validators.Email object&gt;]})&gt;</em><a class="headerlink" href="#forms.RegistrationForm.email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="forms.RegistrationForm.firstname">
+<code class="sig-name descname">firstname</code><em class="property"> = &lt;UnboundField(StringField, ('First Name',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;, &lt;function my_length_check&gt;]})&gt;</em><a class="headerlink" href="#forms.RegistrationForm.firstname" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="forms.RegistrationForm.lastname">
+<code class="sig-name descname">lastname</code><em class="property"> = &lt;UnboundField(StringField, ('Last Name',), {})&gt;</em><a class="headerlink" href="#forms.RegistrationForm.lastname" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="forms.RegistrationForm.password">
+<code class="sig-name descname">password</code><em class="property"> = &lt;UnboundField(PasswordField, ('Password',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;, &lt;function my_password_check&gt;], 'description': 'Minimum 8 Characters, 1 Capital, 1 number'})&gt;</em><a class="headerlink" href="#forms.RegistrationForm.password" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="forms.RegistrationForm.role">
+<code class="sig-name descname">role</code><em class="property"> = &lt;UnboundField(SelectField, ('Role',), {'choices': [('Admin', 'Admin'), ('Manager', 'Manager'), ('Engineer', 'Engineer'), ('Customer', 'Customer')], 'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#forms.RegistrationForm.role" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="forms.RegistrationForm.submit">
+<code class="sig-name descname">submit</code><em class="property"> = &lt;UnboundField(SubmitField, ('Sign Up',), {})&gt;</em><a class="headerlink" href="#forms.RegistrationForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="forms.RegistrationForm.username">
+<code class="sig-name descname">username</code><em class="property"> = &lt;UnboundField(StringField, ('Username',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;, &lt;wtforms.validators.Length object&gt;, &lt;function my_length_check&gt;]})&gt;</em><a class="headerlink" href="#forms.RegistrationForm.username" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="forms.my_length_check">
+<code class="sig-prename descclassname">forms.</code><code class="sig-name descname">my_length_check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">form</span></em>, <em class="sig-param"><span class="n">field</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forms.html#my_length_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#forms.my_length_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Length check for validation</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="forms.my_password_check">
+<code class="sig-prename descclassname">forms.</code><code class="sig-name descname">my_password_check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">form</span></em>, <em class="sig-param"><span class="n">field</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/forms.html#my_password_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#forms.my_password_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Password check for validation</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Car Share IOT Application</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">PIOTAssignment03</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="config.html">config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datetimeconverter.html">datetimeconverter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="db_singleton.html">db_singleton module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flask_api.html">flask_api module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flask_main.html">flask_main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flask_site.html">flask_site module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">forms module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="login.html">login module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="run_tests.html">run_tests module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="speech_recog.html">speech_recog module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="speech_recognition_console.html">speech_recognition_console module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_agentpi.html">test_agentpi module</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">PIOTAssignment03</a><ul>
+      <li>Previous: <a href="flask_site.html" title="previous chapter">flask_site module</a></li>
+      <li>Next: <a href="login.html" title="next chapter">login module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Bhavi Sanjay Mehta, David Alfred Sarkies, Jia Hong Tay, Michael Blakebrough.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/forms.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

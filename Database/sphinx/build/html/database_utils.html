@@ -1,0 +1,453 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>database_utils module &#8212; Car Share IOT Application  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gcalendar_utils module" href="gcalendar_utils.html" />
+    <link rel="prev" title="databaseSetup module" href="databaseSetup.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-database_utils">
+<span id="database-utils-module"></span><h1>database_utils module<a class="headerlink" href="#module-database_utils" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-0"></span><dl class="py class">
+<dt id="database_utils.databaseUtils">
+<em class="property">class </em><code class="sig-prename descclassname">database_utils.</code><code class="sig-name descname">databaseUtils</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span></em>, <em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">database</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py attribute">
+<dt id="database_utils.databaseUtils.DATABASE">
+<code class="sig-name descname">DATABASE</code><em class="property"> = 'car_app_db'</em><a class="headerlink" href="#database_utils.databaseUtils.DATABASE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="database_utils.databaseUtils.HOST">
+<code class="sig-name descname">HOST</code><em class="property"> = '35.197.174.1'</em><a class="headerlink" href="#database_utils.databaseUtils.HOST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="database_utils.databaseUtils.PASSWORD">
+<code class="sig-name descname">PASSWORD</code><em class="property"> = 'password'</em><a class="headerlink" href="#database_utils.databaseUtils.PASSWORD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="database_utils.databaseUtils.USER">
+<code class="sig-name descname">USER</code><em class="property"> = 'root'</em><a class="headerlink" href="#database_utils.databaseUtils.USER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.activate_employee">
+<code class="sig-name descname">activate_employee</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.activate_employee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.activate_employee" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.add_engineer">
+<code class="sig-name descname">add_engineer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span></em>, <em class="sig-param"><span class="n">mac_address</span></em>, <em class="sig-param"><span class="n">token</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.add_engineer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.add_engineer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="database_utils.databaseUtils.area_range">
+<code class="sig-name descname">area_range</code><em class="property"> = 0.0025</em><a class="headerlink" href="#database_utils.databaseUtils.area_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.assign_engineer">
+<code class="sig-name descname">assign_engineer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span></em>, <em class="sig-param"><span class="n">service_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.assign_engineer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.assign_engineer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.book_vehicle">
+<code class="sig-name descname">book_vehicle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">rego</span></em>, <em class="sig-param"><span class="n">pickup</span></em>, <em class="sig-param"><span class="n">dropoff</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.book_vehicle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.book_vehicle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Book vehicle</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.cancel_booking">
+<code class="sig-name descname">cancel_booking</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">booking_number</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.cancel_booking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.cancel_booking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cancel booking of the vehicle</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.change_booking_status">
+<code class="sig-name descname">change_booking_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">booking_number</span></em>, <em class="sig-param"><span class="n">status</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.change_booking_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.change_booking_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change booking status</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.close_connection">
+<code class="sig-name descname">close_connection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.close_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.close_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closing the connection of the database</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="database_utils.databaseUtils.connection">
+<code class="sig-name descname">connection</code><em class="property"> = None</em><a class="headerlink" href="#database_utils.databaseUtils.connection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.create_employee">
+<code class="sig-name descname">create_employee</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_name</span></em>, <em class="sig-param"><span class="n">first_name</span></em>, <em class="sig-param"><span class="n">last_name</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">email</span></em>, <em class="sig-param"><span class="n">role</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.create_employee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.create_employee" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.create_service_request">
+<code class="sig-name descname">create_service_request</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rego</span></em>, <em class="sig-param"><span class="n">post_code</span></em>, <em class="sig-param"><span class="n">email</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.create_service_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.create_service_request" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.delete_user">
+<code class="sig-name descname">delete_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.delete_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.delete_user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.filter_location">
+<code class="sig-name descname">filter_location</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lng</span></em>, <em class="sig-param"><span class="n">lat</span></em>, <em class="sig-param"><span class="n">cars</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.filter_location"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.filter_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Details of users location and nearby cars that aren’t booked</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.getCars">
+<code class="sig-name descname">getCars</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.getCars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.getCars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_active_booking_for_user">
+<code class="sig-name descname">get_active_booking_for_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span></em>, <em class="sig-param"><span class="n">rego</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_active_booking_for_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_active_booking_for_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Active booking</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_all_active_service_requests">
+<code class="sig-name descname">get_all_active_service_requests</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_all_active_service_requests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_all_active_service_requests" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_all_cars">
+<code class="sig-name descname">get_all_cars</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_all_cars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_all_cars" title="Permalink to this definition">¶</a></dt>
+<dd><p>All cars</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_all_mac_addresses">
+<code class="sig-name descname">get_all_mac_addresses</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_all_mac_addresses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_all_mac_addresses" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_all_service_requests">
+<code class="sig-name descname">get_all_service_requests</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_all_service_requests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_all_service_requests" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_all_unassigned_service_requests">
+<code class="sig-name descname">get_all_unassigned_service_requests</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_all_unassigned_service_requests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_all_unassigned_service_requests" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_all_unserviced_cars">
+<code class="sig-name descname">get_all_unserviced_cars</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_all_unserviced_cars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_all_unserviced_cars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_all_users">
+<code class="sig-name descname">get_all_users</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_all_users"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_all_users" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_availability">
+<code class="sig-name descname">get_availability</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rego</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_availability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_availability" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get availability status</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_available_cars">
+<code class="sig-name descname">get_available_cars</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lng</span></em>, <em class="sig-param"><span class="n">lat</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_available_cars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_available_cars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all available cars</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_booking_history">
+<code class="sig-name descname">get_booking_history</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_booking_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_booking_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of bookings that users made</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_booking_status">
+<code class="sig-name descname">get_booking_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">booking_number</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_booking_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_booking_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Booking status</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_car_booking_history">
+<code class="sig-name descname">get_car_booking_history</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rego</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_car_booking_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_car_booking_history" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_car_details">
+<code class="sig-name descname">get_car_details</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rego</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_car_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_car_details" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_confirmed_booking_for_user">
+<code class="sig-name descname">get_confirmed_booking_for_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span></em>, <em class="sig-param"><span class="n">rego</span></em>, <em class="sig-param"><span class="n">time</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_confirmed_booking_for_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_confirmed_booking_for_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Confirmed booking for user</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_confirmed_bookings">
+<code class="sig-name descname">get_confirmed_bookings</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_confirmed_bookings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_confirmed_bookings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Confirmed bookings</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_connection">
+<code class="sig-name descname">get_connection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable connection</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_engineer_address">
+<code class="sig-name descname">get_engineer_address</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_engineer_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_engineer_address" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_engineer_bluetooth_details">
+<code class="sig-name descname">get_engineer_bluetooth_details</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_engineer_bluetooth_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_engineer_bluetooth_details" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_engineer_details">
+<code class="sig-name descname">get_engineer_details</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_engineer_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_engineer_details" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_engineers">
+<code class="sig-name descname">get_engineers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_engineers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_engineers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_engineers_details">
+<code class="sig-name descname">get_engineers_details</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_engineers_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_engineers_details" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_mac_address">
+<code class="sig-name descname">get_mac_address</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_mac_address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_mac_address" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_service_request">
+<code class="sig-name descname">get_service_request</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">service_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_service_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_service_request" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_service_request_rego">
+<code class="sig-name descname">get_service_request_rego</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rego</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_service_request_rego"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_service_request_rego" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_this_engineer_cars">
+<code class="sig-name descname">get_this_engineer_cars</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_this_engineer_cars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_this_engineer_cars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_token">
+<code class="sig-name descname">get_token</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_token" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_user">
+<code class="sig-name descname">get_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_name</span></em>, <em class="sig-param"><span class="n">query</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch user details for username/email and password</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_user_role">
+<code class="sig-name descname">get_user_role</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">role</span></em>, <em class="sig-param"><span class="n">email</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_user_role"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_user_role" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.get_user_search">
+<code class="sig-name descname">get_user_search</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">search</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.get_user_search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.get_user_search" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.insert_user">
+<code class="sig-name descname">insert_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_name</span></em>, <em class="sig-param"><span class="n">first_name</span></em>, <em class="sig-param"><span class="n">last_name</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">email</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.insert_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.insert_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert new user details</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.return_all_employees">
+<code class="sig-name descname">return_all_employees</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.return_all_employees"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.return_all_employees" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.return_employee">
+<code class="sig-name descname">return_employee</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.return_employee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.return_employee" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.return_employee_type">
+<code class="sig-name descname">return_employee_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">role</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.return_employee_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.return_employee_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.return_user">
+<code class="sig-name descname">return_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.return_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.return_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch user details for everything</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.return_user_details">
+<code class="sig-name descname">return_user_details</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.return_user_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.return_user_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle user requests</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.return_vehicle_details">
+<code class="sig-name descname">return_vehicle_details</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">search</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.return_vehicle_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.return_vehicle_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>Details of a particular vehicle</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.return_vehicle_details_location">
+<code class="sig-name descname">return_vehicle_details_location</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lng</span></em>, <em class="sig-param"><span class="n">lat</span></em>, <em class="sig-param"><span class="n">search</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.return_vehicle_details_location"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.return_vehicle_details_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Details of vehicles in a specified locations</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.search_all_cars">
+<code class="sig-name descname">search_all_cars</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">search</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.search_all_cars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.search_all_cars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Details of a particular vehicle</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="database_utils.databaseUtils.service">
+<code class="sig-name descname">service</code><em class="property"> = None</em><a class="headerlink" href="#database_utils.databaseUtils.service" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.service_complete">
+<code class="sig-name descname">service_complete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">service_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.service_complete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.service_complete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.update_availability">
+<code class="sig-name descname">update_availability</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rego</span></em>, <em class="sig-param"><span class="n">available</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.update_availability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.update_availability" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update availability status of the vehicles</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.update_cardetails">
+<code class="sig-name descname">update_cardetails</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">colour</span></em>, <em class="sig-param"><span class="n">make</span></em>, <em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">locationLat</span></em>, <em class="sig-param"><span class="n">locationLong</span></em>, <em class="sig-param"><span class="n">rego</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.update_cardetails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.update_cardetails" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="database_utils.databaseUtils.update_userdetails">
+<code class="sig-name descname">update_userdetails</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">firstname</span></em>, <em class="sig-param"><span class="n">lastname</span></em>, <em class="sig-param"><span class="n">role</span></em>, <em class="sig-param"><span class="n">active_status</span></em>, <em class="sig-param"><span class="n">email</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/database_utils.html#databaseUtils.update_userdetails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#database_utils.databaseUtils.update_userdetails" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Car Share IOT Application</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Database</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="databaseSetup.html">databaseSetup module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">database_utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gcalendar_utils.html">gcalendar_utils module</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">Database</a><ul>
+      <li>Previous: <a href="databaseSetup.html" title="previous chapter">databaseSetup module</a></li>
+      <li>Next: <a href="gcalendar_utils.html" title="next chapter">gcalendar_utils module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Bhavi Sanjay Mehta, David Alfred Sarkies, Jia Hong Tay, Michael Blakebrough.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/database_utils.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
