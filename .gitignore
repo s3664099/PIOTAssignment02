@@ -1,0 +1,10 @@
+*.json
+*.json
+.gitignore
+*.db
+
+__pycache__/
+
+Database\ Setup/
+Database_Setup/
+lib/

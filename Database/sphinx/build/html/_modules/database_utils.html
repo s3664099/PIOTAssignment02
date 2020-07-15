@@ -1,0 +1,959 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>database_utils &#8212; Car Share IOT Application  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for database_utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: database_utils</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">pymysql</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">pymysql.cursors</span> <span class="k">import</span> <span class="n">DictCursor</span>
+<span class="c1">#import Database.gcalendar_utils as gcalendar</span>
+
+<span class="c1">#A class for creating a connection to the database to enable manipulation</span>
+<span class="c1">#and retrieval.</span>
+<div class="viewcode-block" id="databaseUtils"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils">[docs]</a><span class="k">class</span> <span class="nc">databaseUtils</span><span class="p">:</span>
+	<span class="n">HOST</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+	<span class="n">USER</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+	<span class="n">PASSWORD</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+	<span class="n">DATABASE</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+	<span class="n">connection</span> <span class="o">=</span> <span class="kc">None</span>
+	<span class="n">area_range</span> <span class="o">=</span> <span class="mf">0.0025</span>
+	<span class="n">service</span> <span class="o">=</span> <span class="kc">None</span>
+
+	<span class="c1">#Establishes the connection by passing through the required variables</span>
+	<span class="c1">#The variables aren&#39;t hardcoded to enable testing on a test database</span>
+	<span class="k">def</span> <span class="nf">__init__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">database</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Database varriables</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">databaseUtils</span><span class="o">.</span><span class="n">HOST</span> <span class="o">=</span> <span class="n">host</span>
+		<span class="n">databaseUtils</span><span class="o">.</span><span class="n">USER</span> <span class="o">=</span> <span class="n">user</span>
+		<span class="n">databaseUtils</span><span class="o">.</span><span class="n">PASSWORD</span> <span class="o">=</span> <span class="n">password</span>
+		<span class="n">databaseUtils</span><span class="o">.</span><span class="n">DATABASE</span> <span class="o">=</span> <span class="n">database</span>
+
+		<span class="c1">#This is where the connection is made, and saved as a variable in the class</span>
+		<span class="k">if</span> <span class="n">databaseUtils</span><span class="o">.</span><span class="n">connection</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">myConnection</span> <span class="o">=</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">databaseUtils</span><span class="o">.</span><span class="n">HOST</span><span class="p">,</span> <span class="n">user</span> <span class="o">=</span> <span class="n">databaseUtils</span><span class="o">.</span><span class="n">USER</span><span class="p">,</span> <span class="n">passwd</span> <span class="o">=</span> <span class="n">databaseUtils</span><span class="o">.</span><span class="n">PASSWORD</span><span class="p">,</span> 
+    			<span class="n">db</span> <span class="o">=</span> <span class="n">databaseUtils</span><span class="o">.</span><span class="n">DATABASE</span><span class="p">,</span> <span class="n">charset</span><span class="o">=</span><span class="s1">&#39;utf8&#39;</span><span class="p">,</span> <span class="n">cursorclass</span><span class="o">=</span><span class="n">pymysql</span><span class="o">.</span><span class="n">cursors</span><span class="o">.</span><span class="n">DictCursor</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">myConnection</span>
+
+		<span class="c1">#self.service = gcalendar.connect_calendar()</span>
+
+	<span class="c1">#The following methods are for closing the database</span>
+<div class="viewcode-block" id="databaseUtils.close_connection"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.close_connection">[docs]</a>	<span class="k">def</span> <span class="nf">close_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Closing the connection of the database</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+	<span class="k">def</span> <span class="nf">__enter__</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Enter</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span>
+
+	<span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Exit</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">close_connection</span><span class="p">()</span>
+
+	<span class="c1">#This returns the connection to the database to enable a connection elsewhere</span>
+<div class="viewcode-block" id="databaseUtils.get_connection"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_connection">[docs]</a>	<span class="k">def</span> <span class="nf">get_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Enable connection</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span></div>
+
+	<span class="c1">#This method is designed to insert a new user into the database</span>
+<div class="viewcode-block" id="databaseUtils.insert_user"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.insert_user">[docs]</a>	<span class="k">def</span> <span class="nf">insert_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_name</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">email</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Insert new user details</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="n">response</span> <span class="o">=</span> <span class="s2">&quot;success&quot;</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;INSERT INTO user VALUES </span><span class="se">\</span>
+<span class="s2">					(&#39;</span><span class="si">{}</span><span class="s2">&#39;,&#39;</span><span class="si">{}</span><span class="s2">&#39;,&#39;</span><span class="si">{}</span><span class="s2">&#39;,&#39;</span><span class="si">{}</span><span class="s2">&#39;,&#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user_name</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">email</span><span class="p">))</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+			<span class="k">except</span><span class="p">:</span>
+				<span class="n">response</span> <span class="o">=</span> <span class="s2">&quot;Email already used&quot;</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+			<span class="k">return</span> <span class="n">response</span></div>
+
+	<span class="c1">#These three methods below work to return user details, one for everything</span>
+	<span class="c1">#About the user, and the othe ronly the username/email and password</span>
+	<span class="c1">#The third, middle, function actually handles the user requests</span>
+<div class="viewcode-block" id="databaseUtils.return_user"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.return_user">[docs]</a>	<span class="k">def</span> <span class="nf">return_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_name</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Fetch user details for everything</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT username, password FROM user WHERE&quot;</span>
+
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_name</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="databaseUtils.get_user"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_user">[docs]</a>	<span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_name</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Fetch user details for username/email and password</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="n">results</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> email=&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="n">user_name</span><span class="p">))</span>
+			
+			<span class="k">if</span> <span class="n">results</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> username=&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="n">user_name</span><span class="p">))</span>
+
+			<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="databaseUtils.return_user_details"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.return_user_details">[docs]</a>	<span class="k">def</span> <span class="nf">return_user_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_name</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Handle user requests</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT * FROM user WHERE&quot;</span>
+
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_name</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>	</div>
+
+	<span class="c1">#Gets a list of the bookings that the user has made</span>
+<div class="viewcode-block" id="databaseUtils.get_booking_history"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_booking_history">[docs]</a>	<span class="k">def</span> <span class="nf">get_booking_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		List of bookings that users made</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM booking WHERE email=&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">))</span>
+
+			<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span></div>
+
+	<span class="c1">#The following three methods </span>
+	<span class="c1">#Gets confirmed booking for a user for a particular car, active books, bookings within a particular time</span>
+	<span class="c1">#TODO: Try to merge them to help with code quality</span>
+<div class="viewcode-block" id="databaseUtils.get_confirmed_booking_for_user"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_confirmed_booking_for_user">[docs]</a>	<span class="k">def</span> <span class="nf">get_confirmed_booking_for_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">email</span><span class="p">,</span><span class="n">rego</span><span class="p">,</span><span class="n">time</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Confirmed booking for user</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM booking where email=&#39;</span><span class="si">{}</span><span class="s2">&#39; and status=&#39;BOOKED&#39; and rego=&#39;</span><span class="si">{}</span><span class="s2">&#39; and </span><span class="se">\</span>
+<span class="s2">						(pickuptime &lt;=&#39;</span><span class="si">{}</span><span class="s2">&#39; and dropofftime&gt;=&#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">rego</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">time</span><span class="p">))</span>
+
+			<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span></div>
+
+	<span class="c1">#Gets Active booking for a user for a particular car</span>
+<div class="viewcode-block" id="databaseUtils.get_active_booking_for_user"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_active_booking_for_user">[docs]</a>	<span class="k">def</span> <span class="nf">get_active_booking_for_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">email</span><span class="p">,</span><span class="n">rego</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Active booking</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM booking where email=&#39;</span><span class="si">{}</span><span class="s2">&#39; and status=&#39;ACTIVE&#39; and rego=&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">rego</span><span class="p">))</span>
+
+			<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span></div>
+			
+	<span class="c1">#Gets confirmed bookings for a user</span>
+<div class="viewcode-block" id="databaseUtils.get_confirmed_bookings"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_confirmed_bookings">[docs]</a>	<span class="k">def</span> <span class="nf">get_confirmed_bookings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">email</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Confirmed bookings</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM booking where email=&#39;</span><span class="si">{}</span><span class="s2">&#39; and status=&#39;BOOKED&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">))</span>
+
+			<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span></div>
+
+	<span class="c1">#Returns the details of a particular vehicle, the query is structured to search by</span>
+	<span class="c1">#specific values for the vehicle</span>
+<div class="viewcode-block" id="databaseUtils.return_vehicle_details"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.return_vehicle_details">[docs]</a>	<span class="k">def</span> <span class="nf">return_vehicle_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Details of a particular vehicle</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">car</span><span class="o">=</span><span class="s2">&quot;Not Found&quot;</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice </span><span class="se">\</span>
+<span class="s2">				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model </span><span class="se">\</span>
+<span class="s2">				AND m.bodytype = b.bodytype AND c.available = 1 AND (c.rego=&#39;</span><span class="si">{}</span><span class="s2">&#39; OR c.make=&#39;</span><span class="si">{}</span><span class="s2">&#39; OR c.model=&#39;</span><span class="si">{}</span><span class="s2">&#39; </span><span class="se">\</span>
+<span class="s2">				OR c.colour=&#39;</span><span class="si">{}</span><span class="s2">&#39; OR b.bodytype=&#39;</span><span class="si">{}</span><span class="s2">&#39; OR  seats=&#39;</span><span class="si">{}</span><span class="s2">&#39;) &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">search</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">search</span><span class="p">))</span>
+			<span class="n">cars</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+			<span class="k">if</span> <span class="n">cars</span><span class="p">:</span>
+				<span class="k">return</span> <span class="n">cars</span>
+			<span class="k">return</span> <span class="n">car</span></div>
+
+	<span class="c1">#This method returns vehicles in a specified loations based on specific parameters</span>
+<div class="viewcode-block" id="databaseUtils.return_vehicle_details_location"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.return_vehicle_details_location">[docs]</a>	<span class="k">def</span> <span class="nf">return_vehicle_details_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lng</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">search</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Details of vehicles in a specified locations</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="n">cars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_vehicle_details</span><span class="p">(</span><span class="n">search</span><span class="p">)</span>
+		<span class="n">cars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_location</span><span class="p">(</span><span class="n">lng</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">cars</span><span class="p">)</span>
+
+		<span class="k">return</span> <span class="n">cars</span></div>
+
+	<span class="c1">#Takes the details of the users location and returns all nearby cars and returns ones that aren&#39;t currently booked</span>
+<div class="viewcode-block" id="databaseUtils.filter_location"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.filter_location">[docs]</a>	<span class="k">def</span> <span class="nf">filter_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lng</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">cars</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Details of users location and nearby cars that aren&#39;t booked</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="c1">#Variables to be used. The range is arbitrary and can be changed</span>
+		<span class="n">top_long</span> <span class="o">=</span> <span class="n">lng</span> <span class="o">+</span> <span class="n">databaseUtils</span><span class="o">.</span><span class="n">area_range</span>
+		<span class="n">bottom_long</span> <span class="o">=</span> <span class="n">lng</span> <span class="o">-</span> <span class="n">databaseUtils</span><span class="o">.</span><span class="n">area_range</span>
+		<span class="n">left_lat</span> <span class="o">=</span> <span class="n">lat</span> <span class="o">-</span> <span class="n">databaseUtils</span><span class="o">.</span><span class="n">area_range</span>
+		<span class="n">right_lat</span> <span class="o">=</span> <span class="n">lat</span> <span class="o">+</span> <span class="n">databaseUtils</span><span class="o">.</span><span class="n">area_range</span>
+		<span class="n">vehicle_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+		<span class="k">for</span> <span class="n">car</span> <span class="ow">in</span> <span class="n">cars</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">car</span><span class="p">[</span><span class="s2">&quot;locationlong&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">top_long</span> <span class="ow">and</span> <span class="n">car</span><span class="p">[</span><span class="s2">&quot;locationlong&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">bottom_long</span> <span class="ow">and</span> <span class="n">car</span><span class="p">[</span><span class="s2">&quot;locationlat&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">left_lat</span> <span class="ow">and</span> <span class="n">car</span><span class="p">[</span><span class="s2">&quot;locationlat&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">right_lat</span><span class="p">:</span>
+				<span class="n">vehicle_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">car</span><span class="p">)</span>
+
+		<span class="k">return</span> <span class="n">vehicle_list</span></div>
+
+	<span class="c1">#Takes the details of the users location and returns all nearby cars and returns ones that aren&#39;t currently booked</span>
+<div class="viewcode-block" id="databaseUtils.get_available_cars"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_available_cars">[docs]</a>	<span class="k">def</span> <span class="nf">get_available_cars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lng</span><span class="p">,</span> <span class="n">lat</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Get all available cars</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT rego, make, model, locationlat, locationlong FROM car WHERE available = &#39;1&#39;&quot;</span><span class="p">)</span>
+
+			<span class="n">cars</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+			<span class="n">vehicle_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_location</span><span class="p">(</span><span class="n">lng</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">cars</span><span class="p">)</span>
+
+			<span class="k">return</span> <span class="n">vehicle_list</span></div>
+
+	<span class="c1">#Changes the availability status of the vehicle</span>
+<div class="viewcode-block" id="databaseUtils.update_availability"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.update_availability">[docs]</a>	<span class="k">def</span> <span class="nf">update_availability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rego</span><span class="p">,</span> <span class="n">available</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Update availability status of the vehicles</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;UPDATE car SET available = </span><span class="si">{}</span><span class="s2"> WHERE rego = &#39;</span><span class="si">{}</span><span class="s2">&#39; and available!=&#39;</span><span class="se">\</span>
+<span class="s2">					</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">available</span><span class="p">,</span> <span class="n">rego</span><span class="p">,</span> <span class="n">available</span><span class="p">))</span>
+			<span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+					<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Caught error </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+					<span class="k">return</span> <span class="s2">&quot;Error&quot;</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+			<span class="k">return</span> <span class="s2">&quot;Success&quot;</span></div>
+
+	<span class="c1">#Returns the availability status of the vehicle</span>
+<div class="viewcode-block" id="databaseUtils.get_availability"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_availability">[docs]</a>	<span class="k">def</span> <span class="nf">get_availability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rego</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Get availability status</span>
+
+<span class="sd">		&quot;&quot;&quot;</span> 
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT available FROM car WHERE rego = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rego</span><span class="p">))</span>	
+
+			<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>	</div>
+
+<div class="viewcode-block" id="databaseUtils.get_all_cars"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_all_cars">[docs]</a>	<span class="k">def</span> <span class="nf">get_all_cars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		All cars</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT rego, make, model, colour, locationlat, locationlong FROM car WHERE available =&#39;1&#39;&quot;</span><span class="p">)</span>
+
+			<span class="n">vehicle_list</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+		<span class="k">return</span> <span class="n">vehicle_list</span></div>
+
+	<span class="c1">#Function to book a vehicle and adds booking to the database</span>
+<div class="viewcode-block" id="databaseUtils.book_vehicle"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.book_vehicle">[docs]</a>	<span class="k">def</span> <span class="nf">book_vehicle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">rego</span><span class="p">,</span> <span class="n">pickup</span><span class="p">,</span> <span class="n">dropoff</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Book vehicle</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="c1">#gets booking history for vehicle</span>
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT pickuptime, dropofftime, status FROM booking WHERE rego = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rego</span><span class="p">))</span>
+
+			<span class="c1">#Iterates through booking history</span>
+			<span class="k">for</span> <span class="n">bookings</span> <span class="ow">in</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+				<span class="c1">#checks to see if booking date overlaps</span>
+				<span class="k">if</span> <span class="p">(</span><span class="n">pickup</span> <span class="o">&gt;</span> <span class="n">bookings</span><span class="p">[</span><span class="s1">&#39;pickuptime&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">pickup</span> <span class="o">&lt;</span> <span class="n">bookings</span><span class="p">[</span><span class="s1">&#39;dropofftime&#39;</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span>
+					<span class="n">dropoff</span> <span class="o">&gt;</span> <span class="n">bookings</span><span class="p">[</span><span class="s1">&#39;pickuptime&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">dropoff</span> <span class="o">&lt;</span> <span class="n">bookings</span><span class="p">[</span><span class="s1">&#39;dropofftime&#39;</span><span class="p">]):</span>
+
+					<span class="k">if</span> <span class="p">(</span><span class="n">bookings</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;BOOKED&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">bookings</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;ACTIVE&#39;</span><span class="p">):</span>
+
+						<span class="c1">#if it does returns invalid booking</span>
+						<span class="k">return</span> <span class="s2">&quot;Vehicle already booked&quot;</span>
+
+			<span class="c1">#The hourly price for that particular car is retrieved form the database</span>
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT hourlyPrice FROM bodytype JOIN makemodel on makemodel.bodytype = bodytype.bodytype</span><span class="se">\</span>
+<span class="s2">						JOIN car ON car.model = makemodel.model WHERE rego = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rego</span><span class="p">))</span>
+
+			<span class="c1">#Source: https://stackoverflow.com/questions/1345827/how-do-i-find-the-time-difference-between-two-datetime-objects-in-python</span>
+			<span class="c1">#Calculates the total cost of the booking</span>
+			<span class="n">price</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+			<span class="n">price</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">price</span><span class="p">[</span><span class="s1">&#39;hourlyPrice&#39;</span><span class="p">])</span>
+			<span class="n">booking_time</span> <span class="o">=</span> <span class="n">dropoff</span> <span class="o">-</span> <span class="n">pickup</span>
+
+			<span class="n">booking_time</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">booking_time</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">(),</span> <span class="mi">3600</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+			<span class="c1">#Source: https://kite.com/python/answers/how-to-print-a-float-with-two-decimal-places-in-python</span>
+			<span class="n">total_cost</span> <span class="o">=</span> <span class="n">price</span><span class="o">*</span><span class="p">(</span><span class="n">booking_time</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+			<span class="n">total_cost</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_cost</span><span class="p">)</span>
+
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT make, model FROM car WHERE rego = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rego</span><span class="p">))</span>
+			<span class="n">car_type</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+			<span class="n">googleId</span><span class="o">=</span><span class="s2">&quot;None&quot;</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">googleId</span> <span class="o">=</span> <span class="n">gcalendar</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pickup</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span> <span class="o">+</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="n">dropoff</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span> <span class="o">+</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="n">rego</span><span class="p">,</span> <span class="n">car_type</span><span class="p">[</span><span class="s1">&#39;make&#39;</span><span class="p">],</span> 
+										<span class="n">car_type</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">],</span> <span class="n">total_cost</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">service</span><span class="p">)</span>
+			<span class="k">except</span><span class="p">:</span>
+				<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;unable to update calendar&quot;</span><span class="p">)</span>
+
+			<span class="c1">#The booking is added to the database and the results returned to the user</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;INSERT INTO booking (rego, email, pickuptime, dropofftime, totalcost, status, googleEventId) </span><span class="se">\</span>
+<span class="s2">						VALUES (&#39;</span><span class="si">{}</span><span class="s2">&#39;, &#39;</span><span class="si">{}</span><span class="s2">&#39;, &#39;</span><span class="si">{}</span><span class="s2">&#39;,&#39;</span><span class="si">{}</span><span class="s2">&#39;,</span><span class="si">{}</span><span class="s2">, &#39;BOOKED&#39;,&#39;</span><span class="si">{}</span><span class="s2">&#39;)</span><span class="se">\</span>
+<span class="s2">						&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rego</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">pickup</span><span class="p">,</span> <span class="n">dropoff</span><span class="p">,</span> <span class="n">total_cost</span><span class="p">,</span> <span class="n">googleId</span><span class="p">))</span>
+			<span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+				<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Caught error </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+				<span class="k">return</span> <span class="s2">&quot;Error&quot;</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT LAST_INSERT_ID()&quot;</span><span class="p">)</span>
+			<span class="n">insert_id</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+			<span class="k">return</span> <span class="s2">&quot;Vehicle Booked, your booking number is </span><span class="si">{}</span><span class="s2"> and the price is $</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">insert_id</span><span class="p">[</span><span class="s1">&#39;LAST_INSERT_ID()&#39;</span><span class="p">],</span> <span class="n">total_cost</span><span class="p">)</span></div>
+
+	<span class="c1">#This method is used to cancel a booking for the vehicle.</span>
+<div class="viewcode-block" id="databaseUtils.cancel_booking"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.cancel_booking">[docs]</a>	<span class="k">def</span> <span class="nf">cancel_booking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">booking_number</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Cancel booking of the vehicle</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="c1">#gets the booking based on the booking number</span>
+			<span class="n">row_count</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT email, pickuptime, dropofftime, status, googleEventId FROM booking WHERE </span><span class="se">\</span>
+<span class="s2">									bookingnumber = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">booking_number</span><span class="p">))</span>
+
+			<span class="c1">#Checks to see if the booking exists</span>
+			<span class="k">if</span> <span class="n">row_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+				<span class="k">return</span> <span class="s2">&quot;No booking exists&quot;</span>
+
+			<span class="n">results</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+			<span class="n">username</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span>
+			<span class="n">pickup</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;pickuptime&#39;</span><span class="p">]</span>
+			<span class="n">dropoff</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;dropofftime&#39;</span><span class="p">]</span>
+
+			<span class="n">time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+			<span class="c1">#Checks to see if the booking is a valud booking to be cancelled	</span>
+			<span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="n">username</span><span class="p">:</span>
+				<span class="k">return</span> <span class="s2">&quot;Can&#39;t cancel somebody else&#39;s booking&quot;</span>
+			<span class="k">elif</span> <span class="n">time</span> <span class="o">&gt;</span> <span class="n">dropoff</span><span class="p">:</span>
+				<span class="k">return</span> <span class="s2">&quot;Can&#39;t cancel a previous booking&quot;</span>
+			<span class="k">elif</span> <span class="n">time</span> <span class="o">&gt;</span> <span class="n">pickup</span><span class="p">:</span>
+				<span class="k">return</span> <span class="s2">&quot;Can&#39;t cancel a booking in progress&quot;</span>
+			<span class="k">else</span><span class="p">:</span>
+
+				<span class="k">try</span><span class="p">:</span>
+					<span class="n">gcalendar</span><span class="o">.</span><span class="n">remove_event</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;googleEventId&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">service</span><span class="p">)</span>
+				<span class="k">except</span><span class="p">:</span>
+					<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unable to update calendar&quot;</span><span class="p">)</span>
+
+				<span class="k">try</span><span class="p">:</span>
+
+					<span class="c1">#If they do, the booking is cancelled and the entry cleared</span>
+					<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;UPDATE booking SET status = &#39;CANCELLED&#39; WHERE bookingnumber = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">booking_number</span><span class="p">))</span>
+				<span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+					<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Caught error </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+					<span class="k">return</span> <span class="s2">&quot;Error&quot;</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+				<span class="k">return</span> <span class="s2">&quot;Booking successfully cancelled&quot;</span></div>
+				
+
+	<span class="c1">#Returns the booking status of the vehicle. For testing purposes</span>
+<div class="viewcode-block" id="databaseUtils.get_booking_status"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_booking_status">[docs]</a>	<span class="k">def</span> <span class="nf">get_booking_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">booking_number</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Booking status</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT status FROM booking WHERE bookingnumber = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">booking_number</span><span class="p">))</span>
+
+			<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span></div>
+
+	<span class="c1">#Updates the booking status of the booking.</span>
+<div class="viewcode-block" id="databaseUtils.change_booking_status"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.change_booking_status">[docs]</a>	<span class="k">def</span> <span class="nf">change_booking_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">booking_number</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Change booking status</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;UPDATE booking SET status = &#39;</span><span class="si">{}</span><span class="s2">&#39; WHERE bookingnumber = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">booking_number</span><span class="p">))</span>
+			<span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+					<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Caught error </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+					<span class="k">return</span> <span class="s2">&quot;Error&quot;</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+			<span class="k">return</span> <span class="s2">&quot;Success&quot;</span></div>
+
+	<span class="c1">#This method is designed to create an employee.</span>
+<div class="viewcode-block" id="databaseUtils.create_employee"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.create_employee">[docs]</a>	<span class="k">def</span> <span class="nf">create_employee</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_name</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">role</span><span class="p">):</span>
+		<span class="k">if</span> <span class="n">role</span> <span class="o">!=</span> <span class="s1">&#39;Manager&#39;</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">role</span> <span class="o">!=</span> <span class="s1">&#39;Admin&#39;</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">role</span> <span class="o">!=</span> <span class="s1">&#39;Engineer&#39;</span><span class="p">:</span>
+					<span class="k">if</span> <span class="n">role</span><span class="o">!=</span> <span class="s1">&#39;Customer&#39;</span><span class="p">:</span>
+						<span class="k">return</span> <span class="s1">&#39;invalid role&#39;</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="c1">#Registeration form accepts user&#39;s email and user name as this will be needed for appropriate pushbullet messaging</span>
+			<span class="sd">&quot;&quot;&quot;email = &quot;{}.{}@carshare.com&quot;.format(first_name[0], last_name[0])</span>
+<span class="sd">			user_name = &quot;{}{}&quot;.format(first_name,last_name)</span>
+<span class="sd">			&quot;&quot;&quot;</span>
+			<span class="c1">#Adding active status so manager and eningeer profiles can be activated only by admin through modify user functionality</span>
+			<span class="k">if</span> <span class="n">role</span> <span class="o">==</span> <span class="s1">&#39;Admin&#39;</span><span class="p">:</span>
+				<span class="n">is_active</span><span class="o">=</span><span class="mi">1</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">is_active</span><span class="o">=</span><span class="mi">0</span>
+			
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;INSERT INTO user VALUES </span><span class="se">\</span>
+<span class="s2">					(&#39;</span><span class="si">{}</span><span class="s2">&#39;,&#39;</span><span class="si">{}</span><span class="s2">&#39;,&#39;</span><span class="si">{}</span><span class="s2">&#39;,&#39;</span><span class="si">{}</span><span class="s2">&#39;,&#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user_name</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">email</span><span class="p">))</span>	
+
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;INSERT INTO user_role VALUES (&#39;</span><span class="si">{}</span><span class="s2">&#39;,&#39;</span><span class="si">{}</span><span class="s2">&#39;,&#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="n">is_active</span><span class="p">,</span><span class="n">role</span><span class="p">))</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+				<span class="n">response</span> <span class="o">=</span> <span class="s2">&quot;success&quot;</span>
+			<span class="c1">#for sql try and catch blocks, please throw the sql exception as it is required for debugging issues and better code maintanence</span>
+			<span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+				<span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+				<span class="n">response</span><span class="o">=</span><span class="s1">&#39;Email already used&#39;</span>
+
+			<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+			<span class="k">return</span> <span class="n">response</span></div>
+
+	<span class="c1">#Methods to return employees</span>
+<div class="viewcode-block" id="databaseUtils.return_employee"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.return_employee">[docs]</a>	<span class="k">def</span> <span class="nf">return_employee</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">):</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM user, user_role WHERE user.email = user_role.email and user.email = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">))</span>
+
+			<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="databaseUtils.return_employee_type"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.return_employee_type">[docs]</a>	<span class="k">def</span> <span class="nf">return_employee_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role</span><span class="p">):</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM user, user_role WHERE user.email = user_role.email and user_role.role = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">role</span><span class="p">))</span>
+
+			<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="databaseUtils.return_all_employees"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.return_all_employees">[docs]</a>	<span class="k">def</span> <span class="nf">return_all_employees</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>		
+
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM user, user_role WHERE user.email = user_role.email and (user_role.role = &#39;ENGINEER&#39; or </span><span class="se">\</span>
+<span class="s2">				user_role.role = </span><span class="se">\&#39;</span><span class="s2">ADMIN&#39; or user_role.role = &#39;MANAGER&#39;)&quot;</span><span class="p">)</span>
+
+			<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span></div>
+			
+	<span class="c1">#Activate Employee</span>
+<div class="viewcode-block" id="databaseUtils.activate_employee"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.activate_employee">[docs]</a>	<span class="k">def</span> <span class="nf">activate_employee</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">):</span>
+
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="n">response</span> <span class="o">=</span> <span class="s2">&quot;success&quot;</span>
+
+			<span class="k">if</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM user_role WHERE email = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">)):</span>
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;UPDATE user_role SET is_active = 1 WHERE email = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">))</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">response</span> <span class="o">=</span> <span class="s2">&quot;user not found&quot;</span>							
+
+			<span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="databaseUtils.add_engineer"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.add_engineer">[docs]</a>	<span class="k">def</span> <span class="nf">add_engineer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">mac_address</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;INSERT INTO engineer VALUES (&#39;</span><span class="si">{}</span><span class="s2">&#39;,&#39;</span><span class="si">{}</span><span class="s2">&#39;,&#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">mac_address</span><span class="p">,</span><span class="n">token</span><span class="p">))</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+				<span class="k">return</span> <span class="s2">&quot;Success&quot;</span>
+			<span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+					<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Caught error </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+					<span class="k">return</span> <span class="s2">&quot;Error&quot;</span>
+
+			<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="databaseUtils.get_engineer_address"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_engineer_address">[docs]</a>	<span class="k">def</span> <span class="nf">get_engineer_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">):</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="n">results</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM engineer WHERE email = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">))</span>
+
+			<span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+				<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">return</span> <span class="s2">&quot;No engineer found with that email&quot;</span></div>
+
+<div class="viewcode-block" id="databaseUtils.get_engineer_details"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_engineer_details">[docs]</a>	<span class="k">def</span> <span class="nf">get_engineer_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">):</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="n">results</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT u.firstname, u.lastname, u.email FROM user u, user_role r WHERE u.email = r.email AND </span><span class="se">\</span>
+<span class="s2">				r.role = &#39;ENGINEER&#39;&quot;</span><span class="p">)</span>
+
+			<span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+				<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">return</span> <span class="s2">&quot;No engineer found with that email&quot;</span></div>
+
+
+<div class="viewcode-block" id="databaseUtils.get_mac_address"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_mac_address">[docs]</a>	<span class="k">def</span> <span class="nf">get_mac_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">):</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>	
+
+			<span class="n">results</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT mac_address FROM engineer WHERE email = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">))</span>
+
+			<span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+
+				<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+			<span class="k">else</span><span class="p">:</span>
+
+				<span class="k">return</span> <span class="s2">&quot;No engineer found with that email&quot;</span></div>
+
+<div class="viewcode-block" id="databaseUtils.get_token"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_token">[docs]</a>	<span class="k">def</span> <span class="nf">get_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">):</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>	
+
+			<span class="n">results</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT pb_token FROM engineer WHERE email = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">))</span>
+
+			<span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+
+				<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+			<span class="k">else</span><span class="p">:</span>
+
+				<span class="k">return</span> <span class="s2">&quot;No engineer found with that email&quot;</span>		</div>
+
+
+<div class="viewcode-block" id="databaseUtils.get_all_mac_addresses"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_all_mac_addresses">[docs]</a>	<span class="k">def</span> <span class="nf">get_all_mac_addresses</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT mac_address FROM engineer&quot;</span><span class="p">)</span>
+
+			<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span></div>
+
+	<span class="c1">#Create Service Request</span>
+<div class="viewcode-block" id="databaseUtils.create_service_request"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.create_service_request">[docs]</a>	<span class="k">def</span> <span class="nf">create_service_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rego</span><span class="p">,</span> <span class="n">post_code</span><span class="p">,</span> <span class="n">email</span><span class="p">):</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="k">try</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM car WHERE rego = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rego</span><span class="p">)):</span>
+
+					<span class="k">if</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM user_role WHERE email = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">)):</span>
+
+						<span class="k">if</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM car_service WHERE rego = &#39;</span><span class="si">{}</span><span class="s2">&#39; AND needs_service = 1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rego</span><span class="p">)):</span>
+
+							<span class="k">return</span> <span class="s1">&#39;A service request has already been booked for vehicle </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rego</span><span class="p">)</span>
+
+						<span class="k">else</span><span class="p">:</span>
+						
+							<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;INSERT INTO car_service (rego, email, needs_service, engineer_assigned, post_code) VALUES </span><span class="se">\</span>
+<span class="s2">										(&#39;</span><span class="si">{}</span><span class="s2">&#39;,&#39;</span><span class="si">{}</span><span class="s2">&#39;,1,0,&#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rego</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">post_code</span><span class="p">))</span>
+							<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;UPDATE car SET available = 0 WHERE rego = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rego</span><span class="p">))</span>
+
+							<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+							<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT LAST_INSERT_ID()&quot;</span><span class="p">)</span>
+							<span class="n">service_id</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+							<span class="n">result</span> <span class="o">=</span> <span class="s1">&#39;Car Service Booked. The service number is </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">service_id</span><span class="p">[</span><span class="s1">&#39;LAST_INSERT_ID()&#39;</span><span class="p">])</span>
+					<span class="k">else</span><span class="p">:</span>
+						<span class="k">return</span> <span class="s2">&quot;Invalid email. Unable to book vehicle for service&quot;</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="k">return</span> <span class="s2">&quot;Unable to book vehicle for service, no such vehicle exists&quot;</span>
+
+			<span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+				<span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+			<span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="databaseUtils.get_this_engineer_cars"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_this_engineer_cars">[docs]</a>	<span class="k">def</span> <span class="nf">get_this_engineer_cars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">):</span>
+		
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			
+			<span class="k">if</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM car WHERE rego IN (SELECT rego FROM car_service WHERE email = &#39;</span><span class="si">{}</span><span class="s2">&#39; and needs_service=&#39;1&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">)):</span>
+				<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">return</span> <span class="s2">&quot;No jobs assigned to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="databaseUtils.get_service_request_rego"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_service_request_rego">[docs]</a>	<span class="k">def</span> <span class="nf">get_service_request_rego</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rego</span><span class="p">):</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="k">if</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT request_no FROM car_service WHERE rego = &#39;</span><span class="si">{}</span><span class="s2">&#39; AND needs_service = 1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rego</span><span class="p">)):</span>
+				<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">return</span> <span class="s2">&quot;No service request for rego </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rego</span><span class="p">)</span></div>
+		 
+<div class="viewcode-block" id="databaseUtils.get_service_request"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_service_request">[docs]</a>	<span class="k">def</span> <span class="nf">get_service_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">):</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="k">if</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM car_service WHERE request_no = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">service_id</span><span class="p">)):</span>
+				<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">return</span> <span class="s2">&quot;No service request found with id </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">service_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="databaseUtils.get_all_service_requests"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_all_service_requests">[docs]</a>	<span class="k">def</span> <span class="nf">get_all_service_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM car_service&quot;</span><span class="p">)</span>
+
+			<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="databaseUtils.get_all_active_service_requests"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_all_active_service_requests">[docs]</a>	<span class="k">def</span> <span class="nf">get_all_active_service_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM car_service WHERE needs_service = 1&quot;</span><span class="p">)</span>
+
+			<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="databaseUtils.get_all_unassigned_service_requests"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_all_unassigned_service_requests">[docs]</a>	<span class="k">def</span> <span class="nf">get_all_unassigned_service_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM car_service WHERE engineer_assigned = 0&quot;</span><span class="p">)</span>
+
+			<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="databaseUtils.assign_engineer"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.assign_engineer">[docs]</a>	<span class="k">def</span> <span class="nf">assign_engineer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">service_id</span><span class="p">):</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="k">try</span><span class="p">:</span>
+
+				<span class="n">service_request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_service_request</span><span class="p">(</span><span class="n">service_id</span><span class="p">)</span>
+
+				<span class="k">if</span> <span class="n">service_request</span> <span class="o">==</span> <span class="s2">&quot;No service request found with id </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">service_id</span><span class="p">):</span>
+					<span class="k">return</span> <span class="n">service_request</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="n">service_request</span> <span class="o">=</span> <span class="n">service_request</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+					<span class="k">if</span> <span class="n">service_request</span><span class="p">[</span><span class="s2">&quot;engineer_assigned&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+						<span class="k">return</span> <span class="s2">&quot;engineer already assigned to this service request&quot;</span>
+					<span class="k">elif</span> <span class="n">service_request</span><span class="p">[</span><span class="s2">&quot;needs_service&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+						<span class="k">return</span> <span class="s2">&quot;This service request is not active&quot;</span>
+					<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_engineer_address</span><span class="p">(</span><span class="n">email</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;No engineer found with that email&quot;</span><span class="p">:</span>
+						<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;UPDATE car_service SET engineer_assigned = 1, email = &#39;</span><span class="si">{}</span><span class="s2">&#39; WHERE request_no = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">service_id</span><span class="p">))</span>
+						<span class="k">return</span> <span class="s2">&quot;Engineer successfully assigned&quot;</span>
+					<span class="k">else</span><span class="p">:</span>
+						<span class="k">return</span> <span class="s2">&quot;No engineer found with email </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+			<span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+				<span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+				<span class="k">return</span> <span class="s2">&quot;Unable to assign engineer&quot;</span></div>
+
+<div class="viewcode-block" id="databaseUtils.service_complete"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.service_complete">[docs]</a>	<span class="k">def</span> <span class="nf">service_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_id</span><span class="p">):</span>
+
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">service_request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_service_request</span><span class="p">(</span><span class="n">service_id</span><span class="p">)</span>
+
+				<span class="k">if</span> <span class="n">service_request</span> <span class="o">==</span> <span class="s2">&quot;No service request found with id </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">service_id</span><span class="p">):</span>
+					<span class="k">return</span> <span class="n">service_request</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="n">service_request</span> <span class="o">=</span> <span class="n">service_request</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+					<span class="k">if</span> <span class="n">service_request</span><span class="p">[</span><span class="s2">&quot;needs_service&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+						<span class="k">return</span> <span class="s2">&quot;Service request not active&quot;</span>
+					<span class="k">else</span><span class="p">:</span>
+						<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;UPDATE car_service SET needs_service = 0 WHERE request_no = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">service_id</span><span class="p">))</span>
+						<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+						<span class="k">return</span> <span class="s2">&quot;Service completed&quot;</span>
+			<span class="k">except</span><span class="p">:</span>
+				<span class="k">return</span> <span class="s2">&quot;Unable to update service&quot;</span></div>
+
+		
+<div class="viewcode-block" id="databaseUtils.get_user_role"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_user_role">[docs]</a>	<span class="k">def</span> <span class="nf">get_user_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">role</span><span class="p">,</span><span class="n">email</span><span class="p">):</span>
+			<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM user_role where email =&#39;&quot;</span><span class="o">+</span><span class="n">email</span><span class="o">+</span><span class="s2">&quot;&#39; and role=&#39;&quot;</span><span class="o">+</span><span class="n">role</span><span class="o">+</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+				<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span></div>
+				
+<div class="viewcode-block" id="databaseUtils.get_car_booking_history"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_car_booking_history">[docs]</a>	<span class="k">def</span> <span class="nf">get_car_booking_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">rego</span><span class="p">):</span>
+			<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM booking where rego =&#39;&quot;</span><span class="o">+</span><span class="n">rego</span><span class="o">+</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+				<span class="n">result</span><span class="o">=</span><span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+				<span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+					<span class="k">return</span> <span class="n">result</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="k">return</span> <span class="s2">&quot;No Bookings Found&quot;</span></div>
+	
+<div class="viewcode-block" id="databaseUtils.get_user_search"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_user_search">[docs]</a>	<span class="k">def</span> <span class="nf">get_user_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">search</span><span class="p">):</span>
+		<span class="n">user</span><span class="o">=</span><span class="s2">&quot;Not Found&quot;</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT username, firstname, lastname, role, user.email, is_active from user, user_role WHERE </span><span class="se">\</span>
+<span class="s2">				user.email=user_role.email and (user.email=&#39;</span><span class="si">{}</span><span class="s2">&#39; OR user.firstname=&#39;</span><span class="si">{}</span><span class="s2">&#39; OR user.lastname=&#39;</span><span class="si">{}</span><span class="s2">&#39; </span><span class="se">\</span>
+<span class="s2">				 OR user.username=&#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">search</span><span class="p">,</span><span class="n">search</span><span class="p">,</span><span class="n">search</span><span class="p">,</span><span class="n">search</span><span class="p">))</span>
+
+			<span class="n">users</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+			<span class="k">if</span> <span class="n">users</span><span class="p">:</span>
+				<span class="k">return</span> <span class="n">users</span>
+			<span class="k">return</span> <span class="n">user</span></div>
+
+<div class="viewcode-block" id="databaseUtils.get_all_users"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_all_users">[docs]</a>	<span class="k">def</span> <span class="nf">get_all_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT user.firstname,user.lastname,user.email,user.username, user_role.role, user_role.is_active FROM user, user_role WHERE user.email=user_role.email&quot;</span><span class="p">)</span>
+
+			<span class="n">allusers</span><span class="o">=</span><span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+			
+			<span class="k">return</span> <span class="n">allusers</span></div>
+
+<div class="viewcode-block" id="databaseUtils.update_userdetails"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.update_userdetails">[docs]</a>	<span class="k">def</span> <span class="nf">update_userdetails</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">firstname</span><span class="p">,</span><span class="n">lastname</span><span class="p">,</span><span class="n">role</span><span class="p">,</span><span class="n">active_status</span><span class="p">,</span><span class="n">email</span><span class="p">):</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;UPDATE user SET firstname = &#39;</span><span class="si">{}</span><span class="s2">&#39;, lastname = &#39;</span><span class="si">{}</span><span class="s2">&#39; WHERE email = &#39;</span><span class="si">{}</span><span class="s2">&#39; </span><span class="se">\</span>
+<span class="s2">					&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">,</span> <span class="n">email</span><span class="p">))</span>
+				<span class="k">try</span><span class="p">:</span>
+					<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;UPDATE user_role SET role = &#39;</span><span class="si">{}</span><span class="s2">&#39;, is_active = &#39;</span><span class="si">{}</span><span class="s2">&#39; WHERE email = &#39;</span><span class="si">{}</span><span class="s2">&#39; </span><span class="se">\</span>
+<span class="s2">					&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">role</span><span class="p">,</span> <span class="n">active_status</span><span class="p">,</span> <span class="n">email</span><span class="p">))</span>
+				<span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+					<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Caught error </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+					<span class="k">return</span> <span class="s2">&quot;Error&quot;</span>
+			<span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+					<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Caught error </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+					<span class="k">return</span> <span class="s2">&quot;Error&quot;</span>
+					
+			<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+			<span class="k">return</span> <span class="s2">&quot;Success&quot;</span></div>
+
+<div class="viewcode-block" id="databaseUtils.get_car_details"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_car_details">[docs]</a>	<span class="k">def</span> <span class="nf">get_car_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">rego</span><span class="p">):</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * from car where rego=&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rego</span><span class="p">))</span>
+
+			<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span></div>
+	
+<div class="viewcode-block" id="databaseUtils.update_cardetails"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.update_cardetails">[docs]</a>	<span class="k">def</span> <span class="nf">update_cardetails</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">colour</span><span class="p">,</span><span class="n">make</span><span class="p">,</span><span class="n">model</span><span class="p">,</span><span class="n">locationLat</span><span class="p">,</span><span class="n">locationLong</span><span class="p">,</span><span class="n">rego</span><span class="p">):</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;UPDATE car SET colour=&#39;</span><span class="si">{}</span><span class="s2">&#39; , make=&#39;</span><span class="si">{}</span><span class="s2">&#39;, model=&#39;</span><span class="si">{}</span><span class="s2">&#39;,</span><span class="se">\</span>
+<span class="s2">				  locationlat=</span><span class="si">{}</span><span class="s2"> , locationlong=</span><span class="si">{}</span><span class="s2"> WHERE rego=&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">colour</span><span class="p">,</span><span class="n">make</span><span class="p">,</span><span class="n">model</span><span class="p">,</span><span class="nb">float</span><span class="p">(</span><span class="n">locationLat</span><span class="p">),</span><span class="nb">float</span><span class="p">(</span><span class="n">locationLong</span><span class="p">),</span><span class="n">rego</span><span class="p">))</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+				<span class="k">return</span> <span class="s2">&quot;Success&quot;</span>
+			<span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+				<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Caught error </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+				<span class="k">return</span> <span class="s2">&quot;Error&quot;</span></div>
+
+<div class="viewcode-block" id="databaseUtils.get_engineers"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_engineers">[docs]</a>	<span class="k">def</span> <span class="nf">get_engineers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT firstname,lastname,user.email,username from user, user_role where user_role.role=&#39;ENGINEER&#39; and user.email=user_role.email&quot;</span><span class="p">)</span>
+				<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+			<span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+				<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Caught error </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+				<span class="k">return</span> <span class="s2">&quot;Error&quot;</span></div>
+
+<div class="viewcode-block" id="databaseUtils.get_all_unserviced_cars"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_all_unserviced_cars">[docs]</a>	<span class="k">def</span> <span class="nf">get_all_unserviced_cars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * from car where car.rego not in (SELECT rego FROM car_service WHERE needs_service=&#39;1&#39;)&quot;</span><span class="p">)</span>
+				<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+			<span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+				<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Caught error </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+				<span class="k">return</span> <span class="s2">&quot;Error&quot;</span></div>
+
+<div class="viewcode-block" id="databaseUtils.getCars"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.getCars">[docs]</a>	<span class="k">def</span> <span class="nf">getCars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * from car&quot;</span><span class="p">)</span>
+				<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+			<span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+				<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Caught error </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+				<span class="k">return</span> <span class="s2">&quot;Error&quot;</span></div>
+
+<div class="viewcode-block" id="databaseUtils.get_engineers_details"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_engineers_details">[docs]</a>	<span class="k">def</span> <span class="nf">get_engineers_details</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;Select email,mac_address from engineer&quot;</span><span class="p">)</span>
+				<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+			<span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+				<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Caught error </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+				<span class="k">return</span> <span class="s2">&quot;Error&quot;</span></div>
+	
+<div class="viewcode-block" id="databaseUtils.delete_user"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.delete_user">[docs]</a>	<span class="k">def</span> <span class="nf">delete_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">email</span><span class="p">):</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="n">user_role_deleted</span><span class="o">=</span><span class="mi">0</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;DELETE from user_role where email=&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">))</span>
+				<span class="n">user_role_deleted</span><span class="o">=</span><span class="mi">1</span>
+			<span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+				<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Caught error </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+			
+			<span class="k">if</span> <span class="n">user_role_deleted</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+				<span class="k">try</span><span class="p">:</span>
+					<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;DELETE from user where email=&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">email</span><span class="p">))</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+					<span class="k">return</span> <span class="s2">&quot;Success&quot;</span>
+				<span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+					<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Caught error </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+					<span class="k">return</span> <span class="s2">&quot;Error&quot;</span></div>
+					
+<div class="viewcode-block" id="databaseUtils.get_engineer_bluetooth_details"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.get_engineer_bluetooth_details">[docs]</a>	<span class="k">def</span> <span class="nf">get_engineer_bluetooth_details</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT firstname,lastname,mac_address,pb_token from user u, engineer e </span><span class="se">\</span>
+<span class="s2">					WHERE u.email=e.email&quot;</span><span class="p">)</span>
+				<span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+			<span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+					<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Caught error </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+					<span class="k">return</span> <span class="s2">&quot;Error&quot;</span></div>
+	
+<div class="viewcode-block" id="databaseUtils.search_all_cars"><a class="viewcode-back" href="../database_utils.html#database_utils.databaseUtils.search_all_cars">[docs]</a>	<span class="k">def</span> <span class="nf">search_all_cars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Details of a particular vehicle</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">car</span><span class="o">=</span><span class="s2">&quot;Not Found&quot;</span>
+		<span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">(</span><span class="n">DictCursor</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+			<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT rego, c.make, c.model, locationlong, locationlat, colour, b.bodytype, seats, hourlyPrice </span><span class="se">\</span>
+<span class="s2">				colour FROM car c, bodytype b, makemodel m WHERE c.model = m.model </span><span class="se">\</span>
+<span class="s2">				AND m.bodytype = b.bodytype AND (c.rego=&#39;</span><span class="si">{}</span><span class="s2">&#39; OR c.make=&#39;</span><span class="si">{}</span><span class="s2">&#39; OR c.model=&#39;</span><span class="si">{}</span><span class="s2">&#39; </span><span class="se">\</span>
+<span class="s2">				OR c.colour=&#39;</span><span class="si">{}</span><span class="s2">&#39; OR b.bodytype=&#39;</span><span class="si">{}</span><span class="s2">&#39; OR  seats=&#39;</span><span class="si">{}</span><span class="s2">&#39;) &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">search</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">search</span><span class="p">))</span>
+			<span class="n">cars</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+			<span class="k">if</span> <span class="n">cars</span><span class="p">:</span>
+				<span class="k">return</span> <span class="n">cars</span>
+			<span class="k">return</span> <span class="n">car</span></div></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Car Share IOT Application</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Database</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Bhavi Sanjay Mehta, David Alfred Sarkies, Jia Hong Tay, Michael Blakebrough.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

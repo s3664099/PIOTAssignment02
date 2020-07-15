@@ -1,0 +1,60 @@
+<!-- html file to display user home page created by Bhavi Mehta 21/04/2020 -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Car Rental App</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <style>
+form { 
+margin: 0 auto; 
+width:350px;
+}
+  </style>
+</head>
+<body>
+<div class="container mt-3" style="bottom :10px">
+
+
+    {% if userdetails %}
+    <form method="POST" action="" >
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Modify User</legend>
+    <div class="form-group">
+{% for row in userdetails %}
+<label >Email <input type="text" name="email" value="{{row.email}}" disabled class="form-control form-control-lg">
+    <input type="hidden" name="email" value="{{row.email}}" class="form-control form-control-lg"></label><br>
+<label>Username <input type="text" name="username" value="{{row.username}}" disabled class="form-control form-control-lg">
+    <input type="hidden" name="username" value="{{row.username}}"  class="form-control form-control-lg"></label><br>
+<label>First Name <input type="text" value="{{row.firstname}}" name="firstname" placeholder="{{row.firstname}}"  class="form-control form-control-lg">
+    </label><br>
+<label>Last Name <input type="text" value="{{row.lastname}}"name="lastname" placeholder="{{row.lastname}}"  class="form-control form-control-lg">
+    </label><br>
+<label>Role <select name="role" id="role" class="form-control form-control-lg">
+    <option value="Admin">Admin</option>
+    <option value="Manager">Manager</option>
+    <option value="Engineer">Engineer</option>
+    </label><br>
+    <br></label>
+<label>Active Status <input type="text" value="{{row.is_active}}" name="status" placeholder="{{row.is_active}}"  class="form-control form-control-lg">
+    </label><br>
+    </div>
+{%endfor%}
+<button type="submit" name="modify" class="btn btn-success">Modify</button>
+<button type="submit" name="goback" class="btn btn-danger">Go Back</button>
+</form>
+{%else%}
+<div class="alert alert-success" style="left : 0; position : relative;">
+    <strong>Please Select a User to Modify</strong><br>
+</div>
+<a href="{{url_for('site.admin')}}">Go Back</a>
+{% endif %}
+</div>
+</body>
+</html>

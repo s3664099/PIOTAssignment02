@@ -1,0 +1,62 @@
+<!-- html file to display user home page created by Bhavi Mehta 21/04/2020 -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Car Rental App</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <style>
+form { 
+margin: 0 auto; 
+width:350px;
+}
+  </style>
+</head>
+<body>
+    <div class="container mt-5" style="bottom :10px">
+    {% if engineerdetails %}
+    <fieldset class="form-group">
+    <legend class="border-bottom mb-10">Select Engineer to Raise Request to</legend>
+</fieldset>
+    <div class="col-sm-10">
+        <form method="POST"  action="{{url_for('site.reportcar')}}">
+            <input type='hidden' value="{{rego}}" name="rego">
+        <table class='table table-hover'>
+          <thead>
+          <tr>
+        <th></th>
+          <th>Email</th>
+          <th>Username</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          </tr></thead>
+          <tbody>
+          {% for row in engineerdetails %}
+          <tr>
+            <td><input type="radio" value="{{row.email}}" name='engineeremail'></td><td>{{row.email}}</td>
+            <td>{{row.username}}</td>
+            <td>{{row.firstname}}</td>
+            <td>{{row.lastname}}</td>
+        </tr>
+          {% endfor %}
+      </tbody>
+    </div>
+      </table>
+<button type="submit" name="report" class="btn btn-success">Book Service</button>
+<button type="submit" name="goback" class="btn btn-danger">Go Back</button>
+</form>
+{%else%}
+<div class="alert alert-success" style="left : 0; position : relative;">
+    <strong>Please Select a Car for Servicing</strong><br>
+</div>
+<a href="{{url_for('site.admin')}}">Go Back</a>
+{% endif %}
+</div>
+</body>
+</html>

@@ -1,0 +1,545 @@
+<!-- html file to display user home page created by Bhavi Mehta 21/04/2020 -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Car Rental App</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <style>
+    #map {
+    height: 400px;
+    width: 100%;
+    }
+</style>
+</head>
+<body>
+<div class="content-section">
+ {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+
+    {% endif %}
+    {% endwith %}
+<div class="container mt-3">
+  <h2>Admin Dashboard {{ user }}</h2>
+  <br>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" id="myTab">
+    <li><a class="nav-link"  data-toggle="tab" href="#home">Home</a></li>
+    <li><a class="nav-link" data-toggle="tab" href="#history">Car Rental History</a></li>
+    <li><a class="nav-link" data-toggle="tab" href="#search">Search Details</a></li>
+    <li><a class="nav-link" data-toggle="tab" href="#modifyusers">Modify Users</a></li>
+    <li><a class="nav-link" data-toggle="tab" href="#adduser">Add User</a></li>
+    <li><a class="nav-link" data-toggle="tab" href="#addcar">Add Car</a></li>
+    <li><a class="nav-link" data-toggle="tab" href="#modifycars">Modify Cars</a></li>
+    <li><a class="nav-link" data-toggle="tab" href="#report">Report Car Issue</a></li>
+    <li><a class="nav-link" data-toggle="tab" href="#servicehistory">Cars Booked for Service</a></li>
+    <!--<li><a class="nav-link" data-toggle="tab" href="#manage">Manage My Booking</a></li>-->
+</ul>
+
+ <!-- Tab panes -->
+ <div class="tab-content">
+  <div id="adduser" class="tab-pane fade">
+  <form method="POST" action="" >
+      {{ form.hidden_tag() }}
+      <fieldset class="form-group">
+          <legend class="border-bottom mb-4">Join Today</legend>
+          <div class="form-group">
+              {{ form.username.label(class="form-control-label") }}
+              {% if form.username.errors %}
+                  {{ form.username(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                      {% for error in form.username.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+              {% else %}
+                  {{ form.username(class="form-control form-control-lg") }}
+              {% endif %}
+          </div>
+          <div class="form-group">
+              {{ form.firstname.label(class="form-control-label") }}
+              {% if form.firstname.errors %}
+                  {{ form.firstname(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                      {% for error in form.firstname.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+              {% else %}
+                  {{ form.firstname(class="form-control form-control-lg") }}
+              {% endif %}
+          </div>
+          <div class="form-group">
+              {{ form.lastname.label(class="form-control-label") }}
+              {{ form.lastname(class="form-control form-control-lg") }}
+          </div>
+          <div class="form-group">
+              {{ form.email.label(class="form-control-label") }}
+              {% if form.email.errors %}
+                  {{ form.email(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                      {% for error in form.email.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+              {% else %}
+                  {{ form.email(class="form-control form-control-lg") }}
+              {% endif %}
+          </div>
+          <div class="form-group">
+              {{ form.password.label(class="form-control-label") }}
+              {% if form.password.errors %}
+                  {{ form.password(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                      {% for error in form.password.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+              {% else %}
+                  {{ form.password(class="form-control form-control-lg") }}
+              {% endif %}
+              <div class='small' style="color: green"><input type="checkbox" checked disabled>Password must be at least 8 characters
+                  <input type="checkbox" checked disabled>Password must have atleast 1 number
+                  <input type="checkbox" checked disabled>Password must have atleast 1 uppercase character
+          </div>
+          </div>
+          <div class="form-group">
+              {{ form.confirm_password.label(class="form-control-label") }}
+              {% if form.confirm_password.errors %}
+                  {{ form.confirm_password(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                      {% for error in form.confirm_password.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+              {% else %}
+                  {{ form.confirm_password(class="form-control form-control-lg") }}
+              {% endif %}
+          </div>
+          <div class="form-group">
+              {{ form.role.label(class="form-control-label") }}
+              {% if form.role.errors %}
+                  {{ form.role(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                      {% for error in form.role.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+              {% else %}
+                  {{ form.role(class="form-control form-control-lg") }}
+              {% endif %}
+          </div>
+      </fieldset>
+      <div class="form-group">
+        <input type="hidden" name="add" value="adduser">
+          {{ form.submit(class="btn btn-outline-info") }}
+      </div>
+  </form>
+  </div>
+  <div id="home" class="tab-pane fade in active"><br>
+          <div class="col-sm-4">
+            <h2>About Us</h2>
+            <img src='https://galusaustralis.com/wp-content/uploads/2020/03/Carpooling-1170x610.jpg' style='width: 500px; top : 100px; bottom : 250px; left : 150px; right : 150px;'></img>
+            <p>You will be able to navigate the menu options to view and make changes to cars and/or users of the application</p>
+          </div>
+  </div>
+<div id="history" class="tab-pane fade"><br>
+  <div class='col-md-8'>
+    
+    <form action="" method="POST">
+      <input type="text" placeholder="Search Car" name="search">
+      <button type="submit" class="btn btn-outline-success" name="find">Find</button>
+      <button type="submit" class="btn btn-outline-danger" name="clear">Clear</button>
+    </form>
+  </div>
+    {%if rentalhistory%}
+    <table class='table table-hover'>
+        <thead>
+        <tr>
+        <th>Order Number</th>
+        <th>Car Details</th>
+        <th>Pickup Time</th>
+        <th>Dropoff Time</th>
+        <th>Cost</th>
+        <th>Status</th>
+        <th>User Email</th>
+        </tr></thead>
+        <tbody>
+        {% for row in rentalhistory %}
+        <tr>
+          <td>{{row.bookingnumber}}</td>
+          <td>{{row.rego}}</td>
+          <td>{{row.pickuptime}}</td>
+          <td>{{row.dropofftime}}</td>
+          <td>{{row.totalcost}}</td>
+          <td>{{row.status}}</td>
+          <td>{{row.email}}</td>
+      </tr>
+        {% endfor %}
+        {%endif%}
+    </tbody>
+    </table>
+</div>
+<div id="search" class="tab-pane fade"><br>
+  <div class="col-sm-8">
+    <form action="" method="POST">
+      <input type="text" placeholder="Search For User" name="usersearch">
+      <button type="submit" class="btn btn-outline-success" name="userdetails">Find</button>
+      <button type="submit" class="btn btn-outline-danger" name="clearusersearch">Clear</button>
+    </form>
+    </div>
+    {% if userfound %}
+    <table class='table table-hover'>
+      <thead>
+      <tr>
+      <th>Username</th>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Email</th>
+      <th>Role</th>
+      </tr></thead>
+      <tbody>
+      {% for row in userfound %}
+      <tr>
+        <td>{{row.username}}</td>
+        <td>{{row.firstname}}</td>
+        <td>{{row.lastname}}</td>
+        <td>{{row.email}}</td>
+        <td>{{row.role}}</td>
+    </tr>
+      {% endfor %}
+      {%endif%}
+  </tbody>
+  </table>
+    <br>
+    <div class="col-sm-8">
+      <form action="" method="POST">
+        <input type="text" placeholder="Search For Car" name="carsearch">
+        <button type="submit" class="btn btn-outline-success" name="cardetails">Find</button>
+        <button type="submit" class="btn btn-outline-danger" name="clearcarsearch">Clear</button>
+      </form>
+      </div>
+      {% if foundcars %}
+      <table class='table table-hover'>
+        <thead>
+        <tr>
+        <th>Rego</th>
+        <th>Make</th>
+        <th>Model</th>
+        <th>Latitude</th>
+        <th>Longitude</th>
+        <th>Color</th>
+        </tr>
+        </thead>
+        <tbody>
+          {% for row in foundcars %}
+          <tr>
+            <td><input type="radio" value="{{row.rego}}" name='carid'> {{row.rego}}</td>
+            <td>{{row.make}}</td>
+            <td>{{row.model}}</td>
+            <td>{{row.locationlat}}</td>
+          <td>{{row.locationlong}}</td>
+          <td>{{row.colour}}</td>
+        </tr>
+          {% endfor %}
+          </tbody>
+    </table>
+      {%endif%}
+  </div>
+<div id="addcar" class="tab-pane fade">
+  <form method="POST" action="" >
+  {{ formcar.hidden_tag() }}
+  <fieldset class="form-group">
+      <legend class="border-bottom mb-4">Add Car Details</legend>
+      <div class="form-group">
+          {{ formcar.rego.label(class="form-control-label") }}
+          {% if formcar.rego.errors %}
+              {{ formcar.rego(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                  {% for error in formcar.rego.errors %}
+                      <span>{{ error }}</span>
+                  {% endfor %}
+              </div>
+          {% else %}
+              {{ formcar.rego(class="form-control form-control-lg") }}
+          {% endif %}
+      </div>
+      <div class="form-group">
+        {{ formcar.color.label(class="form-control-label") }}
+        {% if formcar.color.errors %}
+            {{ formcar.color(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in formcar.color.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% else %}
+            {{ formcar.color(class="form-control form-control-lg") }}
+        {% endif %}
+    </div>
+    <div class="form-group">
+      {{ formcar.locationlat.label(class="form-control-label") }}
+      {% if formcar.locationlat.errors %}
+          {{ formcar.locationlat(class="form-control form-control-lg is-invalid") }}
+          <div class="invalid-feedback">
+              {% for error in formcar.locationlat.errors %}
+                  <span>{{ error }}</span>
+              {% endfor %}
+          </div>
+      {% else %}
+          {{ formcar.locationlat(class="form-control form-control-lg") }}
+      {% endif %}
+  </div>
+  <div class="form-group">
+    {{ formcar.locationlong.label(class="form-control-label") }}
+    {% if formcar.locationlong.errors %}
+        {{ formcar.locationlong(class="form-control form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+            {% for error in formcar.locationlong.errors %}
+                <span>{{ error }}</span>
+            {% endfor %}
+        </div>
+    {% else %}
+        {{ formcar.locationlong(class="form-control form-control-lg") }}
+    {% endif %}
+</div>
+<div class="form-group">
+  {{ formcar.makemodel.label(class="form-control-label") }}
+  {% if formcar.makemodel.errors %}
+      {{ formcar.makemodel(class="form-control form-control-lg is-invalid") }}
+      <div class="invalid-feedback">
+          {% for error in formcar.makemodel.errors %}
+              <span>{{ error }}</span>
+          {% endfor %}
+      </div>
+  {% else %}
+      {{ formcar.makemodel(class="form-control form-control-lg") }}
+  {% endif %}
+</div>
+</fieldset>
+<div class="form-group">
+  <input type="hidden" name="addcar" value="addcar">
+    {{ formcar.submit(class="btn btn-outline-info") }}
+</div>
+</form>
+      
+</div>
+<div id="modifyusers" class="tab-pane fade"><br>
+    {% if users %}
+    <form method="POST"  action="{{url_for('site.modifyuser')}}">
+    <table class='table table-hover'>
+      <thead>
+      <tr>
+      <th>Username</th>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Email</th>
+      <th>Role</th>
+      <th>Active Status</th>
+      </tr></thead>
+      <tbody>
+      {% for row in users %}
+      <tr>
+        <td> <input type="radio" value="{{row.email}}" name='emailtomodify'>{{row.email}}</td>
+        <td>{{row.firstname}}</td>
+        <td>{{row.lastname}}</td>
+        <td>{{row.username}}</td>
+        <td>{{row.role}}</td>
+        <td>{{row.is_active}}</td>
+    </tr>
+      {% endfor %}
+      {%endif%}
+  </tbody>
+  </table>
+  <button type="submit" value="usermodify" name="usermodify" class="btn btn-outline-success">Modify</button>
+  <button type="submit" value="deleteuser" name="deleteuser" class="btn btn-outline-danger">Delete User</button>
+</form>
+</div>
+<div id="modifycars" class="tab-pane fade"><br>
+  <div class="col-sm-10">
+    {% if cars %}
+    <form method="POST"  action="{{url_for('site.modifycar')}}">
+    <table class='table table-hover'>
+      <thead>
+      <tr>
+      <th>Rego</th>
+      <th>Color</th>
+      <th>Make</th>
+      <th>Model</th>
+      <th>Location Latitude</th>
+      <th>Location Longitude</th>
+      </tr></thead>
+      <tbody>
+      {% for row in cars %}
+      <tr>
+        <td> <input type="radio" value="{{row.rego}}" name='cartomodify'>{{row.rego}}</td>
+        <td>{{row.colour}}</td>
+        <td>{{row.make}}</td>
+        <td>{{row.model}}</td>
+        <td>{{row.locationLat}}</td>
+        <td>{{row.locationLong}}</td>
+    </tr>
+      {% endfor %}
+      {%endif%}
+  </tbody>
+  </table>
+  <button type="submit" name="carmodify" class="btn btn-outline-success">Modify</button>
+  <button type="submit" name="deletecar" class="btn btn-outline-danger">Delete Car</button>
+</form>
+
+    </div>
+</div>
+<div id="report" class="tab-pane fade"><br>
+  <div class="col-sm-10">
+    {% if unservicedcars %}
+    <form method="POST"  action="{{url_for('site.reportcar')}}">
+    <table class='table table-hover'>
+      <thead>
+      <tr>
+      <th>Rego</th>
+      <th>Color</th>
+      <th>Make</th>
+      <th>Model</th>
+      <th>Location Latitude</th>
+      <th>Location Longitude</th>
+      </tr></thead>
+      <tbody>
+      {% for row in unservicedcars %}
+      <tr>
+        <td> <input type="radio" value="{{row.rego}}" name='cartoreport'>{{row.rego}}</td>
+        <td>{{row.colour}}</td>
+        <td>{{row.make}}</td>
+        <td>{{row.model}}</td>
+        <td>{{row.locationLat}}</td>
+        <td>{{row.locationLong}}</td>
+    </tr>
+      {% endfor %}
+      {%endif%}
+  </tbody>
+  </table>
+  <button type="submit" value="reportcar" class="btn btn-outline-success">Report</button>
+</form>
+</div>
+</div>
+<div id="servicehistory" class="tab-pane fade"><br>
+  <div class='col-md-8'>
+    Cars Reported
+  </div>
+    {%if servicehistory%}
+    <table class='table table-hover'>
+        <thead>
+        <tr>
+        <th>ServiceId</th>
+        <th>Car Rego</th>
+        <th>Engineer</th>
+        <th>Needs Service</th>
+        </tr></thead>
+        <tbody>
+        {% for row in servicehistory%}
+        <tr>
+          <td>{{row.request_no}}</td>
+          <td>{{row.rego}}</td>
+          <td>{{row.email}}</td>
+          <td>{{row.needs_service}}</td>
+      </tr>
+        {% endfor %}
+        {%endif%}
+    </tbody>
+    </table>
+</div>
+<div id="search" class="tab-pane fade"><br>
+  <div class="col-sm-8">
+    <form action="" method="POST">
+      <input type="text" placeholder="Search For User" name="usersearch">
+      <button type="submit" class="btn btn-outline-success" name="userdetails">Find</button>
+      <button type="submit" class="btn btn-outline-danger" name="clearusersearch">Clear</button>
+    </form>
+    </div>
+    {% if userfound %}
+    <table class='table table-hover'>
+      <thead>
+      <tr>
+      <th>Username</th>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Email</th>
+      <th>Role</th>
+      </tr></thead>
+      <tbody>
+      {% for row in userfound %}
+      <tr>
+        <td>{{row.username}}</td>
+        <td>{{row.firstname}}</td>
+        <td>{{row.lastname}}</td>
+        <td>{{row.email}}</td>
+        <td>{{row.role}}</td>
+    </tr>
+      {% endfor %}
+      {%endif%}
+  </tbody>
+  </table>
+    <br>
+    <div class="col-sm-8">
+      <form action="" method="POST">
+        <input type="text" placeholder="Search For Car" name="carsearch">
+        <button type="submit" class="btn btn-outline-success" name="cardetails">Find</button>
+        <button type="submit" class="btn btn-outline-danger" name="clearcarsearch">Clear</button>
+      </form>
+      </div>
+      {% if foundcars %}
+      <table class='table table-hover'>
+        <thead>
+        <tr>
+        <th>Rego</th>
+        <th>Make</th>
+        <th>Model</th>
+        <th>Latitude</th>
+        <th>Longitude</th>
+        <th>Color</th>
+        </tr>
+        </thead>
+        <tbody>
+          {% for row in foundcars %}
+          <tr>
+            <td><input type="radio" value="{{row.rego}}" name='carid'> {{row.rego}}</td>
+            <td>{{row.make}}</td>
+            <td>{{row.model}}</td>
+            <td>{{row.locationlat}}</td>
+          <td>{{row.locationlong}}</td>
+          <td>{{row.colour}}</td>
+        </tr>
+          {% endfor %}
+          </tbody>
+    </table>
+      {%endif%}
+  </div>
+<div class="border-top" style="position: fixed; bottom: 10px; left:5px">
+  <small class="text-muted">
+     <a class="ml-2" href="{{ url_for('site.logout') }}">Logout</a>
+  </small>
+</div>
+<script>
+$(document).ready(function(){
+    $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+        localStorage.setItem('activeTab', $(e.target).attr('href'));
+    });
+    var activeTab = localStorage.getItem('activeTab');
+    if(activeTab){
+        $('#myTab a[href="' + activeTab + '"]').tab('show');
+    }
+});
+</script>
+</div>
+</body>
+</html>

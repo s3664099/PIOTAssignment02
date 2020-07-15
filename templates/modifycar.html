@@ -1,0 +1,57 @@
+<!-- html file to display user home page created by Bhavi Mehta 21/04/2020 -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Car Rental App</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <style>
+form { 
+margin: 0 auto; 
+width:350px;
+}
+  </style>
+</head>
+<body>
+<div class="container mt-3" style="bottom :10px">
+
+
+    {% if cardetails %}
+    <form method="POST" action="" >
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Modify User</legend>
+    <div class="form-group">
+{% for row in cardetails %}
+<label >Rego <input type="text" name="Rego" value="{{row.rego}}" disabled class="form-control form-control-lg">
+    <input type="hidden" name="rego" value="{{row.rego}}" class="form-control form-control-lg"></label><br>
+<label>Color <input type="text" name="colour" value="{{row.colour}}" placeholder="{{row.colour}}" class="form-control form-control-lg">
+<label>Make <input type="text" value="{{row.make}}" name="Make" placeholder="{{row.make}}" disabled class="form-control form-control-lg">
+    <input type="hidden" name="make" value="{{row.make}}" class="form-control form-control-lg"></label><br>
+    </label><br>
+<label>Model<input type="text" value="{{row.model}}" name="Model" placeholder="{{row.model}}" disabled class="form-control form-control-lg">
+    <input type="hidden" name="model" value="{{row.model}}" class="form-control form-control-lg"></label><br>
+    </label><br>
+<label>Location Latitude<input type="text" value="{{row.locationLat}}" name="locationLat" placeholder="{{row.locationLat}}"  class="form-control form-control-lg">
+    </label><br>
+<label>Location Longitude<input type="text" value="{{row.locationLong}}" name="locationLong" placeholder="{{row.locationLong}}"  class="form-control form-control-lg">
+    </label><br>
+    </div>
+{%endfor%}
+<button type="submit" name="modify" class="btn btn-success">Modify</button>
+<button type="submit" name="goback" class="btn btn-danger">Go Back</button>
+</form>
+{%else%}
+<div class="alert alert-success" style="left : 0; position : relative;">
+    <strong>Please Select a Car to Modify</strong><br>
+</div>
+<a href="{{url_for('site.admin')}}">Go Back</a>
+{% endif %}
+</div>
+</body>
+</html>

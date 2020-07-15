@@ -1,0 +1,113 @@
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <style>
+      #map {
+      height: 400px;
+      width: 100%;
+      }
+  </style>
+  </head>
+    <body>
+      <div class="content-section">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+           {% if messages %}
+               {% for category, message in messages %}
+                   <div class="alert alert-{{ category }}">
+                       {{ message }}
+                   </div>
+                   {% endfor %}
+       
+           {% endif %}
+           {% endwith %}
+       <div class="container mt-3">
+         <h2>Engineer Dashboard {{ user }}</h2>
+         <br>
+         <!-- Nav tabs -->
+         <ul class="nav nav-tabs" id="myTab">
+        <li><a class="nav-link"  data-toggle="tab" href="#home">Home</a></li>
+        <li><a class="nav-link" data-toggle="tab" href="#service">My Services</a></li>
+        <li><a class="nav-link" data-toggle="tab" href="#forms">My Details</a></li>
+        </ul>
+<div class="tab-content">
+<div id="home" class="tab-pane fade">
+  <div class="col-sm-4">
+    <h2>About Us</h2>
+    <img src='https://galusaustralis.com/wp-content/uploads/2020/03/Carpooling-1170x610.jpg' style='width: 500px; top : 100px; bottom : 250px; left : 150px; right : 150px;'></img>
+    <p>You will be able to view your services and locate the cars on the map</p>
+    <p>You will also be able to add your phone's mac address and pushbullet token to be able to unlock the car for service</p>
+  </div>
+</div>
+<div id="service" class="tab-pane fade">
+  <div id ="map" style="width: 1000px; height: 500px;">
+    <input type="hidden" id="session_email" name="session_email" value="{{session['email']}}"/>
+  </div><br>
+              
+  <script src="{{ url_for('static', filename='js/engineermap.js') }}">
+    </script>
+      <div class='col-md-8'>
+        {% if availablecars %}
+          <table class='table table-hover'>
+          <thead>
+          <tr>
+          <th>Rego</th>
+          <th>Make</th>
+          <th>Model</th>
+          <th>Latitude</th>
+          <th>Longitude</th>
+          <th>Color</th>
+          </tr>
+          </thead>
+          <tbody>
+            {% for row in availablecars %}
+            <tr>
+              <td>{{row.rego}}</td>
+              <td>{{row.make}}</td>
+              <td>{{row.model}}</td>
+              <td>{{row.locationLat}}</td>
+              <td>{{row.locationLong}}</td>
+              <td>{{row.colour}}</td>
+          </tr>
+            {% endfor %}
+            {%endif%}
+            </tbody>
+      </table>
+      </div>
+      </div>
+<div id="forms" class="tab-pane fade">
+  <form method="POST" action="" >
+    <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Add Details</legend>
+        {% if needdetails %}
+<div class="form-group">
+<label >Email <input type="text" name="email" value="{{engineerdetails}}" disabled class="form-control form-control-lg">
+<input type="hidden" name="email" value="{{engineerdetails}}" class="form-control form-control-lg"></label><br>
+<label>Mac Address <input type="text" name="macaddress" class="form-control form-control-lg">
+</label><br>
+<label>Pushbullet Access Token<input type="text" name="pbtoken"  class="form-control form-control-lg">
+</label><br>
+<button type="submit" name="addengineerdetails" class="btn btn-success">Modify</button>
+</form>
+{%else%}
+We have your details.
+If you wish to modify your details, please email admin at : carhireadmin@carhire.com
+{%endif%}
+</div>
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD4SCXnc_FkHnGqlEMXnDCxyrb_EE_YIkc&callback=initMap">
+</script>
+</div>
+<div class="border-top" style="position: fixed; bottom: 10px; left:5px">
+<small class="text-muted">
+        <a class="ml-2" href="{{ url_for('site.logout') }}">Logout</a>
+    </small>
+    </div>
+
+</body>
+</html>
